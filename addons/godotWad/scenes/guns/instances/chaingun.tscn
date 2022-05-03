@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/guns/gun.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/scenes/guns/generator2D.gd" type="Script" id=2]
+
+[node name="chaingun" type="Spatial"]
+script = ExtResource( 1 )
+weaponName = "chaingun"
+category = 2
+idleAnims = [ "idle" ]
+fireAnims = [ "fire" ]
+shootDurationMS = 120
+magSize = -1
+damage = 10
+spread = Vector2( 30, 30 )
+firstShotCooldonwMS = 200
+
+[node name="shootCast" type="RayCast" parent="."]
+cast_to = Vector3( -1, 0, 0 )
+
+[node name="soundPlayer" type="AudioStreamPlayer3D" parent="."]
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource( 2 )
+idleSpriteNames = [ "CHGGA0" ]
+shootSpriteNames = [ "CHGGB0" ]
+idleAnimDuration = 0
+shootAnimDurationMS = 100.0
+shootSounds = [ "DSPISTOL" ]

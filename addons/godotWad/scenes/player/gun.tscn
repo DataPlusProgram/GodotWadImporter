@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godwad/scenes/player/gun.gd" type="Script" id=3]
+
+[node name="gun" type="Spatial"]
+script = ExtResource( 3 )
+
+[node name="soundPlayer" type="AudioStreamPlayer3D" parent="."]

@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://addons/godotWad/WAD_Loader.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/src/wadLoader/floorCreator.gd" type="Script" id=2]
+[ext_resource path="res://addons/godotWad/src/wadLoader/lumpParser.gd" type="Script" id=3]
+[ext_resource path="res://addons/godotWad/src/wadLoader/LevelBuilder.gd" type="Script" id=4]
+[ext_resource path="res://addons/godotWad/src/wadLoader/MeshCombiner.gd" type="Script" id=5]
+[ext_resource path="res://addons/godotWad/src/wadLoader/thingParser.gd" type="Script" id=6]
+[ext_resource path="res://addons/godotWad/src/wadLoader/ResourceManager.gd" type="Script" id=7]
+[ext_resource path="res://addons/godotWad/src/wadLoader/ImagerBuilder.gd" type="Script" id=8]
+
+[node name="WadLoader" type="Spatial"]
+transform = Transform( 0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"mapNames": [  ]
+}
+
+[node name="LumpParser" type="Node" parent="."]
+script = ExtResource( 3 )
+__meta__ = {
+"hidden": true
+}
+
+[node name="LevelBuilder" type="Spatial" parent="."]
+script = ExtResource( 4 )
+__meta__ = {
+"hidden": true
+}
+
+[node name="ImageBuilder" type="Node" parent="."]
+script = ExtResource( 8 )
+__meta__ = {
+"hidden": true
+}
+
+[node name="FloorBuilder" type="Node" parent="."]
+script = ExtResource( 2 )
+__meta__ = {
+"hidden": true
+}
+
+[node name="ThingParser" type="Spatial" parent="."]
+script = ExtResource( 6 )
+__meta__ = {
+"hidden": true,
+"ready": true
+}
+
+[node name="MeshCombiner" type="Node" parent="."]
+script = ExtResource( 5 )
+__meta__ = {
+"hidden": true
+}
+
+[node name="ResourceManager" type="Node" parent="."]
+script = ExtResource( 7 )
+__meta__ = {
+"hidden": true
+}
