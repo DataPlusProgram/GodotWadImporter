@@ -11,5 +11,5 @@
 * Click "Load Wad" on the top bar
 * Chose the map you want to import from the dropdown menu.
 * Click "create map"
-
-![](https://i.imgur.com/ef6zmgl.mp4)
+  
+![](https://i.giphy.com/media/DqSGdD3fJrJoQqAzDw/giphy.webp)
