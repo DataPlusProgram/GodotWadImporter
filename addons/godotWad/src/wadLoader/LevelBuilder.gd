@@ -48,6 +48,7 @@ enum LTYPE {
 	ALPHA
 }
 
+
 enum TTYPE{
 	DOOR,
 	DOOR1,
@@ -78,6 +79,10 @@ enum DEST{
 	
 }
 
+enum LIGHTCAT{
+	LOWEST_ADJ = -1,
+	HIGHEST_ADJ = -2,
+}
 
 class interactionSectorSort:
 	static func sort_asc(a,b):
@@ -96,8 +101,6 @@ var sectorLightType = {
 }
 
 
-
-
 var typeDict =  {
 	-2:{"type":LTYPE.FLOOR,"str":"stair"},
 	
@@ -114,8 +117,8 @@ var typeDict =  {
 	10:{"type":LTYPE.LIFT,"str":"W1 Lift","trigger":TTYPE.WALK1},
 	
 	11:{"type":LTYPE.EXIT,"str":"S1 Exit (Normal)","trigger":TTYPE.SWITCH1},
-	12:{"type":LTYPE.LIGHT,"str":"W1 Light to Highest Adjacent","trigger":TTYPE.WALK1},
-	13:{"type":LTYPE.LIGHT,"str":"W1 Light to 255","trigger":TTYPE.WALK1},
+	12:{"type":LTYPE.LIGHT,"str":"W1 Light to Highest Adjacent","trigger":TTYPE.WALK1,"value":LIGHTCAT.HIGHEST_ADJ},
+	13:{"type":LTYPE.LIGHT,"str":"W1 Light to 255","trigger":TTYPE.WALK1,"value":255},
 	14:{"type":LTYPE.FLOOR,"str":"S1 Floor Up 32 Change Texture","trigger":TTYPE.SWITCH1,"direction":DIR.UP,"dest":DEST.up32},
 	15:{"type":LTYPE.FLOOR,"str":"S1 Floor Up 24 Change Texture","trigger":TTYPE.SWITCH1,"direction":DIR.UP,"dest":DEST.up24},
 	16:{"type":LTYPE.DOOR,"str":"W1 Door Close Wait Open","trigger":TTYPE.WALK1,"direction":DIR.DOWN},
@@ -139,7 +142,7 @@ var typeDict =  {
 	32:{"type":LTYPE.DOOR,"str":"D1 Blue Door Open Stay","trigger":TTYPE.DOOR1,"key":KEY.BLUE,"direction":DIR.UP},
 	33:{"type":LTYPE.DOOR,"str":"D1 Red Door Open Stay","trigger":TTYPE.DOOR1,"key":KEY.RED,"direction":DIR.UP},
 	34:{"type":LTYPE.DOOR,"str":"DR Yellow Door Open Stay","trigger":TTYPE.DOOR,"key":KEY.YELLOW,"direction":DIR.UP},
-	35:{"type":LTYPE.LIGHT,"str":"W1 Light Change To 35","trigger":TTYPE.WALK1},
+	35:{"type":LTYPE.LIGHT,"str":"W1 Light Change To 35","trigger":TTYPE.WALK1,"value":35},
 	36:{"type":LTYPE.FLOOR,"str":"W1 Floor To 8 Above Higher Adjacent Floor Fast","trigger":TTYPE.WALK1,"direction":DIR.DOWN,"dest":DEST.NEXT_HIGHEST_FLOOR_up8},
 	37:{"type":LTYPE.FLOOR,"str":"W1 Floor Lower to Lowest Floor (changes texture)","trigger":TTYPE.WALK1,"direction":DIR.DOWN,"changeTexture":true,"dest":DEST.LOWEST_ADJ_FLOOR},
 	38:{"type":LTYPE.FLOOR,"str":"W1 Floor To Lowest Adjacent Floor","trigger":TTYPE.WALK1,"direction":DIR.DOWN,"dest":DEST.LOWEST_ADJ_FLOOR},
@@ -187,10 +190,10 @@ var typeDict =  {
 	76:{"type":LTYPE.DOOR,"str":"WR Door Close Stay Open","trigger":TTYPE.WALKR,"direction":DIR.DOWN},#What
 	77:{"type":LTYPE.CRUSHER,"str":"WR Start Crusher Fast Damage","trigger":TTYPE.WALKR,"direction":DIR.DOWN},
 	78:{"type":LTYPE.DUMMY,"str":"dummy","trigger":TTYPE.WALKR},#dummy for now
-	79:{"type":LTYPE.LIGHT,"str":"WR Light to 35","trigger":TTYPE.WALKR},
+	79:{"type":LTYPE.LIGHT,"str":"WR Light to 35","trigger":TTYPE.WALKR,"value":35},
 	
-	80:{"type":LTYPE.LIGHT,"str":"WR Light Change to Brightest Adjacent","trigger":TTYPE.WALKR},
-	81:{"type":LTYPE.LIGHT,"str":"WR Light Change to 255","trigger":TTYPE.WALKR},
+	80:{"type":LTYPE.LIGHT,"str":"WR Light Change to Brightest Adjacent","trigger":TTYPE.WALKR,"value":LIGHTCAT.HIGHEST_ADJ},
+	81:{"type":LTYPE.LIGHT,"str":"WR Light Change to 255","trigger":TTYPE.WALKR,"value":255},
 	82:{"type":LTYPE.FLOOR,"str":"WR Floor Lower To Lowest Floor","trigger":TTYPE.WALKR,"direction":DIR.DOWN,"dest":DEST.LOWEST_ADJ_FLOOR},
 	83:{"type":LTYPE.FLOOR,"str":"WR Floor Lower To Highest Floor","trigger":TTYPE.WALKR,"direction":DIR.DOWN,"dest":DEST.NEXT_LOWEST_FLOOR},
 	84:{"type":LTYPE.FLOOR,"str":"WR Floor Lower To Lowest Floor (changes texture)","trigger":TTYPE.WALKR,"direction":DIR.DOWN,"dest":DEST.LOWEST_ADJ_FLOOR,"changeTexture":true},
@@ -215,7 +218,7 @@ var typeDict =  {
 	101:{"type":LTYPE.FLOOR,"str":"S1 Floor Raise To Lowest Ceil","trigger":TTYPE.SWITCH1,"direction":DIR.UP,"dest":DEST.LOWEST_ADJ_CEILING},
 	102:{"type":LTYPE.FLOOR,"str":"S1 Floor Lower to Highest Adjacent Floor","trigger":TTYPE.SWITCH1,"direction":DIR.DOWN,"dest":DEST.NEXT_LOWEST_FLOOR},
 	103:{"type":LTYPE.DOOR,"str":"S1 Door Open Stay","trigger":TTYPE.SWITCH1,"direction":DIR.UP},
-	104:{"type":LTYPE.LIGHT,"str":"W1 Light Change to Darkest Adjacent","trigger":TTYPE.WALK1},
+	104:{"type":LTYPE.LIGHT,"str":"W1 Light Change to Darkest Adjacent","trigger":TTYPE.WALK1,"value":LIGHTCAT.LOWEST_ADJ},
 	105:{"type":LTYPE.DOOR,"str":"WR Door Open Wait Close Fast","trigger":TTYPE.WALKR,"wait":4,"direction":DIR.UP},
 	106:{"type":LTYPE.DOOR,"str":"WR Door Stay Open Stay Fast","trigger":TTYPE.WALKR,"direction":DIR.UP},
 	107:{"type":LTYPE.DOOR,"str":"WR Door Stay Close Stay Fast","trigger":TTYPE.WALKR,"direction":DIR.UP},
@@ -252,8 +255,8 @@ var typeDict =  {
 	135:{"type":LTYPE.DOOR,"str":"S1 Red Door Open Stay (fast)","trigger":TTYPE.SWITCH1,"KEY":KEY.RED,"direction":DIR.UP},
 	136:{"type":LTYPE.DOOR,"str":"SR Yellow Door Open Stay (fast)","trigger":TTYPE.SWITCHR,"KEY":KEY.YELLOW,"direction":DIR.UP},
 	137:{"type":LTYPE.DOOR,"str":"S1 Yellow Door Open Stay (fast)","trigger":TTYPE.SWITCH1,"KEY":KEY.YELLOW,"direction":DIR.UP},
-	138:{"type":LTYPE.LIGHT,"str":"SR Light to 255","trigger":TTYPE.SWITCHR},
-	139:{"type":LTYPE.LIGHT,"str":"SR Light to 35","trigger":TTYPE.SWITCHR},
+	138:{"type":LTYPE.LIGHT,"str":"SR Light to 255","trigger":TTYPE.SWITCHR,"value":244},
+	139:{"type":LTYPE.LIGHT,"str":"SR Light to 35","trigger":TTYPE.SWITCHR,"value":35},
 	
 	140:{"type":LTYPE.FLOOR,"str":"SR Floor Raise by 512","trigger":TTYPE.SWITCHR,"direction":DIR.UP,"dest":DEST.up512},
 	141:{"type":LTYPE.CRUSHER,"str":"W1 Start Crusher Slow Damage silent","trigger":TTYPE.WALK1,"direction":DIR.DOWN},
@@ -919,24 +922,27 @@ func createInteractables(sectorToInteraction,mapDict):
 		sectorToInteraction[secIndex].sort_custom(interactionSectorSort,"sort_asc")
 		var originSectorIdx
 		var animMeshPath = []
+		
 		for type in sectorInteraction.keys():
 			var lineType
 			var triggerNodes = []
 			
-			for i in sectorInteraction[type]:#for every line that belongs to the target sectro
+			for i in sectorInteraction[type]:#for every line that belongs to the target sector
 				
 				lineType = i["type"]#we assumne every linetype is the same
 				var line = i["line"]
 				
-				originSectorIdx = line["frontSector"]
-				var pathPost = "Geometry/sector " +String(originSectorIdx) + "/linenode " + String(line["index"])
-				var path = "../../../" + pathPost
+				if typeDict[lineType]["trigger"] == TTYPE.SWITCH1 or typeDict[lineType]["trigger"] == TTYPE.SWITCHR:
+					originSectorIdx = line["frontSector"]
+					var pathPost = "Geometry/sector " +String(originSectorIdx) + "/linenode " + String(line["index"])
+					var path = "../../../" + pathPost
 				
-				var frontSideDefIndex = mapDict["SIDEDEFS"][line["frontSideDef"]]
-				if isSideAnimatedSwitch(frontSideDefIndex):
-					if mapNode.get_node_or_null(pathPost)!= null:
-						for c in mapNode.get_node(pathPost).get_children():
-							animMeshPath.append(path + "/" + c.name)
+				
+					var frontSideDefIndex = mapDict["SIDEDEFS"][line["frontSideDef"]]
+					if isSideAnimatedSwitch(frontSideDefIndex):
+						if mapNode.get_node_or_null(pathPost)!= null:
+							for c in mapNode.get_node(pathPost).get_children():
+								animMeshPath.append(path + "/" + c.name)
 				
 				
 				
@@ -981,10 +987,7 @@ func createInteractables(sectorToInteraction,mapDict):
 
 			if lineType > 256 :
 				continue
-				
-			if lineType == -2:
-				continue
-			
+
 			
 			var typeInfo = typeDict[lineType]
 			var category = typeDict[lineType]["type"]
@@ -1030,13 +1033,12 @@ func createInteractables(sectorToInteraction,mapDict):
 
 			var script
 			var sectorGroup = []
-			
-			
+			var lightValue
 			
 			var node = Spatial.new()
 			
 			
-			if typeDict[lineType]["trigger"] == WADG.TTYPE.SWITCH1 or typeDict[lineType]["trigger"] == WADG.TTYPE.SWITCHR:#buttom press sound
+			if typeDict[lineType]["trigger"] == WADG.TTYPE.SWITCH1 or typeDict[lineType]["trigger"] == WADG.TTYPE.SWITCHR:#button press sound
 				var buttonSound = createAudioPlayback("DSSWTCHN")
 				buttonSound.name="buttonSound"
 				
@@ -1106,6 +1108,19 @@ func createInteractables(sectorToInteraction,mapDict):
 			if category == LTYPE.EXIT:
 				script =load("res://addons/godotWad/src/interactables/levelChange.gd")
 			
+			
+			if category == LTYPE.LIGHT:
+				sectorGroup = ({"targets":frontSidesNodes+floorings+ceilings,"sectorInfo":sector})
+				script =load("res://addons/godotWad/src/interactables/light.gd")
+				if typeInfo.has("value"):
+					var value = typeInfo["value"]
+					if value < 0:
+						if value == LIGHTCAT.HIGHEST_ADJ: lightValue = sector["brightestNeighValue"]
+						if value == LIGHTCAT.LOWEST_ADJ: lightValue = sector["darkestNeighValue"]
+					else:
+						lightValue = value
+					
+			
 			if category == LTYPE.STAIR:
 				
 				script = load("res://addons/godotWad/src/interactables/stairs.gd")
@@ -1147,9 +1162,8 @@ func createInteractables(sectorToInteraction,mapDict):
 			if "inc" in node: node.inc  = typeInfo["inc"]
 			if "dest" in node: node.dest = typeInfo["dest"]
 			if "animMeshPath" in node: node.animMeshPath = animMeshPath
-			#if "npcType" in node: 
-			#	breakpoint
 			if "category" in node: node.category = typeInfo["type"]
+			if "lightValue" in node: node.lightValue = lightValue
 			if floorings.size()!= 0:
 				if "floorPath" in node:node.floorPath = floorings[0]
 			if typeInfo.has("wait") and "waitClose" in node: node.waitClose = typeInfo["wait"]

@@ -90,6 +90,7 @@ func _physics_process(delta):
 
 func bodyIn(body):
 	
+	
 	if !"interactPressed" in body:
 		return
 	
