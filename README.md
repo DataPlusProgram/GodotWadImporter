@@ -19,12 +19,12 @@
 There is a provided character controller for testing purposes
 
 | Action        |  Description  |
-| ------------- | ------------- |
+| ------------- | :-------------: |
 | ui_up         | move forward  |
 | ui_down       | move backward |
 | ui_left       | move left     |
 | ui_right      | move right    |
 | shoot         | shoot weapon  |
-| interact      | actvate doors,buttons,etc|
+| interact      | actvate doors, buttons, etc|
 | jump          | jump          |
 | weaponSwitchCategory0...5| Switch between weapon categories |
