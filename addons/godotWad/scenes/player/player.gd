@@ -41,18 +41,6 @@ onready var footstepSound = $"footstepSound"
 var bspNode = null
 
 var footStepDict = {
-	"C":["player/pl_step1.wav","player/pl_step2.wav"],
-	"M":["player/pl_metal1.wav","player/pl_metal2.wav"],
-	"D":["player/pl_dirt1.wav","player/pl_dirt2.wav","player/pl_dirt3.wav"],
-	"V":["player/pl_duct1.wav"],
-	"G":["player/pl_grate1.wav","player/pl_grate4.wav"],
-	"T":["player/pl_tile1.wav","player/pl_tile2.wav","player/pl_tile3.wav","player/pl_tile4.wav"],
-	"S":["player/pl_slosh1.wav","player/pl_slosh2.wav","player/pl_slosh3.wav","player/pl_slosh4.wav"],
-	"W":["debris/wood1.wav","debris/wood2.wav","debris/wood3.wav"],
-	"P":["debris/glass1.wav","debris/glass2.wav","debris/glass3.wav"],
-	"Y":["debris/glass1.wav","debris/glass2.wav","debris/glass3.wav"],
-	"F":["weapons/bullet_hit1.wav","weapons/bullet_hit1.wav","weapons/bullet_hit1.wav"]
-	
 
 }
 
