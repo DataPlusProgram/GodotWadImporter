@@ -12,7 +12,7 @@
 * Chose the map you want to import from the dropdown menu.
 * Click "create map"
   
-![](https://i.giphy.com/media/DqSGdD3fJrJoQqAzDw/giphy.webp)
+![howto](https://user-images.githubusercontent.com/62811101/166899791-9e22999e-2afd-4209-b7d2-97840fab0aae.gif)
 
 
 ## Character Controller
