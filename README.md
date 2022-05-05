@@ -18,8 +18,11 @@
 ## Character Controller
 There is a provided character controller for testing purposes
 
+
+![](https://i.giphy.com/media/dRsq8BVZ2lUapFyGJk/giphy.webp)
+
 | Action        |  Description  |
-| ------------- | :-------------: |
+| ------------- |:-------------:|
 | ui_up         | move forward  |
 | ui_down       | move backward |
 | ui_left       | move left     |
