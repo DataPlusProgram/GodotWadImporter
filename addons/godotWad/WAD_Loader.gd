@@ -461,10 +461,6 @@ func preloadAssests():
 		
 		texture = $ResourceManager.fetchTexture(textureName)
 		
-		if textureName == "STEP1":
-			texture.get_data().save_png("fing.png")
-			
-		
 		for textureEntry in wme[textureName]:#each mat param of a given texture
 			var lightLevel = textureEntry[0]
 			var scrollVector = textureEntry[1]

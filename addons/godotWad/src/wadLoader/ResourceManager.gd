@@ -226,7 +226,7 @@ func fetchMaterialRuntime(textureName,texture,lightLevel,scroll,alpha,lightInc,s
 	var mat
 	var materialKey = String(textureName) +"," + String(lightLevel)+ "," + String(scroll) + "," + String(alpha)
 	
-
+	
 	if materialCache.has(materialKey):
 		return materialCache[materialKey]
 	
@@ -270,7 +270,7 @@ func createMatShader(texture,lightLevel,scroll,alpha):
 	var shader = load("res://addons/godotWad/shaders/base2.shader")
 	var sectorLightLevel = lightLevel#sector["lightLevel"]/255.0
 	var mat = ShaderMaterial.new()
-	var scrollSpeed = Vector2(0,0)
+	#var scrollSpeed = Vector2(0,0)
 	mat.shader = shader
 	
 	#if sType!= 0:
@@ -279,7 +279,7 @@ func createMatShader(texture,lightLevel,scroll,alpha):
 
 			
 	mat.set_shader_param("texture_albedo" , texture)
-	mat.set_shader_param("scrolling",scrollSpeed)
+	mat.set_shader_param("scrolling",scroll)
 	mat.set_shader_param("alpha",1)
 	
 	return mat
