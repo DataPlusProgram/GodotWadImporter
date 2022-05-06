@@ -28,7 +28,6 @@ var bottomH
 var curH
 
 func _ready():
-	
 
 	info["targetNodes"] = []
 	

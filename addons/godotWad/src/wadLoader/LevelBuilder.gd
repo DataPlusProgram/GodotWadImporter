@@ -260,11 +260,14 @@ var typeDict =  {
 	
 	140:{"type":LTYPE.FLOOR,"str":"SR Floor Raise by 512","trigger":TTYPE.SWITCHR,"direction":DIR.UP,"dest":DEST.up512},
 	141:{"type":LTYPE.CRUSHER,"str":"W1 Start Crusher Slow Damage silent","trigger":TTYPE.WALK1,"direction":DIR.DOWN},
-	
 	159:{"type":LTYPE.FLOOR,"str":"S1 Floor Down To Adjacent Floor","trigger":TTYPE.SWITCH1,"direction":DIR.DOWN,"dest":DEST.LOWEST_ADJ_FLOOR},
 	195:{"type":LTYPE.TELEPORT,"str":"SR Teleport","trigger":TTYPE.SWITCHR},
 	221:{"type":LTYPE.FLOOR,"str":"S1 Floor Down To Adjacent Floor","trigger":TTYPE.SWITCH1,"direction":DIR.DOWN,"dest":DEST.NEXT_LOWEST_FLOOR},
 	260:{"type":LTYPE.ALPHA,"str":"Translucent Line","alpha":0.5},
+	
+	
+	15391:{"type":LTYPE.DOOR,"str":"Generalized Door","trigger":TTYPE.DOOR,"wait":4,"direction":DIR.UP},
+	
 }
 	
 	
@@ -404,6 +407,7 @@ func createStaticSide(renderable):
 	if upperUnpegged:
 		ceilDraw = TEXTUREDRAW.GRID
 	
+
 	
 	if type == "trigger":return
 	
@@ -411,21 +415,26 @@ func createStaticSide(renderable):
 	var texture
 	
 
-	
 	if textureName != "F_SKY1":
 		texture = $"../ResourceManager".fetchTexture(textureName,!get_parent().dontUseShader)
-	
-	
-	#if texture == null:
-	#	breakpoint
 	
 	var oSectorSky = false
 	if oSectorIdx != null:
 		if sectors[oSectorIdx]["ceilingTexture"] == "F_SKY1":
 			oSectorSky = true
 	
+	
+	if renderable["lineIndex"] == 2057:
+		print(fCeil,",",String(sector["highestNeighCeilInc"]))
+	
+	if type == "skyUpper":
+		if oSectorIdx != null:
+			if sectors[oSectorIdx]["ceilingTexture"] == "F_SKY1":
+				return
 		
-	if type == "skyUpper" and oSectorIdx == null:
+		if renderable["lineIndex"] == 2057:
+			print(fCeil,",",String(sector["highestNeighCeilInc"]))
+	
 		if fCeil < sector["highestNeighCeilInc"]:
 			createMeshAndCol(start,end,fCeil,sector["highestNeighCeilInc"],sector["highestNeighCeilInc"],texture,midDraw,textureOffset,renderable["sideIndex"],lineIndex,renderable["sector"],type,hasCollision,textureName,false,renderable["sType"])
 			return
@@ -436,8 +445,6 @@ func createStaticSide(renderable):
 	if sector["ceilingTexture"] == "F_SKY1" and type!="lower" and oSectorSky and renderable["oSide"]["upperName"] == "-" and oSectorIdx and type == "upper" :#if my ceiling is sky and I'm not lower and oSector is also sky then I'm sky 
 		return
 
-	
-	#hasCollision =true# hasCollision or doubleSided
 	
 	
 	if oSectorIdx == null:
@@ -544,9 +551,7 @@ func createDynamicSide(renderable):
 
 	if type == "trigger":
 		return
-	
-
-
+	 
 	var texture = $"../ResourceManager".fetchTexture(textureName,!get_parent().dontUseShader)
 	
 
@@ -555,9 +560,9 @@ func createDynamicSide(renderable):
 		if sectors[oSectorIdx]["ceilingTexture"] == "F_SKY1":
 			oSectorSky = true
 	
-	if sector["ceilingTexture"] == "F_SKY1" and type!="lower" and oSectorSky:
-		if get_parent().skyWall!= get_parent().SKYVIS.DISABLED:
-			textureName = "F_SKY1"
+	#if sector["ceilingTexture"] == "F_SKY1" and type!="lower" and oSectorSky:
+	#	if get_parent().skyWall!= get_parent().SKYVIS.DISABLED:
+	#		textureName = "F_SKY1"
 
 	
 	var dest = fFloor
@@ -639,7 +644,7 @@ func createDynamicSide(renderable):
 	var lowCeil = min(fCeil,oCeil)
 	var highCeil = max(fCeil,oCeil)
 	
-
+	
 	
 	if type == "middle" and !doubleSided:
 		createMeshAndCol(start,end,lowestLocalFloor,highestOFloor,fCeil,texture,midDraw,textureOffset,renderable["sideIndex"],lineIndex,renderable["sector"],type,hasCollision,textureName,true,renderable["sType"],false)
@@ -826,11 +831,6 @@ func createMeshAndCol(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,
 	
 	#if textureName == "F_SKY1":
 	#	breakpoint
-	#var center =  start+((start-end)/2.0)
-	
-	
-	#start = (start-center)*-1.1 + center
-	#end = (end-center)*1.1 + center
 	
 	
 	if sectorNode == null:
@@ -910,7 +910,6 @@ func createMeshAndCol(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,
 func createInteractables(sectorToInteraction,mapDict):
 	
 	for secIndex in sectorToInteraction.keys():#for every sector#
-
 		var sectorInteraction = {}
 		
 		for i in sectorToInteraction[secIndex]:
@@ -932,17 +931,18 @@ func createInteractables(sectorToInteraction,mapDict):
 				lineType = i["type"]#we assumne every linetype is the same
 				var line = i["line"]
 				
-				if typeDict[lineType]["trigger"] == TTYPE.SWITCH1 or typeDict[lineType]["trigger"] == TTYPE.SWITCHR:
-					originSectorIdx = line["frontSector"]
-					var pathPost = "Geometry/sector " +String(originSectorIdx) + "/linenode " + String(line["index"])
-					var path = "../../../" + pathPost
-				
-				
-					var frontSideDefIndex = mapDict["SIDEDEFS"][line["frontSideDef"]]
-					if isSideAnimatedSwitch(frontSideDefIndex):
-						if mapNode.get_node_or_null(pathPost)!= null:
-							for c in mapNode.get_node(pathPost).get_children():
-								animMeshPath.append(path + "/" + c.name)
+				if typeDict[lineType].has("trigger"):
+					if typeDict[lineType]["trigger"] == TTYPE.SWITCH1 or typeDict[lineType]["trigger"] == TTYPE.SWITCHR:
+						originSectorIdx = line["frontSector"]
+						var pathPost = "Geometry/sector " +String(originSectorIdx) + "/linenode " + String(line["index"])
+						var path = "../../../" + pathPost
+					
+					
+						var frontSideDefIndex = mapDict["SIDEDEFS"][line["frontSideDef"]]
+						if isSideAnimatedSwitch(frontSideDefIndex):
+							if mapNode.get_node_or_null(pathPost)!= null:
+								for c in mapNode.get_node(pathPost).get_children():
+									animMeshPath.append(path + "/" + c.name)
 				
 				
 				
@@ -1065,10 +1065,12 @@ func createInteractables(sectorToInteraction,mapDict):
 			if category == LTYPE.CEILING:
 				sectorGroup = {"targets":backSideSideDefNodes+ceilings,"sectorInfo":sector}
 				script = load("res://addons/godotWad/src/interactables/ceiling.gd")
+				pass
 				
 			if category == LTYPE.CRUSHER:
 				sectorGroup = {"targets":backSideSideDefNodes+ceilings,"sectorInfo":sector}
 				script = load("res://addons/godotWad/src/interactables/crusher.gd")
+				pass
 				
 			
 			if category == LTYPE.FLOOR: 
@@ -1107,6 +1109,7 @@ func createInteractables(sectorToInteraction,mapDict):
 			
 			if category == LTYPE.EXIT:
 				script =load("res://addons/godotWad/src/interactables/levelChange.gd")
+				pass
 			
 			
 			if category == LTYPE.LIGHT:
@@ -1359,3 +1362,4 @@ func isSideAnimatedSwitch(side):
 	if $"../ImageBuilder".switchTextures.has(side["middleName"]): return true
 	if $"../ImageBuilder".switchTextures.has(side["upperName"]): return true
 	return false
+

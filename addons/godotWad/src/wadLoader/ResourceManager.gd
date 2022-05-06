@@ -34,10 +34,12 @@ func fetchTexture(textureName,saveAsFlat = false,rIndex = false):
 		return fetchTextureDisk(textureName,rIndex)
 	
 func fetchMaterial(textureName,texture,lightLevel,scroll,alpha,lightInc = 0,skyDoubleSided:bool=false):
+	if texture == null:
+		return
 	if !get_parent().toDisk:
-		return fetchMaterialRuntime(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
+		return fetchMaterialRuntime(texture.get_instance_id(),texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
 	else:
-		return fetchMaterialDisk(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
+		return fetchMaterialDisk(texture.get_instance_id(),texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
 	
 	
 	
@@ -222,7 +224,7 @@ func fetchMaterialDisk(textureName,texture,lightLevel,scroll,alpha,lightInc,skyD
 func fetchMaterialRuntime(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided):
 	
 	var mat
-	var materialKey = textureName +"," + String(lightLevel)+ "," + String(scroll) + "," + String(alpha)
+	var materialKey = String(textureName) +"," + String(lightLevel)+ "," + String(scroll) + "," + String(alpha)
 	
 
 	if materialCache.has(materialKey):
@@ -293,24 +295,17 @@ func fetchFlat(name,rIndexed=false):
 
 func fetchFlatRuntime(name,rIndexed=false):
 	
-	
-	#if name == "F_SKY1":
-	#	breakpoint
-	
-	if flatCache.has(name):
-		return flatCache[name]
-	
 	rIndexed = false
 	
-	var textureEntries = get_parent().patchTextureEntries
+	var patchTextureEntries = get_parent().patchTextureEntries
 	
-	if !textureEntries.has(name):
+	if !patchTextureEntries.has(name):
 		return null
 	
 	var subStr = name.substr(0,name.length()-1)
 
 	
-	var textureFileEntry = textureEntries[name]
+	var textureFileEntry = patchTextureEntries[name]
 	var textureObj = null
 	
 	
@@ -557,8 +552,10 @@ func createSkyMat(skyDoubleSided : bool =false):
 		return $"../ResourceManager".materialCache[matKey]
 	
 	var image : Image# = skyTexture.get_data()
-
-	image = fetchTexture(texName,false).get_data()
+	var txt = fetchTexture(texName,false)
+	if txt == null:
+		return
+	image = txt.get_data()
 	var colArr : PoolByteArray = []
 	
 

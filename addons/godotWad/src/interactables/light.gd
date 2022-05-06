@@ -16,8 +16,24 @@ func _ready():
 		var n = mapNode.get_node(path)
 		if n != null:
 			var mat = n.mesh.surface_get_material(0)
+		
+			if mat == null:
+				queue_free()
+				return
+				
+			var shader = mat.get_shader()
+			if shader == null:
+				queue_free()
+				return
+			
+			if shader.has_param("tint"):
+				queue_free()
+				return
+				
+			
 			if !matMap.has(mat):
 				matMap[mat] = mat.duplicate(true)
+			
 			n.mesh.surface_set_material(0,matMap[mat])
 	
 

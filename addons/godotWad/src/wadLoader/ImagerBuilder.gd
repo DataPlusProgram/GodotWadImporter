@@ -18,7 +18,7 @@ var animatedTextures = {
 	"SFALL"  : ["SFALL1","SFALL2","SFALL3","SFALL4"],
 	"SLADRIP" : ["SLADRIP1","SLADRIP2","SLADRIP3"],
 	"BFALL": ["BFALL1","BFALL2","BFALL3","BFALL4"],
-	
+	"DBRAIN":["DBRAIN1","DBRAIN2","DBRAIN3","DBRAIN4"]
 } 
 
 var switchTextures = {
@@ -70,8 +70,15 @@ func createTexture(data,rIndexed = false):
 	
 	var i = 0
 	for patch in data["patches"]:
+		if !patchNames.has(patch["pnamIndex"]):
+			print("patch not found")
+			return
 		var patchName = patchNames[patch["pnamIndex"]].to_upper()
 		var patchImage = parsePatch(patchName,rIndexed)
+		
+		if patchImage == null:
+			return null
+		
 		var sourceRect = Rect2(Vector2.ZERO,patchImage.get_size())
 		image.blend_rect(patchImage,sourceRect,Vector2(patch["originX"],patch["originY"]))
 		i+=1
@@ -114,6 +121,10 @@ func parsePatch(patchName,rIndexed=true):
 		
 		
 		var patch = $"../LumpParser".parsePatch(patchTextureEntries[patchName])
+		
+		if patch == null:
+			return null
+		
 		var offset = patchTextureEntries[patchName]["offset"]
 		var columnOffsets = patch["columnOffsets"]
 		var width = patch["width"]
@@ -125,6 +136,8 @@ func parsePatch(patchName,rIndexed=true):
 		for x in range(0,width):
 			
 			file.seek(offset + columnOffsets[x])
+			if file.eof_reached():
+				return null
 			var rowStart = 0
 				
 			while rowStart != 255:

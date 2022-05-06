@@ -37,10 +37,19 @@ enum LINDEF_FLAG{
 func _ready():
 	set_meta("hidden",true)
 
+var inPatch = false
+var inFlat = false
+
 func parseLumps(lumps):
 	for lump in lumps:
 		
 		var lumpName = lump["name"]
+		
+		if lumpName == "P_START": inPatch = true
+		if lumpName == "P_END": inPatch = false
+		if lumpName == "F_START" or lumpName == "F1_START" or lumpName == "F2_START": inFlat = true
+		if lumpName == "F_END" or lumpName == "F1_END" or lumpName == "F2_END": inFlat = false
+		
 		
 		if lumpName.substr(0,7) == "TEXTURE": parseTextureLump(lump)
 		elif lumpName == "PLAYPAL": parsePallete(lump)
@@ -53,6 +62,7 @@ func parseLumps(lumps):
 		elif lumpName.substr(0,2) == "DP": continue
 		elif lumpName.substr(0,4) == "DEMO": continue
 		else: patchTextureEntries[lumpName] = lump
+		
 	get_parent().colorMaps = colorMaps
 	get_parent().palletes = palletes
 	get_parent().textureEntries = textureEntries
@@ -115,6 +125,7 @@ func parseSector(lump,mapDict):
 		var lightLevel = file.get_16()
 		var type = file.get_16()
 		var tagNum = file.get_16()
+		
 		sectors.append({"floorHeight":floorHeight,"ceilingHeight":ceilingHeight,"floorTexture":floorTexture,"ceilingTexture":ceilingTexture,"lightLevel":lightLevel,"type":type,"tagNum":tagNum,"index":i})
 		
 		
@@ -162,6 +173,9 @@ func parseLinedef(lump):
 		var frontSidedef = file.get_16s()
 		var backSidedef = file.get_16s()
 
+		if !$"../LevelBuilder".typeDict.has(type):
+			type = 0
+		
 		if type == 65535: type = 0
 		if frontSidedef != -1: curMapDict["sideToLine"][frontSidedef] = i
 		if backSidedef != -1: curMapDict["sideToLine"][backSidedef] = i
@@ -430,8 +444,7 @@ func createSectorToInteraction(mapDict):
 			for s in targetSectors:#for every target sector
 				if !sectorToInteraction.has(s):
 					sectorToInteraction[s] = []#create an interaction entry for sector
-				if s == 148:
-					breakpoint
+
 				sectorToInteraction[s].append({"type":type,"line":line,"npcTrigger":npcTrigger})#set the interaction type for sector
 
 
@@ -636,9 +649,7 @@ func procSide(line,side,oSide,dir = 1):
 	var middleTexture = side["middleName"]
 	var lowerTexture = side["lowerName"]
 	
-	
-	var ltype = $"../LevelBuilder".typeDict[type]["type"]
-	
+
 	#matEntries
 	
 	
@@ -738,35 +749,42 @@ func addRenderable(line,side,oSide,dir,textureName,type):
 	var b3 = !line.has("stairIdx")
 	var b4 = !$"../ImageBuilder".switchTextures.has(textureName)
 	
-	#if !sectorToInteraction.has(dict["sector"]) and !sectorToInteraction.has(dict["oSector"]) and !line.has("stairIdx") and  !$"../ImageBuilder".switchTextures.has(textureName):
-	if b1 && b2 && b3 && b4:
+	
 
-
-		staticRenderables.append(dict)
+	
+#	if side["index"] == "295":
+	#	breakpoint
+	
+	if sector["ceilingTexture"] == "F_SKY1" and get_parent().skyWall== get_parent().SKYVIS.ENABLED:#walls to cover sky gap
+		#var b1 = oSide == null:
+		var sky = false
+		if oSide == null: sky = true
 		
+		if oSide != null:
+			if oSide["upperName"] == "-" and oSide["middleName"] == "-" and oSide["lowerName"] == "-":
+				sky = true
 		
-		if sector["ceilingTexture"] == "F_SKY1" and get_parent().skyWall== get_parent().SKYVIS.ENABLED:#walls to cover sky gap
-			
+		#if oSide["upperName"] == "-" and oSide["middleName"] == "-" and oSide["lowerName"] == "-":
+		if sky:
+			#if oSide["upperName"] == "-" and oSide["middleName"] == "-" and oSide["lowerName"] == "-":
 			var dict2 = dict.duplicate(true) 
 			dict2.type = "skyUpper"
 			
 			dict2["textureName"] = "F_SKY1"
 			dict2["texture"] = "F_SKY1"
 			staticRenderables.append(dict2)
+			
+	
+	#if !sectorToInteraction.has(dict["sector"]) and !sectorToInteraction.has(dict["oSector"]) and !line.has("stairIdx") and  !$"../ImageBuilder".switchTextures.has(textureName):
+	if b1 && b2 && b3 && b4:
+
+		staticRenderables.append(dict)
 		
 		if !sectorToRenderables.has(dict["sector"]):
 			sectorToRenderables[dict["sector"]] = []
 		
 	
 	else:
-		
-		
-		
-		#if checkSidesDynamic(sectorToInteraction,dict,typeDict,textureName):
-		#	staticRenderables.append(dict)
-		#else:
-		
-		
 		dynamicRenderables.append(dict)
 		
 
@@ -914,6 +932,8 @@ func parsePatch(lump):
 	var left_offset = file.get_16s()
 	var top_offset = file.get_16s()
 	var columnOffsets = []
+	if (file.get_position() + width) > file.get_len():
+		return null
 	for i in width:
 		columnOffsets.append(file.get_32())
 

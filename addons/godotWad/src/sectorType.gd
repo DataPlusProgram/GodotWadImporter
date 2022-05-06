@@ -18,12 +18,13 @@ var flickerTypes = [1,2,3,4,8,12,13,17]
 
 
 func _ready():
-	
 	var mesh : ArrayMesh = get_node(meshPath).mesh 
 	for i in mesh.get_surface_count():
 		
 		var originalMat = mesh.surface_get_material(i)
-
+		if originalMat == null:
+			queue_free()
+			return
 		var runtimeMat = originalMat.duplicate()
 		mesh.surface_set_material(i,runtimeMat)
 		matsInSector.append(runtimeMat)

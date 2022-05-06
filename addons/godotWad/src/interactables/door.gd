@@ -31,6 +31,7 @@ export(String) var animMeshPath = ""
 export(int) var waitClose = -1
 # Called when the node enters the scene tree for the first time.
 func _ready():
+
 	info["targetNodes"] = []
 	
 	

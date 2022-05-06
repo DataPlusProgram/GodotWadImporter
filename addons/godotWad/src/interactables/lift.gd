@@ -28,7 +28,8 @@ func _ready():
 	info["endHeight"] = info["sectorInfo"]["lowestNeighFloorExc"] 
 	info["curY"] = info["sectorInfo"]["floorHeight"]
 	info["targetNodes"] = []
-
+	
+	
 	for t in info["targets"]:
 		var mapNode = get_parent().get_parent().get_parent()
 		var node = mapNode.get_node(t)

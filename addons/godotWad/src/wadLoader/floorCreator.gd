@@ -298,8 +298,15 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 	
 	var floorTexture
 	if currentSector["floorTexture"] != "F_SKY1":
+		
+		#if currentSector["index"] == 109:
+		#	breakpoint
+		
 		floorTexture = $"../ResourceManager".fetchFlat(currentSector["floorTexture"],!get_parent().dontUseShader)
-	
+		
+
+		
+			
 	var ceilTexture
 	if currentSector["ceilingTexture"] != "F_SKY1":
 		ceilTexture =  $"../ResourceManager".fetchFlat(currentSector["ceilingTexture"],!get_parent().dontUseShader)
@@ -402,6 +409,7 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 				return
 				
 		var ret = createFloorMesh(finalArr,ceilHeight,-1,dim,mini,currentSector["ceilingTexture"],ceilTexture,currentSector)
+		
 		var ceilMesh = ret["mesh"]
 		var center = ret["center"]
 		var a = OS.get_system_time_msecs()
@@ -446,13 +454,14 @@ func createFloorMesh(arr,height,dir,dim,mini,textureName,texture = null,sector=n
 	sector["center"] = center
 	var mat 
 	
-	
 	var matKey= textureName +"," + String(sector["lightLevel"])+ "," + String(Vector2(0,0))
 	
 
 
 	if textureName !="F_SKY1":
+		
 		mat = $"../ResourceManager".fetchMaterial(textureName,texture,sector["lightLevel"],Vector2(0,0),1,false)
+		
 	else:
 		mat = $"../ResourceManager".fetchSkyMat()
 

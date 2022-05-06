@@ -31,7 +31,6 @@ enum STATE{
 
 func _ready():
 
-	
 	if has_meta("loop"): loop = true
 	if !get_parent().has_meta("curH"):
 		get_parent().set_meta("curH",0)

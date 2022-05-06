@@ -419,7 +419,6 @@ func preloadAssests():
 	
 	
 	for type in maps[mapName]["THINGS"]:
-		
 		if  !$ThingParser.thingsDict.has(type):
 			print("type:",type," not found")
 			continue
@@ -461,6 +460,10 @@ func preloadAssests():
 			continue
 		
 		texture = $ResourceManager.fetchTexture(textureName)
+		
+		if textureName == "STEP1":
+			texture.get_data().save_png("fing.png")
+			
 		
 		for textureEntry in wme[textureName]:#each mat param of a given texture
 			var lightLevel = textureEntry[0]
