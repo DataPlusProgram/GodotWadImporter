@@ -4,6 +4,8 @@
 
 This is a Godot plugin that allows the importing of Doom WAD maps into Godot.
 
+Video Demonstration here: https://www.youtube.com/watch?v=E-L27FucTN0
+
 It is the successor from my previous WAD importer https://github.com/DataPlusProgram/GodWad
 
 It currently only supports the base Doom format and not UMDF.
@@ -43,8 +45,11 @@ When using the plugin initially I recommoned not enabling "To Disk" do to its in
 ## Character Controller
 There is a provided character controller for testing purposes
 
-
 ![](https://i.giphy.com/media/dRsq8BVZ2lUapFyGJk/giphy.webp)
+
+The character controller generated dynamically by the pluging by clicking the "Create Character Controller" button
+
+
 
 | Action        |  Description  |
 | ------------- |:-------------:|
