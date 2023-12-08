@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/props/barrelGenerator.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/scenes/props/explosiveBarrel.gd" type="Script" id=2]
+
+[sub_resource type="SpriteFrames" id=3]
+animations = [ {
+"frames": [  ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="Animation" id=1]
+resource_name = "explode"
+
+[sub_resource type="Animation" id=2]
+resource_name = "idle"
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 10, 16, 10 )
+
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 120, 120, 120 )
+
+[node name="Barrel" type="RigidBody"]
+contact_monitor = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+script = ExtResource( 2 )
+hp = 20
+damage = 128
+
+[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
+billboard = 2
+frames = SubResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/explode = SubResource( 1 )
+anims/idle = SubResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 6 )
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+unit_size = 6.0
+
+[node name="BlastZone" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="BlastZone"]
+shape = SubResource( 7 )
+
+[node name="Generator" type="Node" parent="."]
+script = ExtResource( 1 )
+explodingSpriteNames = [ "BEXPC0", "BEXPD0", "BEXPE0" ]

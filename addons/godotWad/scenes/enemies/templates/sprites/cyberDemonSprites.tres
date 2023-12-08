@@ -1,0 +1,188 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "CYBRA7",
+"n": "CYBRA5",
+"ne": "CYBRA6",
+"nw": "CYBRA4",
+"s": "CYBRA1",
+"se": "CYBRA8",
+"sw": "CYBRA2",
+"w": "CYBRA3"
+},
+"B": {
+"e": "CYBRB7",
+"n": "CYBRB5",
+"ne": "CYBRB6",
+"nw": "CYBRB4",
+"s": "CYBRB1",
+"se": "CYBRB8",
+"sw": "CYBRB2",
+"w": "CYBRB3"
+},
+"C": {
+"e": "CYBRC7",
+"n": "CYBRC5",
+"ne": "CYBRC6",
+"nw": "CYBRC4",
+"s": "CYBRC1",
+"se": "CYBRC8",
+"sw": "CYBRC2",
+"w": "CYBRC3"
+},
+"D": {
+"e": "CYBRD7",
+"n": "CYBRD5",
+"ne": "CYBRD6",
+"nw": "CYBRD4",
+"s": "CYBRD1",
+"se": "CYBRD8",
+"sw": "CYBRD2",
+"w": "CYBRD3"
+},
+"E": {
+"e": "CYBRE7",
+"n": "CYBRE5",
+"ne": "CYBRE6",
+"nw": "CYBRE4",
+"s": "CYBRE1",
+"se": "CYBRE8",
+"sw": "CYBRE2",
+"w": "CYBRE3"
+},
+"F": {
+"e": "CYBRF7",
+"n": "CYBRF5",
+"ne": "CYBRF6",
+"nw": "CYBRF4",
+"s": "CYBRF1",
+"se": "CYBRF8",
+"sw": "CYBRF2",
+"w": "CYBRF3"
+},
+"G": {
+"e": "CYBRG7",
+"n": "CYBRG5",
+"ne": "CYBRG6",
+"nw": "CYBRG4",
+"s": "CYBRG1",
+"se": "CYBRG8",
+"sw": "CYBRG2",
+"w": "CYBRG3"
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CYBRP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P" ],
+"sheetWidth": 734.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

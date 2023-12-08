@@ -1,0 +1,188 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "BSPIA5D5",
+"ne": "",
+"nw": "BSPIA4A6",
+"s": "BSPIA1D1",
+"se": "",
+"sw": "BSPIA2A8",
+"w": "BSPIA3A7"
+},
+"B": {
+"e": "",
+"n": "BSPIB5E5",
+"ne": "",
+"nw": "BSPIB4B6",
+"s": "BSPIB1E1",
+"se": "",
+"sw": "BSPIB2B8",
+"w": "BSPIB3B7"
+},
+"C": {
+"e": "",
+"n": "BSPIC5F5",
+"ne": "",
+"nw": "BSPIC4C6",
+"s": "BSPIC1F1",
+"se": "",
+"sw": "BSPIC2C8",
+"w": "BSPIC3C7"
+},
+"D": {
+"e": "",
+"n": "BSPIA5D5",
+"ne": "",
+"nw": "BSPID4D6",
+"s": "BSPIA1D1",
+"se": "",
+"sw": "BSPID2D8",
+"w": "BSPID3D7"
+},
+"E": {
+"e": "",
+"n": "BSPIB5E5",
+"ne": "",
+"nw": "BSPIE4E6",
+"s": "BSPIB1E1",
+"se": "",
+"sw": "BSPIE2E8",
+"w": "BSPIE3E7"
+},
+"F": {
+"e": "",
+"n": "BSPIC5F5",
+"ne": "",
+"nw": "BSPIF4F6",
+"s": "BSPIC1F1",
+"se": "",
+"sw": "BSPIF2F8",
+"w": "BSPIF3F7"
+},
+"G": {
+"e": "",
+"n": "BSPIG5",
+"ne": "",
+"nw": "BSPIG4G6",
+"s": "BSPIG1",
+"se": "",
+"sw": "BSPIG2G8",
+"w": "BSPIG2G8"
+},
+"H": {
+"e": "",
+"n": "BSPIH5",
+"ne": "",
+"nw": "BSPIH4H6",
+"s": "BSPIH1",
+"se": "",
+"sw": "BSPIH2H8",
+"w": "BSPIH3H7"
+},
+"I": {
+"e": "BSPII7",
+"n": "BSPII5",
+"ne": "BSPII6",
+"nw": "BSPII4",
+"s": "BSPII1",
+"se": "BSPII8",
+"sw": "BSPII2",
+"w": "BSPII3"
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BSPIP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P" ],
+"sheetWidth": 1070.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

@@ -1,0 +1,20 @@
+[gd_scene format=2]
+
+[node name="mapProgresss" type="Control"]
+anchor_right = 0.22168
+anchor_bottom = 0.295
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="WindowDialog" type="WindowDialog" parent="."]
+visible = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+window_title = "Maps"
+
+[node name="ItemList" type="ItemList" parent="WindowDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3

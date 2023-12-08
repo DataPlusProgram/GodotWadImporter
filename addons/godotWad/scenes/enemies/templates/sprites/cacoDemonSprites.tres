@@ -1,0 +1,148 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "HEADA5",
+"ne": "",
+"nw": "HEADA4A6",
+"s": "HEADA1",
+"se": "",
+"sw": "HEADA2A8",
+"w": "HEADA3A7"
+},
+"B": {
+"e": "",
+"n": "HEADB5",
+"ne": "",
+"nw": "HEADB4B6",
+"s": "HEADB1",
+"se": "",
+"sw": "HEADB2B8",
+"w": "HEADB3B7"
+},
+"C": {
+"e": "",
+"n": "HEADC5",
+"ne": "",
+"nw": "HEADC4C6",
+"s": "HEADC1",
+"se": "",
+"sw": "HEADC2C8",
+"w": "HEADC3C7"
+},
+"D": {
+"e": "",
+"n": "HEADD5",
+"ne": "",
+"nw": "HEADD4D6",
+"s": "HEADD1",
+"se": "",
+"sw": "HEADD2D8",
+"w": "HEADD3D7"
+},
+"E": {
+"e": "",
+"n": "HEADE5",
+"ne": "",
+"nw": "HEADE4E6",
+"s": "HEADE1",
+"se": "",
+"sw": "HEADE2E8",
+"w": "HEADE3E7"
+},
+"F": {
+"e": "",
+"n": "HEADF5",
+"ne": "",
+"nw": "HEADF4F6",
+"s": "HEADF1",
+"se": "",
+"sw": "HEADF2F8",
+"w": "HEADF3F7"
+},
+"G": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADG0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "HEADL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" ],
+"sheetWidth": 696.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

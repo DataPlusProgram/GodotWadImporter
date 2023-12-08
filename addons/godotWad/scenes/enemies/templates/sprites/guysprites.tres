@@ -1,0 +1,258 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "PLAYA5",
+"ne": "",
+"nw": "PLAYA4A6",
+"s": "PLAYA1",
+"se": "",
+"sw": "PLAYA2A8",
+"w": "PLAYA3A7"
+},
+"B": {
+"e": "",
+"n": "PLAYB5",
+"ne": "",
+"nw": "PLAYB4B6",
+"s": "PLAYB1",
+"se": "",
+"sw": "PLAYB2B8",
+"w": "PLAYB3B7"
+},
+"C": {
+"e": "",
+"n": "PLAYC5",
+"ne": "",
+"nw": "PLAYC4C6",
+"s": "PLAYC1",
+"se": "",
+"sw": "PLAYC2C8",
+"w": "PLAYC3C7"
+},
+"D": {
+"e": "",
+"n": "PLAYD5",
+"ne": "",
+"nw": "PLAYD4D6",
+"s": "PLAYD1",
+"se": "",
+"sw": "PLAYD2D8",
+"w": "PLAYD3D7"
+},
+"E": {
+"e": "",
+"n": "PLAYE5",
+"ne": "",
+"nw": "PLAYE4E6",
+"s": "PLAYE1",
+"se": "",
+"sw": "PLAYE2E8",
+"w": "PLAYE3E7"
+},
+"F": {
+"e": "",
+"n": "PLAYF5",
+"ne": "",
+"nw": "PLAYF4F6",
+"s": "PLAYF1",
+"se": "",
+"sw": "PLAYF2F8",
+"w": "PLAYF3F7"
+},
+"G": {
+"e": "",
+"n": "PLAYG5",
+"ne": "",
+"nw": "PLAYG5",
+"s": "PLAYG1",
+"se": "",
+"sw": "PLAYG2G8",
+"w": "PLAYG3G7"
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYT0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"U": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYU0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"V": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYV0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"W": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PLAYW0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W" ],
+"sheetWidth": 674.0,
+"splitSize": {
+0: 0,
+1: 1,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

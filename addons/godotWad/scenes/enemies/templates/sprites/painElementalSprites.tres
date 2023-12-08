@@ -1,0 +1,158 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "PAINA5",
+"ne": "",
+"nw": "PAINA4A6",
+"s": "PAINA1",
+"se": "",
+"sw": "PAINA2A8",
+"w": "PAINA3A7"
+},
+"B": {
+"e": "",
+"n": "PAINB5",
+"ne": "",
+"nw": "PAINB4B6",
+"s": "PAINB1",
+"se": "",
+"sw": "PAINB2B8",
+"w": "PAINB3B7"
+},
+"C": {
+"e": "",
+"n": "PAINC5",
+"ne": "",
+"nw": "PAINC4C6",
+"s": "PAINC1",
+"se": "",
+"sw": "PAINC2C8",
+"w": "PAINC3C7"
+},
+"D": {
+"e": "",
+"n": "PAIND5",
+"ne": "",
+"nw": "PAIND4D6",
+"s": "PAIND1",
+"se": "",
+"sw": "PAIND2D8",
+"w": "PAIND3D7"
+},
+"E": {
+"e": "",
+"n": "PAINE5",
+"ne": "",
+"nw": "PAINE4E6",
+"s": "PAINE1",
+"se": "",
+"sw": "PAINE2E8",
+"w": "PAINE3E7"
+},
+"F": {
+"e": "",
+"n": "PAINF5",
+"ne": "",
+"nw": "PAINF4F6",
+"s": "PAINF1",
+"se": "",
+"sw": "PAINF2F8",
+"w": "PAINF3F7"
+},
+"G": {
+"e": "",
+"n": "PAING5",
+"ne": "",
+"nw": "PAING4G6",
+"s": "PAING1",
+"se": "",
+"sw": "PAING2G8",
+"w": "PAING3G7"
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "PAINM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M" ],
+"sheetWidth": 679.0,
+"splitSize": {
+0: 2,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

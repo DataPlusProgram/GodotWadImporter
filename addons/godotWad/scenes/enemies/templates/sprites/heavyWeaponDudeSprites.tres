@@ -1,0 +1,228 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "CPOSA7",
+"n": "CPOSA5",
+"ne": "CPOSA6",
+"nw": "CPOSA4",
+"s": "CPOSA1",
+"se": "CPOSA8",
+"sw": "CPOSA2",
+"w": "CPOSA3"
+},
+"B": {
+"e": "CPOSB7",
+"n": "CPOSB5",
+"ne": "CPOSB6",
+"nw": "CPOSB4",
+"s": "CPOSB2",
+"se": "CPOSB8",
+"sw": "CPOSB2",
+"w": "CPOSB3"
+},
+"C": {
+"e": "CPOSC7",
+"n": "CPOSC5",
+"ne": "CPOSC6",
+"nw": "CPOSC4",
+"s": "CPOSC1",
+"se": "CPOSC8",
+"sw": "CPOSC2",
+"w": "CPOSC3"
+},
+"D": {
+"e": "CPOSD7",
+"n": "CPOSD5",
+"ne": "CPOSD6",
+"nw": "CPOSD4",
+"s": "CPOSD1",
+"se": "CPOSD8",
+"sw": "CPOSD2",
+"w": "CPOSD3"
+},
+"E": {
+"e": "CPOSE7",
+"n": "CPOSE5",
+"ne": "CPOSE6",
+"nw": "CPOSE4",
+"s": "CPOSE1",
+"se": "CPOSE8",
+"sw": "CPOSE2",
+"w": "CPOSE3"
+},
+"F": {
+"e": "CPOSF7",
+"n": "CPOSF5",
+"ne": "CPOSF6",
+"nw": "CPOSF4",
+"s": "CPOSF1",
+"se": "CPOSF8",
+"sw": "CPOSF2",
+"w": "CPOSF3"
+},
+"G": {
+"e": "CPOSG7",
+"n": "CPOSG5",
+"ne": "CPOSG6",
+"nw": "CPOSG4",
+"s": "CPOSG1",
+"se": "CPOSG8",
+"sw": "CPOSG2",
+"w": "CPOSG3"
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOSS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "CPOST0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T" ],
+"sheetWidth": 670.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

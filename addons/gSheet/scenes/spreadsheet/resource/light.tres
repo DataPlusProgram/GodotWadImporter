@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/spreadsheet/resource/spreadSheetStyle.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+cellColor = Color( 1, 1, 1, 1 )
+cellBorderColor = Color( 0.74902, 0.74902, 0.74902, 1 )
+headingColor = Color( 0.831373, 0.831373, 0.831373, 1 )
+headingBorderColor = Color( 0.74902, 0.74902, 0.74902, 1 )
+fontColor = Color( 0, 0, 0, 1 )
+cursorColor = Color( 0, 0, 0, 1 )
+optionButtonHoverFontColor = Color( 0.470588, 0.470588, 0.470588, 1 )
+borderThickness = 1
+marginLeft = 7
+marginRight = 7
+marginTop = 3
+marginBottom = 3

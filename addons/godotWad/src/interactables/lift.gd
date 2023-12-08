@@ -13,20 +13,23 @@ export(Dictionary) var info
 export(WADG.TTYPE) var triggerType
 export(STATE) var state  = STATE.TOP
 export(String) var animMeshPath = ""
+export(float) var globalScale = 1
 var animTextures = []
 var endHeight
 var active = false
 var speed = 2
 var targets = []
 var isASwitch = false
-
-var waitClose = 1
-
+var overlappingBodies : Array = []
+var waitClose = 2
+var floorNode 
 
 func _ready():
-
+	
+	speed *= globalScale
 	info["endHeight"] = info["sectorInfo"]["lowestNeighFloorExc"] 
-	info["curY"] = info["sectorInfo"]["floorHeight"]
+	#info["curY"] = info["sectorInfo"]["floorHeight"]
+	get_parent().set_meta("curH",info["sectorInfo"]["floorHeight"]) 
 	info["targetNodes"] = []
 	
 	
@@ -46,8 +49,8 @@ func _ready():
 		
 		
 
+
 func _physics_process(delta):
-	
 	if typeof(get_parent().get_meta("owner")) == TYPE_OBJECT:
 		if get_parent().get_meta("owner") != self:
 			return
@@ -56,18 +59,26 @@ func _physics_process(delta):
 	if get_node_or_null("trigger") != null:# X1 triggers will get deleted after first trigger
 		for c in get_children():
 			if c.get_class() == "Area":
-				for body in c.get_overlapping_bodies():
+				for body in overlappingBodies:
 					bodyIn(body)
-	
+
 	
 	if state == STATE.GOING_DOWN:
-		if info["curY"] > info["endHeight"]:
-			info["curY"] -= speed
+		#if info["curY"] > info["endHeight"]:
+		#	info["curY"] -= speed
+		
+		if getCurH() > info["endHeight"]:
+			incCurH(-speed)
 		
 		for node in info["targetNodes"]:
-			node.translation.y-= speed
+			node.translation.y-= speed.y
 			
-		if info["curY"] <= info["endHeight"]:
+		#if info["curY"] <= info["endHeight"]:
+		if getCurH() <= info["endHeight"]:
+	
+			for node in info["targetNodes"]:
+				node.translation.y = info["endHeight"]
+			
 			state = STATE.BOTTOM
 			if waitClose != -1:
 				yield(get_tree().create_timer(waitClose),"timeout")
@@ -76,21 +87,32 @@ func _physics_process(delta):
 			
 			
 	if state == STATE.GOING_UP:
-		if info["curY"] < info["sectorInfo"]["floorHeight"]:
-			info["curY"] += speed
+		
+#		if info["curY"] < info["sectorInfo"]["floorHeight"]:
+#			info["curY"] += speed
+		
+		
+		if getCurH() < info["sectorInfo"]["floorHeight"]:
+			incCurH(speed)
 		
 		for node in info["targetNodes"]:
-			node.translation.y+= speed
+			node.translation.y+= speed.y
 			
-		if info["curY"] >= info["sectorInfo"]["floorHeight"]:
+		#if info["curY"] >= info["sectorInfo"]["floorHeight"]:
+		if getCurH() >= info["sectorInfo"]["floorHeight"]:
+			
+			for node in info["targetNodes"]:
+				node.translation.y = info["sectorInfo"]["floorHeight"]
+			
 			state = STATE.TOP
 			get_parent().set_meta("owner",false)
 		
 	
 			
 
-func bodyIn(body):
+func bodyIn(body : PhysicsBody) -> void:
 	
+		
 	
 	if !"interactPressed" in body:
 		return
@@ -115,16 +137,34 @@ func bodyIn(body):
 	
 		if state == STATE.TOP: 
 				state = STATE.GOING_DOWN
-				if get_node_or_null("startSound")!= null: 
-					get_node("startSound").play()
+				if get_node_or_null("openSound")!= null: 
+					get_node("openSound").global_translation = body.translation
+					get_node("openSound").play()
+					
+				
 				
 		elif state == STATE.BOTTOM: 
 				state = STATE.GOING_UP
-				if get_node_or_null("startSound")!= null: 
-					get_node("startSound").play()
+				if get_node_or_null("closeSound")!= null: 
+					get_node("closeSound").global_translation = body.translation
+					get_node("closeSound").play()
 			
 		if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.WALK1: 
 			for i in get_children():
 				if i.get_class() == "Area":
 					i.queue_free()
 
+func bout(body):
+	if overlappingBodies.has(body):
+		overlappingBodies.erase(body)
+
+func bin(body):
+	if !overlappingBodies.has(body):
+		overlappingBodies.append(body)
+
+func getCurH():
+	return get_parent().get_meta("curH")
+
+func incCurH(amt):
+	var curH = getCurH()
+	get_parent().set_meta("curH",curH+amt.y)

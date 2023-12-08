@@ -15,7 +15,7 @@ func loadFile(path):
 	return true
 	
 	
-func seek(offset):
+func seek(offset):#
 	pos = offset
 
 func get_position():
@@ -110,3 +110,17 @@ func get_len():
 		
 func eof_reached():
 	return pos >= data.size()
+
+
+func scanForString(string,searchSize):
+	var sub = data.subarray(pos,pos+(searchSize-1))
+	
+	for index in sub.size():
+		if sub[index] == 0:
+			sub[index] = 32
+	
+	var t = sub.get_string_from_ascii()
+	
+	return t.find(string,0) != -1
+	
+	

@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/shotgunGuySprites.tres" type="Resource" id=1]
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=2]
+
+[sub_resource type="QuadMesh" id=10]
+size = Vector2( 6.045, 3.41 )
+
+[sub_resource type="BoxShape" id=9]
+extents = Vector3( 10, 28, 10 )
+
+[node name="ShotgunGuy" instance=ExtResource( 2 )]
+height = 56.0
+thickness = 10.0
+drops = "shotgun pickup"
+painChance = 0.676
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource( 10 )
+
+[node name="CollisionShape" parent="." index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0 )
+shape = SubResource( 9 )
+
+[node name="cast" parent="." index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0 )
+debug_shape_custom_color = Color( 1, 0, 0, 1 )
+debug_shape_thickness = 5
+
+[node name="Generator" parent="." index="7"]
+sprites = ExtResource( 1 )
+idle = "AB"
+chase = "ABCD"
+attack = "EFE"
+hurt = "G"
+dying = "HIJKL"
+gib = "MNOPQRSTU"
+attackSounds = [ "DSSHOTGN" ]
+
+[node name="VisibilityNotifier" parent="." index="9"]
+aabb = AABB( -1, 0, -1, 2, 56, 2 )
+
+[editable path="AnimatedSprite3D"]

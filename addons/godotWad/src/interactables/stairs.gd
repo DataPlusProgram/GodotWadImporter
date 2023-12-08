@@ -7,14 +7,13 @@ export(float) var inc = 0
 var targetNodes = []
 var stairGroups = []
 var stairPos = []
-
+export(float) var globalScale = 1
 var active = false
-#var speed = 2
-var targets = []
+
 var triggerType = 0
 var state  = STATE.TOP
 var speed = 0.5
-# Called when the node enters the scene tree for the first time.
+
 
 enum STATE{
 	TOP,
@@ -25,12 +24,13 @@ enum STATE{
 
 
 func _ready():
-	
-
-	var t = info
+	inc *= globalScale
+	speed *= globalScale
 	for i in info:
 		
 		var nodesInStair = []
+		
+		
 		for target in i["targets"]:
 			
 			var node =$"../../../".get_node(target)
@@ -54,11 +54,11 @@ func _physics_process(delta):
 	
 	if active:
 		for idx in stairGroups.size():
-			if stairPos[idx] < inc*(idx+1):
+			if stairPos[idx] < inc.y*(idx+1):
 				for node in stairGroups[idx]:
-					node.translation.y += speed
-					#print(node.name)
-			stairPos[idx] += speed
+					node.translation.y += speed.y
+					
+			stairPos[idx] += speed.y
 		
 		
 	

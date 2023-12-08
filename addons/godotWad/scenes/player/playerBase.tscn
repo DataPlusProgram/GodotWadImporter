@@ -1,0 +1,179 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/player/player.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/src/interactionSector.gd" type="Script" id=2]
+[ext_resource path="res://addons/godotWad/scenes/player/Crosshair.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/godotWad/scenes/player/debug/CanvasLayer.tscn" type="PackedScene" id=4]
+[ext_resource path="res://addons/godotWad/scenes/player/gunManager.gd" type="Script" id=5]
+[ext_resource path="res://addons/godotWad/scenes/player/movement.gd" type="Script" id=6]
+
+[sub_resource type="CylinderShape" id=31]
+margin = 0.01
+height = 55.0
+radius = 17.4
+
+[sub_resource type="CylinderMesh" id=8]
+top_radius = 16.0
+bottom_radius = 16.0
+height = 55.0
+
+[sub_resource type="SpatialMaterial" id=32]
+flags_transparent = true
+albedo_color = Color( 1, 0, 0, 0.415686 )
+
+[sub_resource type="CylinderShape" id=33]
+margin = 0.01
+height = 27.5
+radius = 17.4
+
+[sub_resource type="CylinderShape" id=34]
+margin = 0.01
+height = 0.1
+radius = 17.4
+
+[sub_resource type="CylinderShape" id=35]
+margin = 0.01
+height = 0.1
+radius = 17.4
+
+[node name="playerBase" type="KinematicBody" groups=["player"]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -180, 0 )
+script = ExtResource( 1 )
+__meta__ = {
+"height": 2.1
+}
+mouseSensitivity = 0.06
+headBobSpeed = 500
+initialHp = 100000
+maxHp = 100000
+maxSpeed = 2000
+friction = 9
+thickness = 0.48
+
+[node name="debug" parent="." instance=ExtResource( 4 )]
+
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Crosshair" parent="UI" instance=ExtResource( 3 )]
+
+[node name="HUDS" type="Control" parent="UI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="HUD1" type="Control" parent="UI/HUDS"]
+anchor_left = 0.961
+anchor_top = 0.933
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -0.0640259
+margin_top = 0.200012
+
+[node name="hp" type="Label" parent="UI/HUDS/HUD1"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -51.0
+margin_top = -53.0
+margin_right = -3.0
+margin_bottom = -39.0
+text = "jiojiojio"
+
+[node name="armor" type="Label" parent="UI/HUDS/HUD1"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -51.0
+margin_top = -37.0
+margin_right = -11.0
+margin_bottom = -23.0
+text = "jio"
+
+[node name="ammo" type="Label" parent="UI/HUDS/HUD1"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -51.0
+margin_top = -20.0
+margin_right = -1.0
+margin_bottom = -6.0
+text = ";kokpjio"
+
+[node name="gunManager" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.14822, 0 )
+script = ExtResource( 5 )
+
+[node name="weapons" type="Spatial" parent="gunManager"]
+
+[node name="shootCast" type="RayCast" parent="gunManager"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.48 )
+enabled = true
+cast_to = Vector3( 0, 0, -1000 )
+
+[node name="ItemList" type="ItemList" parent="."]
+visible = false
+anchor_left = 0.305
+anchor_top = 0.288
+anchor_right = 0.691
+anchor_bottom = 0.76
+margin_left = -0.320007
+margin_top = 0.199997
+margin_right = 0.415955
+margin_bottom = -18.0
+max_columns = 2
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.075, 0 )
+shape = SubResource( 31 )
+
+[node name="lightCast" type="RayCast" parent="."]
+enabled = true
+cast_to = Vector3( 0, -200, 0 )
+collision_mask = 32768
+
+[node name="footstepSound" type="AudioStreamPlayer3D" parent="."]
+unit_db = 10.0
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00187574, 1.075, 0.000322774 )
+mesh = SubResource( 8 )
+material/0 = SubResource( 32 )
+
+[node name="TextureRect" type="TextureRect" parent="." groups=["fullscreenTexture"]]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="movement" type="Spatial" parent="."]
+script = ExtResource( 6 )
+sideSpeed = 1.25
+gravity = 28.571
+slopeAngle = 50
+snapDownnAmt = 4
+
+[node name="footCast" type="ShapeCast" parent="movement"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.075, 0 )
+visible = false
+shape = SubResource( 33 )
+target_position = Vector3( 0, -2.15, 0 )
+max_results = 4
+debug_shape_custom_color = Color( 0.0431373, 0.0352941, 0.0352941, 1 )
+
+[node name="ShapeCastL" type="ShapeCast" parent="movement"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
+visible = false
+shape = SubResource( 34 )
+debug_shape_custom_color = Color( 0.337255, 1, 0.0352941, 1 )
+
+[node name="ShapeCastH" type="ShapeCast" parent="movement"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3, 0 )
+visible = false
+shape = SubResource( 35 )
+debug_shape_custom_color = Color( 0, 0.0627451, 1, 1 )

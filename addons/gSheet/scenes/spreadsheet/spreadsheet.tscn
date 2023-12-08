@@ -1,0 +1,79 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/spreadsheet/mainScript.gd" type="Script" id=1]
+[ext_resource path="res://addons/gSheet/scenes/spreadsheet/resource/dark.tres" type="Resource" id=2]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 7.0
+margin_right = 7.0
+rect_min_size = Vector2( 800, 600 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Control" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/separation = 0
+script = ExtResource( 1 )
+sheetStyle = ExtResource( 2 )
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control"]
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+follow_focus = true
+
+[connection signal="draw" from="Control" to="Control" method="_on_Control_draw"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/VBoxContainer/row 0" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/VBoxContainer/row 0" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/VBoxContainer/row 1" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/VBoxContainer/row 1" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/VBoxContainer/row 2" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/VBoxContainer/row 2" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/VBoxContainer/row 3" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/VBoxContainer/row 3" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/VBoxContainer/row 4" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/VBoxContainer/row 4" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 0" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 0" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 1" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 1" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 2" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 2" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 3" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 3" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 4" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/VBoxContainer/row 4" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 0" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 0" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 1" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 1" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 2" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 2" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 3" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 3" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 4" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/VBoxContainer/row 4" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 0" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 0" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 1" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 1" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 2" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 2" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 3" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 3" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 4" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/VBoxContainer/row 4" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 0" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 0" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 0" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 1" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 1" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 1" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 2" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 2" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 2" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 3" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 3" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 3" method="_on_typedLineEdit_focus_exited"]
+[connection signal="focus_entered" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 4" method="_on_typedLineEdit_focus_entered"]
+[connection signal="focus_exited" from="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 4" to="Control/ScrollContainer/col 4/col 3/col 2/col 1/col 0/VBoxContainer/row 4" method="_on_typedLineEdit_focus_exited"]

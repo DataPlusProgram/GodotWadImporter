@@ -1,0 +1,168 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "SARGA5",
+"ne": "",
+"nw": "SARGA4A6",
+"s": "SARGA1",
+"se": "",
+"sw": "SARGA2A8",
+"w": "SARGA3A7"
+},
+"B": {
+"e": "",
+"n": "SARGB5",
+"ne": "",
+"nw": "SARGB4B6",
+"s": "SARGB1",
+"se": "",
+"sw": "SARGB2B8",
+"w": "SARGB3B7"
+},
+"C": {
+"e": "",
+"n": "SARGC5",
+"ne": "",
+"nw": "SARGC4C6",
+"s": "SARGC1",
+"se": "",
+"sw": "SARGC2C8",
+"w": "SARGC3C7"
+},
+"D": {
+"e": "",
+"n": "SARGD5",
+"ne": "",
+"nw": "SARGD4D6",
+"s": "SARGD1",
+"se": "",
+"sw": "SARGD2D8",
+"w": "SARGD3D7"
+},
+"E": {
+"e": "SARGE7",
+"n": "SARGE5",
+"ne": "SARGE6",
+"nw": "SARGE4",
+"s": "SARGE1",
+"se": "SARGE8",
+"sw": "SARGE2",
+"w": "SARGE3"
+},
+"F": {
+"e": "SARGF7",
+"n": "SARGF5",
+"ne": "SARGF6",
+"nw": "SARGF4",
+"s": "SARGF1",
+"se": "SARGF8",
+"sw": "SARGF2",
+"w": "SARGF3"
+},
+"G": {
+"e": "SARGG7",
+"n": "SARGG5",
+"ne": "SARGG6",
+"nw": "SARGG4",
+"s": "SARGG1",
+"se": "SARGG8",
+"sw": "SARGG2",
+"w": "SARGG3"
+},
+"H": {
+"e": "SARGH7",
+"n": "SARGH5",
+"ne": "SARGH6",
+"nw": "SARGH4",
+"s": "SARGH1",
+"se": "SARGH8",
+"sw": "SARGH2",
+"w": "SARGH3"
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SARGN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "n", "ne", "e", "se", "s", "sw", "w", "nw" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N" ],
+"sheetWidth": 1439.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

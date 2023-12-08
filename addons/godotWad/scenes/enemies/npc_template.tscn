@@ -1,0 +1,65 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/enemyGenerator.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/src/raycastDynamic.gd" type="Script" id=2]
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc.gd" type="Script" id=3]
+[ext_resource path="res://addons/godotWad/scenes/enemies/enemySounds.gd" type="Script" id=4]
+[ext_resource path="res://addons/godotWad/scenes/enemies/navigationLogic.gd" type="Script" id=5]
+[ext_resource path="res://addons/godotWad/src/castWeapon.gd" type="Script" id=6]
+[ext_resource path="res://addons/godotWad/scenes/quad3Dsprite.tscn" type="PackedScene" id=7]
+
+[sub_resource type="QuadMesh" id=1]
+size = Vector2( 1.271, 2.263 )
+
+[node name="npc" type="KinematicBody"]
+process_priority = 1
+script = ExtResource( 3 )
+__meta__ = {
+"": "",
+"originAtFeet": true
+}
+initialHP = 30.0
+height = 32.0
+thickness = 20.0
+projectileRange = -1.0
+
+[node name="AnimatedSprite3D" parent="." instance=ExtResource( 7 )]
+mesh = SubResource( 1 )
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+script = ExtResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0 )
+
+[node name="cast" type="RayCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.6, 0 )
+enabled = true
+cast_to = Vector3( 0, 0, -1 )
+debug_shape_thickness = 1
+script = ExtResource( 2 )
+
+[node name="navigationLogic" type="Node" parent="."]
+script = ExtResource( 5 )
+
+[node name="castWeapon" type="Spatial" parent="."]
+script = ExtResource( 6 )
+
+[node name="Generator" type="Node" parent="."]
+script = ExtResource( 1 )
+bloodSplatter = [ "BLUDA0", "BLUDB0", "BLUDC0" ]
+
+[node name="footCast" type="ShapeCast" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
+enabled = false
+margin = 1.0
+max_results = 1
+
+[node name="VisibilityNotifier" type="VisibilityNotifier" parent="."]
+aabb = AABB( -1, 0, -1, 2, 32, 2 )
+
+[connection signal="camera_entered" from="VisibilityNotifier" to="AnimatedSprite3D" method="_on_VisibilityNotifier_camera_entered"]
+
+[editable path="AnimatedSprite3D"]

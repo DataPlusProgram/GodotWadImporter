@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/guns/template/gunbase_template.tscn" type="PackedScene" id=1]
+
+[sub_resource type="QuadMesh" id=1]
+size = Vector2( 1.271, 1.767 )
+
+[node name="superShotgun" instance=ExtResource( 1 )]
+weaponName = "super shotgun"
+categorySubIndex = 1
+ammoType = "shell"
+pickupAmmo = 8
+bulletPerShot = 7
+
+[node name="AnimatedSprite3D" parent="." index="1"]
+mesh = SubResource( 1 )
+
+[node name="Generator" parent="." index="3"]
+idleSpriteNames = [ "SHT2A0" ]
+shootSpriteNames = [ "SHT2A0", "SHT2A0", "SHT2B0", "SHT2B0", "SHT2B0", "SHT2B0", "SHT2B0", "SHT2C0", "SHT2A0" ]
+worldSprite = "SGN2A0"
+fireSounds = [ "DSDSHTGN" ]

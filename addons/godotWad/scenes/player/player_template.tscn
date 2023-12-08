@@ -1,0 +1,167 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/player/playerBase.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/godotWad/scenes/player/debug/playerGenerator.gd" type="Script" id=2]
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/guysprites.tres" type="Resource" id=3]
+[ext_resource path="res://addons/godotWad/scenes/quad3Dsprite.tscn" type="PackedScene" id=4]
+[ext_resource path="res://addons/godotWad/scenes/player/playerSounds.gd" type="Script" id=5]
+[ext_resource path="res://addons/godotWad/scenes/player/doomHud.tscn" type="PackedScene" id=6]
+[ext_resource path="res://addons/godotWad/scenes/player/ColorOverlay.tscn" type="PackedScene" id=7]
+
+[sub_resource type="QuadMesh" id=1]
+size = Vector2( 1.271, 1.736 )
+
+[node name="KinematicBody" instance=ExtResource( 1 )]
+process_priority = 1
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+mouseSensitivity = 0.05
+headBobSpeed = 1000
+initialHp = 100
+maxHp = 100
+maxSpeed = 1600
+friction = 1
+thickness = 17.4
+height = 55.0
+hudIndex = 1
+
+[node name="debug" parent="." index="0"]
+visible = false
+
+[node name="UI" parent="." index="1"]
+mouse_filter = 1
+input_pass_on_modal_close_click = false
+
+[node name="ColorOverlay" parent="UI" index="1" instance=ExtResource( 7 )]
+
+[node name="HUD1" parent="UI/HUDS" index="0"]
+visible = false
+
+[node name="HUD2" parent="UI/HUDS" index="1" instance=ExtResource( 6 )]
+anchor_left = 0.0
+anchor_top = 0.845
+anchor_right = 0.99893
+anchor_bottom = 1.003
+margin_left = 0.0
+margin_top = -3.05176e-05
+
+[node name="head" parent="UI/HUDS/HUD2/v" index="0"]
+margin_bottom = 92.0
+
+[node name="h" parent="UI/HUDS/HUD2/v" index="1"]
+margin_right = 161.0
+margin_bottom = 92.0
+
+[node name="armor" parent="UI/HUDS/HUD2/v/h" index="0"]
+margin_right = 79.0
+margin_bottom = 44.0
+
+[node name="Control" parent="UI/HUDS/HUD2/v/h/armor" index="0"]
+size = Vector2( 79, 44 )
+
+[node name="Camera2D" parent="UI/HUDS/HUD2/v/h/armor/Control" index="1"]
+zoom = Vector2( 0.493671, 0.363636 )
+
+[node name="hp" parent="UI/HUDS/HUD2/v/h" index="1"]
+margin_top = 48.0
+margin_right = 79.0
+margin_bottom = 92.0
+
+[node name="Control" parent="UI/HUDS/HUD2/v/h/hp" index="0"]
+size = Vector2( 79, 44 )
+
+[node name="Camera2D" parent="UI/HUDS/HUD2/v/h/hp/Control" index="1"]
+zoom = Vector2( 0.493671, 0.363636 )
+
+[node name="VBoxContainer" parent="UI/HUDS/HUD2/v" index="2"]
+margin_left = 182.0
+margin_right = 244.0
+margin_bottom = 92.0
+
+[node name="Control" parent="UI/HUDS/HUD2/v/VBoxContainer" index="0"]
+margin_bottom = 44.0
+
+[node name="keys" parent="UI/HUDS/HUD2/v/VBoxContainer" index="1"]
+margin_top = 48.0
+margin_bottom = 92.0
+
+[node name="keyB" parent="UI/HUDS/HUD2/v/VBoxContainer/keys" index="3"]
+margin_bottom = 44.0
+
+[node name="keyY" parent="UI/HUDS/HUD2/v/VBoxContainer/keys" index="4"]
+margin_bottom = 44.0
+
+[node name="keyR" parent="UI/HUDS/HUD2/v/VBoxContainer/keys" index="5"]
+margin_bottom = 44.0
+
+[node name="weaponIcon" parent="UI/HUDS/HUD2/HBoxContainer" index="0"]
+margin_bottom = 45.0
+
+[node name="VBoxContainer" parent="UI/HUDS/HUD2/HBoxContainer" index="1"]
+margin_bottom = 45.0
+
+[node name="ammo" parent="UI/HUDS/HUD2/HBoxContainer/VBoxContainer" index="1"]
+margin_bottom = 45.0
+
+[node name="Control" parent="UI/HUDS/HUD2/HBoxContainer/VBoxContainer/ammo" index="0"]
+size = Vector2( 104, 45 )
+
+[node name="Camera2D" parent="UI/HUDS/HUD2/HBoxContainer/VBoxContainer/ammo/Control" index="1"]
+zoom = Vector2( 0.375, 0.355556 )
+
+[node name="shootCast" parent="gunManager" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -17.4 )
+
+[node name="AnimatedSprite3D" parent="." index="4" instance=ExtResource( 4 )]
+mesh = SubResource( 1 )
+
+[node name="CollisionShape" parent="." index="5"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27.5, 0 )
+
+[node name="Generator" type="Node" parent="." index="6"]
+script = ExtResource( 2 )
+sprites = ExtResource( 3 )
+idle = "A"
+chase = "ABCD"
+attack = "EF"
+hurt = "GG"
+dying = "HIJKLMN"
+gib = "OPQRSTUVW"
+gruntSound = "DSNOWAY"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="7"]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." index="8"]
+script = ExtResource( 5 )
+
+[node name="MeshInstance" parent="." index="11"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00187574, 27.5, 0.000322774 )
+visible = false
+
+[node name="TextureRect" parent="." index="12"]
+rect_rotation = 0.0556979
+mouse_filter = 0
+
+[node name="movement" parent="." index="13"]
+visible = false
+airStepRatio = 0.389
+maxVelo = Vector3( 50, inf, 50 )
+slopeAngle = 46.0
+
+[node name="footCast" parent="movement" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27.5, 0 )
+visible = true
+target_position = Vector3( 0, -55, 0 )
+
+[node name="ShapeCastL" parent="movement" index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+visible = true
+
+[node name="ShapeCastH" parent="movement" index="2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 110, 0 )
+visible = true
+
+[editable path="UI/HUDS/HUD2"]
+[editable path="UI/HUDS/HUD2/v/h/armor"]
+[editable path="UI/HUDS/HUD2/v/h/hp"]
+[editable path="UI/HUDS/HUD2/HBoxContainer/VBoxContainer/ammo"]
+[editable path="AnimatedSprite3D"]

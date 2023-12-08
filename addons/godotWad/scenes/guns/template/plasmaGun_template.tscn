@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/guns/template/gunbase_template.tscn" type="PackedScene" id=1]
+
+[node name="plasmaGun" instance=ExtResource( 1 )]
+weaponName = "plasma gun"
+category = 5
+ammoType = "plasma"
+shootDurationMS = 100
+damage = 80
+pickupAmmo = 40
+initialSpread = Vector2( 0, 0 )
+maxSpread = Vector2( 0, 0 )
+firstShotAccuracy = 1
+firstShotCooldonwMS = 500
+
+[node name="Generator" parent="." index="4"]
+idleSpriteNames = [ "PLSGA0" ]
+shootSpriteNames = [ "PLSFA0", "PLSFB0" ]
+worldSprite = "PLASA0"
+idleAnimDuration = 0.0
+fireSounds = [ "DSPLASMA" ]
+entityDepends = [ "plasma" ]

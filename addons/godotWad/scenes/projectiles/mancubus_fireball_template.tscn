@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/projectiles/projectileBase.tscn" type="PackedScene" id=1]
+
+[node name="Fireball" instance=ExtResource( 1 )]
+dmg = 32
+
+[node name="Generator" parent="." index="4"]
+front = [ "MANFA1", "MANFB1" ]
+back = [ "MANFA5", "MANFB5" ]
+backRight = [ "MANFA6A4", "MANFB6B4" ]
+right = [ "MANFA7A3", "MANFB7B3" ]
+frontRight = [ "MANFA8A2", "MANFB8B2" ]
+explosion = [ "BAL1C0", "BAL1D0", "BAL1E0" ]
+spawnSound = "DSFIRSHT"
+explosionSound = "DSFIRXPL"
+scaleFactor = 1000.0
+sizeIncrease = 1.0

@@ -1,0 +1,318 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "VILEA7D3",
+"n": "VILEA5D5",
+"ne": "VILEA6D4",
+"nw": "VILEA4D6",
+"s": "VILEA1D1",
+"se": "VILEA8D2",
+"sw": "VILEA2D8",
+"w": "VILEA3D7"
+},
+"B": {
+"e": "VILEB7E3",
+"n": "VILEB5E5",
+"ne": "VILEB6E4",
+"nw": "VILEB4E6",
+"s": "VILEB1E1",
+"se": "VILEB8E2",
+"sw": "VILEB2E8",
+"w": "VILEB3E7"
+},
+"C": {
+"e": "VILEC7F3",
+"n": "VILEC5F5",
+"ne": "VILEC6F4",
+"nw": "VILEC4F6",
+"s": "VILEC1F1",
+"se": "VILEC8F2",
+"sw": "VILEC2F8",
+"w": "VILEC3F7"
+},
+"D": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"E": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"F": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"G": {
+"e": "VILEG7",
+"n": "VILEG5",
+"ne": "VILEG6",
+"nw": "VILEG4",
+"s": "VILEG1",
+"se": "VILEG8",
+"sw": "VILEG2",
+"w": "VILEG3"
+},
+"H": {
+"e": "VILEH7",
+"n": "VILEH5",
+"ne": "VILEH6",
+"nw": "VILEH4",
+"s": "VILEH1",
+"se": "VILEH8",
+"sw": "VILEH2",
+"w": "VILEH3"
+},
+"I": {
+"e": "VILEI7",
+"n": "VILEI5",
+"ne": "VILEI6",
+"nw": "VILEI4",
+"s": "VILEI1",
+"se": "VILEI8",
+"sw": "VILEI2",
+"w": "VILEI3"
+},
+"J": {
+"e": "VILEJ7",
+"n": "VILEJ5",
+"ne": "VILEJ6",
+"nw": "VILEJ4",
+"s": "VILEJ1",
+"se": "VILEJ8",
+"sw": "VILEJ2",
+"w": "VILEJ3"
+},
+"K": {
+"e": "VILEK7",
+"n": "VILEK5",
+"ne": "VILEK6",
+"nw": "VILEK4",
+"s": "VILEK1",
+"se": "VILEK8",
+"sw": "VILEK2",
+"w": "VILEK3"
+},
+"L": {
+"e": "VILEL7",
+"n": "VILEL5",
+"ne": "VILEL6",
+"nw": "VILEL4",
+"s": "VILEL1",
+"se": "VILEL8",
+"sw": "VILEL2",
+"w": "VILEL4"
+},
+"M": {
+"e": "VILEM7",
+"n": "VILEM5",
+"ne": "VILEM6",
+"nw": "VILEM4",
+"s": "VILEM1",
+"se": "VILEM8",
+"sw": "VILEM2",
+"w": "VILEM3"
+},
+"N": {
+"e": "VILEN7",
+"n": "VILEN5",
+"ne": "VILEN6",
+"nw": "VILEN4",
+"s": "VILEN1",
+"se": "VILEN8",
+"sw": "VILEN2",
+"w": "VILEN3"
+},
+"O": {
+"e": "VILEO7",
+"n": "VILEO5",
+"ne": "VILEO6",
+"nw": "VILEO4",
+"s": "VILEO1",
+"se": "VILEO8",
+"sw": "VILEO2",
+"w": "VILEO3"
+},
+"P": {
+"e": "VILEP7",
+"n": "VILEP5",
+"ne": "VILEP6",
+"nw": "VILEP4",
+"s": "VILEP1",
+"se": "VILEP8",
+"sw": "VILEP2",
+"w": "VILEP3"
+},
+"Q": {
+"e": "VILEQ7",
+"n": "VILEQ5",
+"ne": "VILEQ6",
+"nw": "VILEQ4",
+"s": "VILEQ1",
+"se": "VILEQ8",
+"sw": "VILEQ2",
+"w": "VILEQ3"
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILER0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILES0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILET0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"U": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEU0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"V": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEV0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"W": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEW0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"X": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEX0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Y": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEY0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Z": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "VILEZ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"[": {
+"e": "VILE[7",
+"n": "VILE[5",
+"ne": "VILE[6",
+"nw": "VILE[4",
+"s": "VILE[1",
+"se": "VILE[8",
+"sw": "VILE[2",
+"w": "VILE[3"
+},
+"\\": {
+"e": "VILE\\7",
+"n": "VILE\\5",
+"ne": "VILE\\6",
+"nw": "VILE\\4",
+"s": "VILE\\1",
+"se": "VILE\\8",
+"sw": "VILE\\2",
+"w": "VILE\\3"
+},
+"]": {
+"e": "VILE]1",
+"n": "VILE]1",
+"ne": "VILE]1",
+"nw": "VILE]1",
+"s": "VILE]1",
+"se": "VILE]1",
+"sw": "VILE]1",
+"w": "VILE]1"
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]" ],
+"sheetWidth": 1114.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

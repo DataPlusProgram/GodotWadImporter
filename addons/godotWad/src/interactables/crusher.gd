@@ -12,27 +12,35 @@ enum STATE{
 	CLOSED,
 	CLOSING
 }
+var overlappingBodies = []
+
 
 var type
 export(Dictionary) var info
 var endHeight
 var active = true
-var speed = 2
-export(DIR) var dir
-
+var speed : float = 2
+export(DIR) var direction
+export(Vector3) var globalScale = Vector3.ONE
 export var category = 0
 var change = 0
 var top
 var bottom 
+
 export(WADG.TTYPE) var triggerType
 
+var floorCast: ShapeCast = null
+var ceilingCast : ShapeCast = null
+var floorNode
+var ceilingNode
+var initialSpeed
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	
+	speed*= globalScale.y
 	info["targetNodes"] = []
 	
 	
-	info["endHeight"] = info["sectorInfo"]["floorHeight"]+8
+	info["endHeight"] = info["sectorInfo"]["floorHeight"]+8*globalScale.y
 	setCurY(info["sectorInfo"]["ceilingHeight"])
 
 
@@ -45,33 +53,87 @@ func _ready():
 	for t in info["targets"]:
 		var mapNode = get_parent().get_parent().get_parent()
 		var node = mapNode.get_node(t)
-		if node.has_meta("ceil"): info["targetNodes"].append(node)
+		if node.has_meta("ceil"): 
+			info["targetNodes"].append(node)
+			
+			ceilingNode = node
+			for j in node.get_parent().get_children():
+				if j.has_meta("ceil"):
+					floorNode = j
+			
 		elif node.has_meta("type"):
 			if node.get_meta("type") == "upper": info["targetNodes"].append(node)
 		
-	if dir == WADG.DIR.UP: setState(STATE.CLOSED)
-	if dir == WADG.DIR.DOWN: setState(STATE.OPEN)
+	if direction == WADG.DIR.UP: setState(STATE.CLOSED)
+	if direction == WADG.DIR.DOWN: setState(STATE.OPEN)
 	
 	if category == WADG.LTYPE.STOPPER:
 		breakpoint
+		
+	if floorNode != null and ceilingNode != null:
+		var s = OS.get_system_time_msecs()
+		floorCast = WADG.createCastShapeForBody(floorNode.get_child(0),Vector3(0,0.1,0))
+		ceilingCast = WADG.createCastShapeForBody(ceilingNode.get_child(0),Vector3(0,-0.1,0))
+		
+		WADG.incTimeLog(get_tree(),"castShapes",s)
 	
-
+	initialSpeed = speed
 
 func _physics_process(delta):
-		
-	if get_node_or_null("trigger") != null:# X1 triggers will get deleted after first trigger
-		for c in get_children():
-			if c.get_class() == "Area":
-				for body in c.get_overlapping_bodies():
-					bodyIn(body)
 	
+	var state = getState()
+	
+	if getState() == STATE.CLOSING and ceilingCast != null:
+		ceilingCast.enabled = true
+		ceilingCast.force_shapecast_update()
+
+		
+		var flag = false
+		for i in ceilingCast.get_collision_count():
+			var collider = ceilingCast.get_collider(i)
+			var parent = collider.get_parent()
+		
+			
+			if !parent.has_meta("floor"):
+				if parent.get_class() != "StaticBody" and collider.get_class() != "StaticBody":
+					flag = true
+					speed = 0
+					if state == STATE.CLOSING:
+						
+						if collider.has_method("takeDamage"):
+							var dict = {"amt":10,"iMS":300,"specific":"crusher","source":self}
+							collider.takeDamage(dict)
+							
+			if collider.get_class() == "RigidBody":
+				setState(STATE.OPENING)
+				
+				
+
+					
+		if flag == false:
+			speed = initialSpeed
+		
+	else:
+		speed = initialSpeed
+	
+	for body in overlappingBodies:
+		bodyIn(body)
 
 	if typeof(get_parent().get_meta("owner")) == TYPE_BOOL: 
 		return
 	
+
 	var curY = getCurY()
 	
+	if getState() == STATE.OPENING or getState() == STATE.CLOSING:
+		if get_node_or_null("openSound")!= null: 
+			if !get_node("openSound").playing:
+				get_node("openSound").play()
+	
 	if getState() == STATE.OPENING:
+		
+		
+		
 		if curY < top:
 			incCurY(speed)
 
@@ -97,7 +159,6 @@ func _physics_process(delta):
 
 func bodyIn(body):
 	
-	
 	if typeof(get_parent().get_meta("owner")) != TYPE_BOOL: 
 		return
 	
@@ -110,17 +171,12 @@ func bodyIn(body):
 		get_parent().set_meta("active",null)
 		get_parent().set_meta("owner",self)
 		
-		if getState() == STATE.OPEN: 
-			setState(STATE.CLOSING)
-			if get_node_or_null("closeSound")!= null: get_node("closeSound").play()
-			
-		elif getState() == (STATE.CLOSED): 
-			setState(STATE.OPENING)
-			if get_node_or_null("openSound")!= null: get_node("openSound").play()
+		
 		
 		if triggerType == WADG.TTYPE.DOOR1 or triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.WALK1: 
 			for i in get_children():
-				i.queue_free()
+				if i.get_class() == "Area":
+					i.queue_free()
 
 
 func getState():
@@ -135,7 +191,7 @@ func getCurY():
 func setCurY(y):
 	return get_parent().set_meta("curY",y)
 	
-func incCurY(amt):
+func incCurY(amt: float):
 	setCurY(getCurY() + amt)
 
 
@@ -146,3 +202,20 @@ func printState(state):
 	elif state == STATE.CLOSED: print("closed")
 	elif state == STATE.CLOSING: print("goingDown")
 
+
+func bin(body):
+	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
+		if !"interactPressed" in body:
+			return
+			
+	if body.get_class() == "StaticBody": return
+	
+	
+	if !overlappingBodies.has(body):
+		overlappingBodies.append(body)
+	
+	
+func bout(body):
+	
+	if overlappingBodies.has(body):
+		overlappingBodies.erase(body)

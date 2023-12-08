@@ -1,4 +1,4 @@
-tool
+
 extends Control
 
 
@@ -11,6 +11,7 @@ var right #= $"right"
 var left #= $"left"
 var up #= $"up"
 var down #= $"down"
+var radius = 50
 # Called when the node enters the scene tree for the first time.
 
 
@@ -27,6 +28,7 @@ func _physics_process(delta):
 	#gap()
 	color()
 	thickness()
+	update()
 
 func gap(g):
 	if right == null: return
@@ -61,13 +63,25 @@ func length(l):
 	
 	
 func color():
+	if right == null: return
 	right.default_color = color
 	left.default_color = color
 	down.default_color = color
 	up.default_color = color
 
 func thickness():
+	if right == null: return
 	right.width = thickness
 	left.width = thickness
 	down.width = thickness
 	up.width = thickness
+
+
+
+#func _draw():
+#	var spread = ($"../../gunManager/pistol3".maxSpread.x/2.0)
+#	radius = tan(deg2rad(spread))*360
+#	draw_arc(Vector2.ZERO,radius,0,2*PI,600,Color.yellow)
+	
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -1,0 +1,75 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/ui/progressBar/progressBar.gd" type="Script" id=1]
+
+[node name="progressBar" type="WindowDialog"]
+visible = true
+anchor_right = 0.866211
+anchor_bottom = 0.328333
+window_title = "Waiting for editor to import import"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_left = 0.145508
+anchor_top = 0.145
+anchor_right = 0.87207
+anchor_bottom = 0.735
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 644.0
+margin_bottom = 14.0
+text = "waiting..."
+align = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 644.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 0, 20 )
+size_flags_horizontal = 3
+
+[node name="TextEdit" type="Label" parent="VBoxContainer"]
+self_modulate = Color( 1, 1, 1, 0.294118 )
+margin_top = 42.0
+margin_right = 644.0
+margin_bottom = 56.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "0/0"
+align = 1
+valign = 1
+
+[node name="ItemList" type="TextEdit" parent="VBoxContainer"]
+margin_top = 60.0
+margin_right = 644.0
+margin_bottom = 98.0
+size_flags_vertical = 3
+readonly = true
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBoxContainer"]
+margin_left = 272.0
+margin_top = 102.0
+margin_right = 372.0
+margin_bottom = 116.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="VBoxContainer/HSplitContainer"]
+modulate = Color( 1, 1, 1, 0.352941 )
+margin_right = 88.0
+margin_bottom = 14.0
+text = "time elapsed:"
+
+[node name="Label2" type="Label" parent="VBoxContainer/HSplitContainer"]
+modulate = Color( 1, 1, 1, 0.27451 )
+margin_left = 100.0
+margin_right = 100.0
+margin_bottom = 14.0

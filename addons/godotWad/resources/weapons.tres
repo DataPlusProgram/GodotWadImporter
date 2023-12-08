@@ -1,0 +1,88 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"-1": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "fists",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/fists_template.tscn"
+},
+"0": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "pistol",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/pistol_template.tscn"
+},
+"1": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "shotgun",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/shotgun_template.tscn"
+},
+"2": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "super shotgun",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/superShotgun_template.tscn"
+},
+"3": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "chaingun",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/chaingun_template.tscn"
+},
+"4": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "plasma gun",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/plasmaGun_template.tscn"
+},
+"5": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "rocket launcher",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/rocket launcher_template.tscn"
+},
+"6": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "chainsaw",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/chainsaw_template.tscn"
+},
+"7": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "BFG",
+"sourceScene": "res://addons/godotWad/scenes/guns/template/BFG_template.tscn"
+},
+"meta": {
+"colNames": [ "name", "sourceScene", "category", "3", "4" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "-1", "0", "1", "2", "3", "4", "5", "6", "7" ],
+"sheetWidth": 1018.0,
+"splitSize": {
+0: 0,
+1: 94,
+2: 24,
+3: 0,
+4: 0
+}
+}
+}

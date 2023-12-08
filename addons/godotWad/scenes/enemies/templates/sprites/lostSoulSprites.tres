@@ -1,0 +1,138 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "SKULA7A3",
+"n": "SKULA5",
+"ne": "SKULA6A4",
+"nw": "",
+"s": "SKULA1",
+"se": "SKULA8A2",
+"sw": "",
+"w": ""
+},
+"B": {
+"e": "SKULB7B3",
+"n": "SKULB5",
+"ne": "SKULB6B4",
+"nw": "",
+"s": "SKULB1",
+"se": "SKULB8B2",
+"sw": "",
+"w": ""
+},
+"C": {
+"e": "SKULC7C3",
+"n": "SKULC5",
+"ne": "SKULC6C4",
+"nw": "",
+"s": "SKULC1",
+"se": "SKULC8C2",
+"sw": "",
+"w": ""
+},
+"D": {
+"e": "SKULD7D3",
+"n": "SKULD5",
+"ne": "SKULD6D4",
+"nw": "",
+"s": "SKULD1",
+"se": "SKULD8D2",
+"sw": "",
+"w": ""
+},
+"E": {
+"e": "SKULE7E3",
+"n": "SKULE5",
+"ne": "SKULE6E4",
+"nw": "",
+"s": "SKULE1",
+"se": "SKULE8E2",
+"sw": "",
+"w": ""
+},
+"F": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULF0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"G": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULG0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKULK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K" ],
+"sheetWidth": 681.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 1,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

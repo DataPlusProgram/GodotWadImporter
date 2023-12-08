@@ -1,0 +1,178 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "BOS2A7C3",
+"n": "BOS2A5C5",
+"ne": "BOS2A6C4",
+"nw": "BOS2A4C6",
+"s": "BOS2A1C1",
+"se": "BOS2A8C2",
+"sw": "BOS2A2C8",
+"w": "BOS2A3C7"
+},
+"B": {
+"e": "BOS2B7D3",
+"n": "BOS2B5D5",
+"ne": "BOS2B6D4",
+"nw": "BOS2B4D6",
+"s": "BOS2B1D1",
+"se": "BOS2B8D2",
+"sw": "BOS2B2D8",
+"w": "BOS2B3D7"
+},
+"C": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"D": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"E": {
+"e": "BOS2E7",
+"n": "BOS2E5",
+"ne": "BOS2E6",
+"nw": "BOS2E4",
+"s": "BOS2E1",
+"se": "BOS2E8",
+"sw": "BOS2E2",
+"w": "BOS2E3"
+},
+"F": {
+"e": "BOS2F1",
+"n": "BOS2F1",
+"ne": "BOS2F1",
+"nw": "BOS2F1",
+"s": "BOS2F1",
+"se": "BOS2F1",
+"sw": "BOS2F1",
+"w": "BOS2F1"
+},
+"G": {
+"e": "BOS2G7",
+"n": "BOS2G5",
+"ne": "BOS2G6",
+"nw": "BOS2G4",
+"s": "BOS2G1",
+"se": "BOS2G8",
+"sw": "BOS2G2",
+"w": "BOS2G3"
+},
+"H": {
+"e": "BOS2H7",
+"n": "BOS2H5",
+"ne": "BOS2H6",
+"nw": "BOS2H4",
+"s": "BOS2H1",
+"se": "BOS2H8",
+"sw": "BOS2H2",
+"w": "BOS2H3"
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2I0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2J0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2K0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2L0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2M0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2N0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "BOS2O0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O" ],
+"sheetWidth": 808.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

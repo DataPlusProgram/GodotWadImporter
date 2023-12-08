@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/entityDebugDialog.gd" type="Script" id=1]
+
+[node name="entityDebugDialog" type="WindowDialog"]
+margin_right = 468.0
+margin_bottom = 326.0
+resizable = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Tabs" type="TabContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="treeMeta" type="VSplitContainer" parent="Tabs"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 32.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="hSplit" type="HBoxContainer" parent="Tabs/treeMeta"]
+margin_right = 460.0
+margin_bottom = 290.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="listLeft" type="ItemList" parent="Tabs/treeMeta/hSplit"]
+margin_right = 150.0
+margin_bottom = 290.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="listMiddle" type="ItemList" parent="Tabs/treeMeta/hSplit"]
+margin_left = 154.0
+margin_right = 305.0
+margin_bottom = 290.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="listRight" type="ItemList" parent="Tabs/treeMeta/hSplit"]
+margin_left = 309.0
+margin_right = 460.0
+margin_bottom = 290.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HSplitContainer" type="HSplitContainer" parent="Tabs"]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+
+[connection signal="about_to_show" from="." to="." method="_on_entityDebugDialog_about_to_show"]
+[connection signal="tab_selected" from="Tabs" to="." method="_on_Tabs_tab_selected"]
+[connection signal="item_selected" from="Tabs/treeMeta/hSplit/listLeft" to="." method="_on_listTop_item_selected"]
+[connection signal="item_selected" from="Tabs/treeMeta/hSplit/listMiddle" to="." method="_on_listMiddle_item_selected"]

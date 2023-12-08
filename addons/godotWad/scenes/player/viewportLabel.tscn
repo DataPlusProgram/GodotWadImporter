@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/player/Camera2D.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/scenes/player/HUD.gd" type="Script" id=2]
+
+[node name="ViewportContainer" type="ViewportContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -745.0
+margin_bottom = -467.0
+stretch = true
+script = ExtResource( 2 )
+
+[node name="Control" type="Viewport" parent="."]
+size = Vector2( 279, 133 )
+transparent_bg = true
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Label" type="Label" parent="Control"]
+margin_right = 39.0
+margin_bottom = 16.0
+text = "100"
+
+[node name="Camera2D" type="Camera2D" parent="Control"]
+anchor_mode = 0
+current = true
+zoom = Vector2( 0.139785, 0.120301 )
+script = ExtResource( 1 )

@@ -1,0 +1,198 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "SKELA7D3",
+"n": "SKELA5D5",
+"ne": "SKELA6D4",
+"nw": "SKELA4D6",
+"s": "SKELA1D1",
+"se": "SKELA8D2",
+"sw": "SKELA2D8",
+"w": "SKELA3D7"
+},
+"B": {
+"e": "SKELB7E3",
+"n": "SKELB5E5",
+"ne": "SKELB6E4",
+"nw": "SKELB4E6",
+"s": "SKELB1E1",
+"se": "SKELB8E2",
+"sw": "SKELB2E8",
+"w": "SKELB3E7"
+},
+"C": {
+"e": "SKELC7F3",
+"n": "SKELC5F5",
+"ne": "SKELC6F4",
+"nw": "SKELC4F6",
+"s": "SKELC1F1",
+"se": "SKELC8F2",
+"sw": "SKELC2F8",
+"w": "SKELC3F7"
+},
+"D": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"E": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"F": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "",
+"se": "",
+"sw": "",
+"w": ""
+},
+"G": {
+"e": "SKELG7",
+"n": "SKELG5",
+"ne": "SKELG6",
+"nw": "SKELG4",
+"s": "SKELG1",
+"se": "SKELG8",
+"sw": "SKELG2",
+"w": "SKELG3"
+},
+"H": {
+"e": "SKELH7",
+"n": "SKELH5",
+"ne": "SKELH6",
+"nw": "SKELH4",
+"s": "SKELH1",
+"se": "SKELH8",
+"sw": "SKELH2",
+"w": "SKELH3"
+},
+"I": {
+"e": "SKELI7",
+"n": "SKELI5",
+"ne": "SKELI6",
+"nw": "SKELI4",
+"s": "SKELI1",
+"se": "SKELI8",
+"sw": "SKELI2",
+"w": "SKELI3"
+},
+"J": {
+"e": "SKELJ7",
+"n": "SKELJ5",
+"ne": "SKELJ6",
+"nw": "SKELJ4",
+"s": "SKELJ1",
+"se": "SKELJ8",
+"sw": "SKELJ2",
+"w": "SKELJ3"
+},
+"K": {
+"e": "SKELK7",
+"n": "SKELK5",
+"ne": "SKELK6",
+"nw": "SKELK4",
+"s": "SKELK1",
+"se": "SKELK8",
+"sw": "SKELK2",
+"w": "SKELK3"
+},
+"L": {
+"e": "SKELL7",
+"n": "SKELL5",
+"ne": "SKELL6",
+"nw": "SKELL4",
+"s": "SKELL1",
+"se": "SKELL8",
+"sw": "SKELL2",
+"w": "SKELL3"
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKELM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKELN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKELO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKELP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SKELQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q" ],
+"sheetWidth": 773.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

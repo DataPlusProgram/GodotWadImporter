@@ -1,0 +1,218 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "SPIDA5D5",
+"ne": "",
+"nw": "SPIDA4A6",
+"s": "SPIDA1D1",
+"se": "",
+"sw": "SPIDA2A8",
+"w": "SPIDA3A7"
+},
+"B": {
+"e": "",
+"n": "SPIDB5E5",
+"ne": "",
+"nw": "SPIDB4B6",
+"s": "SPIDB1E1",
+"se": "",
+"sw": "SPIDB2B8",
+"w": "SPIDB3B7"
+},
+"C": {
+"e": "",
+"n": "SPIDC5F5",
+"ne": "",
+"nw": "SPIDC4C6",
+"s": "SPIDC1F1",
+"se": "",
+"sw": "SPIDC2C8",
+"w": "SPIDC3C7"
+},
+"D": {
+"e": "",
+"n": "SPIDA5D5_flipped",
+"ne": "",
+"nw": "SPIDD4D6",
+"s": "SPIDA1D1_flipped",
+"se": "",
+"sw": "SPIDD2D8",
+"w": "SPIDD3D7"
+},
+"E": {
+"e": "",
+"n": "SPIDB5E5_flipped",
+"ne": "",
+"nw": "SPIDE4E6",
+"s": "SPIDB1E1_flipped",
+"se": "",
+"sw": "SPIDE2E8",
+"w": "SPIDE3E7"
+},
+"F": {
+"e": "SPIDF3F7",
+"n": "SPIDC5F5_flipped",
+"ne": "SPIDF3F7",
+"nw": "SPIDF4F6",
+"s": "SPIDC1F1_flipped",
+"se": "",
+"sw": "",
+"w": ""
+},
+"G": {
+"e": "",
+"n": "SPIDG5",
+"ne": "",
+"nw": "SPIDG4G6",
+"s": "SPIDG1",
+"se": "",
+"sw": "SPIDG2G8",
+"w": "SPIDG3G7"
+},
+"H": {
+"e": "",
+"n": "SPIDH5",
+"ne": "",
+"nw": "SPIDH4H6",
+"s": "SPIDH1",
+"se": "",
+"sw": "SPIDH2H8",
+"w": "SPIDH3H7"
+},
+"I": {
+"e": "SPIDI7",
+"n": "SPIDI5",
+"ne": "SPIDI6",
+"nw": "SPIDI4",
+"s": "SPIDI1",
+"se": "SPIDI8",
+"sw": "SPIDI2",
+"w": "SPIDI3"
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SPIDS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S" ],
+"sheetWidth": 842.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

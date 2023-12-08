@@ -1,0 +1,60 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"-1": {
+"3": "",
+"4": "",
+"category": "weapons",
+"name": "Spiked gauntlets",
+"sourceScene": ""
+},
+"1": {
+"3": "",
+"4": "",
+"category": "",
+"name": "",
+"sourceScene": ""
+},
+"2": {
+"3": "",
+"4": "",
+"category": "",
+"name": "",
+"sourceScene": ""
+},
+"3": {
+"3": "",
+"4": "",
+"category": "",
+"name": "",
+"sourceScene": ""
+},
+"4": {
+"3": "",
+"4": "",
+"category": "",
+"name": "",
+"sourceScene": ""
+},
+"meta": {
+"colNames": [ "name", "sourceScene", "category", "3", "4" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "-1", "1", "2", "3", "4" ],
+"sheetWidth": 1108.0,
+"splitSize": {
+0: 0,
+1: 94,
+2: 24,
+3: 0,
+4: 0
+}
+}
+}

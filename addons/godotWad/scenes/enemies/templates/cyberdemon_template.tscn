@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/cyberDemonSprites.tres" type="Resource" id=2]
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 6.045, 3.41 )
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 35, 55, 35 )
+
+[node name="Cyberdemon" instance=ExtResource( 1 )]
+initialHP = 4000.0
+npcName = "Cyberdemon"
+height = 110.0
+thickness = 35.0
+painChance = 0.055
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource( 2 )
+
+[node name="CollisionShape" parent="." index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 55, 0 )
+shape = SubResource( 1 )
+
+[node name="cast" parent="." index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 88, 0 )
+
+[node name="Generator" parent="." index="7"]
+sprites = ExtResource( 2 )
+idle = "AB"
+chase = "ABCD"
+attack = "EFEFEF"
+hurt = "G"
+dying = "HIJKLMNOP"
+deathSounds = [ "DSCYBDTH" ]
+painSounds = [ "DSDMPAIN" ]
+attackSounds = [  ]
+alertSounds = [ "DSCYBSIT" ]
+entityDepends = [ "rocket" ]
+
+[node name="VisibilityNotifier" parent="." index="9"]
+aabb = AABB( -1, 0, -1, 2, 110, 2 )
+
+[editable path="AnimatedSprite3D"]

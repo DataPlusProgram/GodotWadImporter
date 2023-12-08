@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/arachnotronSprites.tres" type="Resource" id=1]
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=2]
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 1.271, 2.263 )
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 64, 32, 64 )
+
+[node name="arachnotron" instance=ExtResource( 2 )]
+initialHP = 500.0
+npcName = "arachnotron"
+height = 64.0
+thickness = 64.0
+projectile = "spider_plasma"
+meleeRange = -1.0
+projectileRange = 8.0
+continuousFire = true
+painChance = 0.5
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource( 2 )
+
+[node name="CollisionShape" parent="." index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0 )
+shape = SubResource( 1 )
+
+[node name="cast" parent="." index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51.2, 0 )
+
+[node name="Generator" parent="." index="7"]
+sprites = ExtResource( 1 )
+idle = "AB"
+chase = "AABBCCDDEEFF"
+melee = "GHH"
+hurt = "II"
+dying = "JKLMNOP"
+deathSounds = [ "DSBSPDTH" ]
+painSounds = [ "DSDMPAIN" ]
+attackSounds = [ "DSPLASMA " ]
+alertSounds = [ "DSBSPSIT" ]
+
+[node name="VisibilityNotifier" parent="." index="9"]
+aabb = AABB( -1, 0, -1, 2, 64, 2 )
+
+[editable path="AnimatedSprite3D"]

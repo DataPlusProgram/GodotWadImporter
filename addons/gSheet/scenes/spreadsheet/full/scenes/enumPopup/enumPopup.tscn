@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/spreadsheet/full/scenes/enumPopup/enumPopup.gd" type="Script" id=1]
+
+[node name="enumPopup" type="WindowDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -783.0
+margin_bottom = -330.0
+window_title = "select ENUM"
+script = ExtResource( 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_left = 0.024
+anchor_top = 0.022
+anchor_right = 0.961
+anchor_bottom = 0.974
+margin_left = 0.0799999
+margin_top = 0.0599995
+margin_right = -0.00500488
+margin_bottom = 0.019989
+
+[node name="ItemList" type="ItemList" parent="VBoxContainer"]
+margin_right = 225.0
+margin_bottom = 233.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 237.0
+margin_right = 225.0
+margin_bottom = 257.0
+alignment = 1
+
+[node name="select" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 58.0
+margin_right = 109.0
+margin_bottom = 20.0
+disabled = true
+text = "select"
+
+[node name="cancel" type="Button" parent="VBoxContainer/HBoxContainer"]
+margin_left = 113.0
+margin_right = 166.0
+margin_bottom = 20.0
+text = "cancel"
+
+[connection signal="item_activated" from="VBoxContainer/ItemList" to="." method="_on_ItemList_item_activated"]
+[connection signal="item_selected" from="VBoxContainer/ItemList" to="." method="_on_ItemList_item_selected"]
+[connection signal="nothing_selected" from="VBoxContainer/ItemList" to="." method="_on_ItemList_nothing_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/select" to="." method="_on_select_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/cancel" to="." method="_on_Button2_pressed"]

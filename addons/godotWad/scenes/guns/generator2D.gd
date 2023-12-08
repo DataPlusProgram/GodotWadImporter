@@ -16,6 +16,8 @@ var loader
 var initialized = false
 var animationPlayer : AnimationPlayer
 var animatedSprite : AnimatedSprite3D
+var scaleFactor = 1
+
 func _ready():
 	
 	
@@ -41,7 +43,7 @@ func initialize(toDisk=true):
 	animatedSprite = AnimatedSprite3D.new()
 	animatedSprite.frames = SpriteFrames.new()
 	
-	animatedSprite.pixel_size = 0.002
+	animatedSprite.pixel_size = 0.002 * scaleFactor
 	
 	animatedSprite.name = "AnimatedSprite"
 	animationPlayer.name = "AnimationPlayer"
@@ -78,8 +80,7 @@ func initSprites():
 	
 	for s in allSprites.size():
 		
-		
-		var sprite : Texture = loader.fetchPatch(allSprites[s])
+		var sprite : Texture = loader.fetchDoomGraphic(allSprites[s])
 	
 		if sprite == null:
 			print("missing srpite:",allSprites[s]," for weapon ",get_parent().weaponName)
@@ -88,10 +89,8 @@ func initSprites():
 		
 		
 		if loader.get_parent().textureFiltering == false: 
-			#print("texture filtering false")
 			sprite.flags -= Texture.FLAG_FILTER
-		#else:
-		#	print("texture filtering true")
+
 		if loader.get_parent().mipMaps == loader.get_parent().MIP.OFF:
 			sprite.flags -= Texture.FLAG_MIPMAPS
 	
@@ -101,7 +100,7 @@ func initSprites():
 		
 
 
-func createAnim(animName,startIndex,numSprites,dur):
+func createAnim(animName,startIndex,numSprites,dur:float):
 	if numSprites == 0:
 		return
 	
@@ -126,8 +125,8 @@ func createBringDown():
 	anim.length = 0.25
 	anim.track_set_path(0,"AnimatedSprite:offset")
 	
-	anim.track_insert_key(0,0,Vector2.ZERO)
-	anim.track_insert_key(0,anim.length,Vector2(0,-50))
+	anim.track_insert_key(0,0,Vector3.ZERO)
+	anim.track_insert_key(0,anim.length,Vector3(0,-50,0))
 	
 	var e = animationPlayer.add_animation("bringDown",anim)
 
@@ -138,14 +137,13 @@ func createBringUp():
 	anim.length = 0.25
 	anim.track_set_path(0,"AnimatedSprite:offset")
 	
-	anim.track_insert_key(0,0,Vector2(0,-50))
-	anim.track_insert_key(0,anim.length,Vector2.ZERO)
+	anim.track_insert_key(0,0,Vector3(0,-50,0))
+	anim.track_insert_key(0,anim.length,Vector3.ZERO)
 	
 	var e = animationPlayer.add_animation("bringUp",anim)
 
 
 func initSounds():
-	
 	
 	var arr = []
 	

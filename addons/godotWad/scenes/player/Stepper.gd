@@ -42,13 +42,12 @@ func setRays(val):
 
 	
 # Called every frame. 'deVector3(0,0,-colShape.radius*1.1)ta' is the elapsed time since the previous frame.
-func _process(delta):
+func _physics_process(delta):
 	
 	while footRay.is_colliding() and !kneeRay.is_colliding() and $"../..".inputVelo.length_squared() != 0 and grandparent.is_on_floor(): 
 		$"../..".translation.y += 0.1
 		footRay.force_raycast_update()
 		kneeRay.force_raycast_update()
-		#print(diffRay.get_collision_point())
-		#$"../..".translation.y +=  (-0.5*-colShape.height) - diffRay.get_collision_point().y #+ 0.01
+		
 
 	pass

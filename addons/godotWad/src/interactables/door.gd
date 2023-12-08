@@ -14,161 +14,306 @@ enum STATE{
 }
 
 export(int) var type
-export(Dictionary) var info
-var endHeight
 var active = false
 export var speed = 2
-export(DIR) var dir
+export(DIR) var direction
 var state 
-var change = 0
-var floorNode
-var kinematicIgnore = []
+var cast : ShapeCast = null
 var animTextures = []
 export(String) var floorPath
 export(WADG.TTYPE) var triggerType
 export(String) var animMeshPath = ""
+export(Array) var targets = []
+export(Dictionary) var sectorInfo = {}
+export(float) var globalScale = 0.05
+export(bool) var stayOpen = false
+export(String) var keyType = 9
 
+
+var topH;
+var bottomH;
+var switchCooldown = 0
+var ceiling = null
+var floorNode = null
 export(int) var waitClose = -1
-# Called when the node enters the scene tree for the first time.
+export(int) var waitOpen = -1
+
+
+var overlappingBodies = []
+var overlappingBodiesActivated = []
+var targetNodes = []
+var curH : float = 0
+var nodeInitial = []
+var yInitial = 0
 func _ready():
+	
+	
+	if !get_parent().has_meta("curH"):
+		get_parent().set_meta("curH",0)
+	
+	speed *= globalScale.y
+	get_parent().set_meta("curH",sectorInfo["ceilingHeight"]) 
 
-	info["targetNodes"] = []
-	
-	
-	if dir == DIR.UP:
-		endHeight = info["sectorInfo"]["lowestNeighCeilExc"] - 4
-		info["curY"] = info["sectorInfo"]["ceilingHeight"]
+	topH = sectorInfo["lowestNeighCeilExc"] - 4*globalScale.y
+	bottomH = sectorInfo["floorHeight"] 
+	yInitial = sectorInfo["ceilingHeight"]
 		
-	elif dir == DIR.DOWN:
-		endHeight = info["sectorInfo"]["floorHeight"] 
-		info["curY"] = info["sectorInfo"]["ceilingHeight"]
-	
 
-
-	for t in info["targets"]:
+	for t in targets:
 		var mapNode = get_parent().get_parent().get_parent()
 		var node = mapNode.get_node(t)
 		
-		
-		if node.get_parent().get_class() == "KinematicBody":
-			kinematicIgnore.append(node.get_parent())
 			
-		if node.has_meta("ceil"): info["targetNodes"].append(node)
+		if node.has_meta("ceil"): 
+			if node.get_class() != "StaticBody":
+				ceiling = node
+				targetNodes.append(node)
+				nodeInitial.append(node.translation)
+			
+			
 		elif node.has_meta("type"):
 			if node.get_meta("type") == "upper": 
-				info["targetNodes"].append(node)
+				targetNodes.append(node)
+				nodeInitial.append(node.translation)
 				
 	
 	
 	animTextures = $"../../../".getAnimTextures(self,animMeshPath)
 	
 	var mapNode = get_parent().get_parent().get_parent()
-	floorNode = mapNode.get_node(floorPath)
+
+	if ceiling != null:
+		var s = OS.get_system_time_msecs()
+		cast = WADG.createCastShapeForBody(ceiling.get_child(0),-Vector3(0,0.1,0))
+		WADG.incTimeLog(get_tree(),"castShapes",s)
 	
-	if dir == WADG.DIR.UP: state = STATE.CLOSED
-	if dir == WADG.DIR.DOWN: state = STATE.OPEN
+	if direction == WADG.DIR.UP: state = STATE.CLOSED
+	if direction == WADG.DIR.DOWN: state = STATE.OPEN
+
+
+
+
 	
 
+func bin(body):
+	if body.get_class() == "StaticBody": return
+	
+	
+	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
+		if !"interactPressed" in body:
+			return
+	
+	if !overlappingBodies.has(body):
+		overlappingBodies.append(body)
+
+func bout(body):
+	
+	if overlappingBodies.has(body):
+		overlappingBodies.erase(body)
+		overlappingBodiesActivated.erase(body)
 
 func _physics_process(delta):
+	switchCooldown = max(0,switchCooldown-delta)
 	
+	if cast != null:
+		if state == STATE.OPENING or state == STATE.CLOSING: 
+			cast.enabled = true
+			cast.force_shapecast_update()
+		else:
+			cast.enabled = false
 	
-	if state == STATE.CLOSING:
-		for i in info["targetNodes"]:
+		for i in cast.get_collision_count():
+			var normal = WADG.normalToDegree(cast.get_collision_normal(i))
+			var parent = cast.get_collider(i).get_parent()
+			#if !parent.has_meta("floor")
+
+			if cast.get_collider(i).get_class() != "StaticBody":
+				var a= parent.has_meta("type")
+				var b = parent.has_meta("floor")
+				var t = parent.get_meta_list()
+				if state == STATE.CLOSING:
+					state = STATE.OPENING
 		
-			var stopper : Area = i.get_node_or_null("area")
-			
-			if stopper != null:
-				for col in stopper.get_overlapping_bodies():
-					if col.get_class() == "KinematicBody":
-						var par = col.get_parent()
-						if !col.has_meta("env"):
-							if state == STATE.CLOSING:
-								state = STATE.OPENING
-							
-						
-				
-				for body in stopper.get_overlapping_bodies():
-					print(body.name)
-	
-	if get_node_or_null("trigger") != null:# X1 triggers will get deleted after first trigger
-		for c in get_children():
-			if c.get_class() == "Area":
-				for body in c.get_overlapping_bodies():
-					bodyIn(body)
-	
-	#for body in get_node("trigger").get_overlapping_bodies():
+		#print(normal)
 		
 	
-	if state == STATE.CLOSED:
-		return
+	for i in overlappingBodies:
+		bodyIn(i)
+	
+	curH = getCurH()
+	
+	
 	
 	if state == STATE.OPENING:
-		if info["curY"] < endHeight:
-			info["curY"] += speed
-			change += speed
-		
-			for node in info["targetNodes"]:
-				if node.get_parent().get_class() != "Spatial":
-					node.get_parent().translation.y += speed
-					#node.get_parent().move_and_slide(Vector3(0,-speed,0))
-				else:
-					node.translation.y += speed
-				#	print(node.name)
-				#node.translation.y += speed
+		if curH < topH:
+			incCurH(speed)
+			curH+=speed
+			changeNodesY(targetNodes,speed)
 				
-		if info["curY"] >= endHeight:
+		if curH >= topH:
 			state = STATE.OPEN
+
 			
 			if waitClose != -1:
 				yield(get_tree().create_timer(waitClose),"timeout")
 				state = STATE.CLOSING
+				
+				if get_node_or_null("closeSound")!= null: 
+					get_node("closeSound").play()
+				return
+
 			
 				
 	if state == STATE.CLOSING:
-		if info["curY"] > info["sectorInfo"]["floorHeight"]:
-			info["curY"] -= speed
-			
-			for node in info["targetNodes"]:
-				if node.get_parent().get_class() != "Spatial":
-					node.get_parent().translation.y -= speed
-					#node.get_parent().move_and_slide(Vector3(0,-speed,0))
-				else:
-					node.translation.y -= speed
+		if curH > bottomH:
+			incCurH(-speed)
+			curH-=speed
+			changeNodesY(targetNodes,-speed)
 		
-		if info["curY"] <= info["sectorInfo"]["floorHeight"]:
+		if curH  <= bottomH:
 			state = STATE.CLOSED
 
+			if waitOpen != -1:
+				yield(get_tree().create_timer(waitOpen),"timeout")
+				state = STATE.OPENING
+				
+				playOpen()
+				return
+		
+	if curH <= bottomH: 
+		state = STATE.CLOSED
+			
+	if curH >= topH: 
+		state = STATE.OPEN
+
+		
+	if state == STATE.CLOSED or state == STATE.CLOSED: 
+		get_parent().set_meta("curOwner",null)
 
 
 func bodyIn(body):
-	if !"interactPressed" in body:
+	
+	if overlappingBodiesActivated.has(body):
+		return  
+		
+	if keyType < 4:
+		if !doesBodyHaveKey(body):
+			return
+	
+	if get_parent().has_meta("curOwner"):
+		if get_parent().get_meta("curOwner") != self:
+			return
+	
+	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
+		if body.interactPressed == false:
+			return
+	
+	
+	
+	if switchCooldown > 0:
 		return
 	
-	var par = body.get_parent()
-	if body.get_class() != "StaticBody" and !body.has_meta("env"):#!info["targetParents"].has(body.get_parent()):
-		if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
-			if "interactPressed" in body:
-				if body.interactPressed == false:
-					return
-			else:
-				return
-		
-		for i in animTextures:
-			i.current_frame = 1
-		
-		if state == STATE.OPEN: 
-			state = STATE.CLOSING
-			if get_node_or_null("closeSound")!= null: 
-				get_node("closeSound").play()
-					
-		elif state == STATE.CLOSED: 
-			state = STATE.OPENING
-			if get_node_or_null("openSound")!= null: 
-				get_node("openSound").play()
-				
-		if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.WALK1: 
-			for i in get_children():
-				if i.get_class() == "Area":
-					i.queue_free()
 	
+	switchCooldown = 1
+	
+	if get_node_or_null("buttonSound") != null:
+		if getCurH() <= bottomH or getCurH() >= topH:
+			get_node("buttonSound").play()
+	
+	for i in animTextures:
+		var t = (i.current_frame+1)%2
+		i.current_frame = (i.current_frame+1)%2
+
+
+	if !body.is_in_group("player") and !("interactPressed" in body):
+		return 
+		
+	if !overlappingBodiesActivated.has(body):
+		overlappingBodiesActivated.append(body)
+		activate()
+	
+	
+	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.WALK1: 
+		for i in get_children():
+			if i.get_class() == "Area":
+				i.queue_free()
+
+	
+
+func activate():
+	
+	
+	#if sectorInfo["index"] == 53:
+	#	breakpoint
+	
+	
+	if state == STATE.OPEN and stayOpen == false:# and direction == DIR.DOWN: #if open and is a closer and !stayOpen -> close
+		state = STATE.CLOSING
+		
+		if !get_parent().has_meta("curOwner"): 
+			get_parent().set_meta("curOwner",self)
+		
+		playClosed()
+					
+	elif state == STATE.CLOSED and direction == DIR.UP: #if closed and is an opener -> open
+		
+		if getCurH() < topH:
+			
+			if !get_parent().has_meta("curOwner"): 
+				get_parent().set_meta("curOwner",self)
+			
+			state = STATE.OPENING
+			playOpen()
+			
+func changeNodesY(nodes,amt):
+	for node in nodes:
+		if node.get_parent().get_class() != "Spatial":
+			node.get_parent().translation.y += amt
+		else:
+			node.translation.y += amt
+			
+func setNodesY(nodes,value):
+	for nIdx in nodes.size():
+		var node = nodes[nIdx]
+		
+		if node.get_parent().get_class() != "Spatial":
+			node.get_parent().translation.y = value
+		else:
+		
+			var t= yInitial - value
+			node.translation.y = nodeInitial[nIdx].y - t
+	
+func getCurH():
+	return get_parent().get_meta("curH")
+	
+	
+func incCurH(amt):
+	var curH = getCurH()
+	get_parent().set_meta("curH",curH+amt)
+	
+
+func playOpen():
+	if get_node_or_null("openSound")!= null: 
+		get_node("openSound").play()
+		
+func playClosed():
+	if get_node_or_null("closeSound")!= null: 
+		get_node("closeSound").play()
+	
+func doesBodyHaveKey(body):
+	if "inventory" in body:
+		var bodyInventory = body.inventory
+			
+		var keyNames = WADG.keyNunmberToNameArr(keyType)
+		var ret = true
+		for i in keyNames:
+			if i in bodyInventory:
+				if bodyInventory[i]["count"] > 0:
+					ret = false
+		if ret: return false
+	else:
+		return false
+		
+	return true
+ 
+

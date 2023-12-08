@@ -18,6 +18,7 @@ var flickerTypes = [1,2,3,4,8,12,13,17]
 
 
 func _ready():
+	var node = get_node(meshPath)
 	var mesh : ArrayMesh = get_node(meshPath).mesh 
 	for i in mesh.get_surface_count():
 		
@@ -65,19 +66,4 @@ func _physics_process(delta):
 		for i in matsInSector:
 			i.set_shader_param("tint",Color(curValue/256.0,curValue/256.0,curValue/256.0))
 
-
-func fetchMat(origMat):
-	var par = get_parent()
-	
-	if !par.has_meta("matList"):
-		var dict = {}
-		par.set_meta("matList",dict)
-
-	var dict = par.get_meta("matList")
-	
-	if !dict.has(origMat):
-		dict[origMat] = origMat.duplicate()
-		par.set_meta("matList",dict)
-	
-	return dict[origMat]
 	

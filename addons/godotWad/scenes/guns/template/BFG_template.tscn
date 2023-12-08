@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/guns/template/gunbase_template.tscn" type="PackedScene" id=1]
+
+[sub_resource type="QuadMesh" id=1]
+size = Vector2( 1.271, 1.767 )
+
+[node name="BFG" instance=ExtResource( 1 )]
+weaponName = "BFG"
+category = 6
+ammoType = "plasma"
+ammoConsumedPerShot = 40
+
+[node name="AnimatedSprite3D" parent="." index="1"]
+mesh = SubResource( 1 )
+
+[node name="AudioStreamPlayer3D" parent="." index="2"]
+unit_db = 100.0
+
+[node name="Generator" parent="." index="4"]
+idleSpriteNames = [ "BFGGA0" ]
+shootSpriteNames = [ "BFGGB0", "BFGGC0" ]
+worldSprite = "BFUGA0"
+fireSounds = [ "DSBFG" ]
+entityDepends = [ "BFG_bomb" ]

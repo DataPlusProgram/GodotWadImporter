@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/revenantSprites.tres" type="Resource" id=1]
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=2]
+
+[sub_resource type="QuadMesh" id=2]
+size = Vector2( 1.271, 2.263 )
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 20, 28, 20 )
+
+[node name="npc" instance=ExtResource( 2 )]
+initialHP = 300.0
+height = 56.0
+painChance = 0.398
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource( 2 )
+
+[node name="CollisionShape" parent="." index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0 )
+shape = SubResource( 1 )
+
+[node name="cast" parent="." index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0 )
+
+[node name="Generator" parent="." index="7"]
+sprites = ExtResource( 1 )
+idle = "AB"
+chase = "AABBCCDDEEFF"
+attack = "JJKK"
+melee = "GGHI"
+hurt = "LL"
+dying = "LMNOPQ"
+attackSounds = [  ]
+meleeSounds = [ "DSSKEPCH" ]
+entityDepends = [ "revenant_missile" ]
+
+[node name="VisibilityNotifier" parent="." index="9"]
+aabb = AABB( -1, 0, -1, 2, 56, 2 )
+
+[editable path="AnimatedSprite3D"]

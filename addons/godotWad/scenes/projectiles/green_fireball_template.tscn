@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/projectiles/projectileBase.tscn" type="PackedScene" id=1]
+
+[node name="Fireball" instance=ExtResource( 1 )]
+collision_layer = 0
+collision_mask = 0
+
+[node name="Generator" parent="." index="4"]
+front = [ "BAL7A1A5", "BAL7B1B5" ]
+frontLeft = [ "BAL7A2A8", "BAL7B2B8" ]
+left = [ "BAL7A3A7", "BAL7B3B7" ]
+backLeft = [ "BAL7A4A6", "BAL7B4B6" ]
+back = [  ]
+backRight = [  ]
+right = [  ]
+frontRight = [  ]
+explosion = [ "BAL7C0", "BAL7D0", "BAL7E0" ]
+explosionSound = "DSFIRXPL"
+sizeIncrease = 2.0

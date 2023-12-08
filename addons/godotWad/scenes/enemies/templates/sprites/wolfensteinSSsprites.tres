@@ -1,0 +1,248 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "SSWVA7",
+"n": "SSWVA5",
+"ne": "SSWVA6",
+"nw": "SSWVA4",
+"s": "SSWVA1",
+"se": "SSWVA8",
+"sw": "SSWVA2",
+"w": "SSWVA3"
+},
+"B": {
+"e": "SSWVB7",
+"n": "SSWVB5",
+"ne": "SSWVB6",
+"nw": "SSWVB4",
+"s": "SSWVB1",
+"se": "SSWVB8",
+"sw": "SSWVB2",
+"w": "SSWVB3"
+},
+"C": {
+"e": "SSWVC7",
+"n": "SSWVC5",
+"ne": "SSWVC6",
+"nw": "SSWVC4",
+"s": "SSWVC1",
+"se": "SSWVC8",
+"sw": "SSWVC2",
+"w": "SSWVC3"
+},
+"D": {
+"e": "SSWVD7",
+"n": "SSWVD5",
+"ne": "SSWVD6",
+"nw": "SSWVD4",
+"s": "SSWVD1",
+"se": "SSWVD8",
+"sw": "SSWVD2",
+"w": "SSWVD3"
+},
+"E": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVE0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"F": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVF0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"G": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVG0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"H": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVH0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVT0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"U": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVU0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"V": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "SSWVV0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" ],
+"sheetWidth": 678.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

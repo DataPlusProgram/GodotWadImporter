@@ -1,0 +1,228 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"A": {
+"e": "",
+"n": "FATTA4A6",
+"ne": "FATTA5",
+"nw": "FATTA3A7",
+"s": "FATTA1",
+"se": "",
+"sw": "FATTC2C8",
+"w": "FATTA2A8"
+},
+"B": {
+"e": "",
+"n": "FATTB5",
+"ne": "",
+"nw": "FATTB4B6",
+"s": "FATTB1",
+"se": "",
+"sw": "FATTB2B8",
+"w": "FATTB3B7"
+},
+"C": {
+"e": "",
+"n": "FATTC5",
+"ne": "",
+"nw": "FATTC4C6",
+"s": "FATTC1",
+"se": "",
+"sw": "FATTC2C8",
+"w": "FATTC3C7"
+},
+"D": {
+"e": "",
+"n": "FATTD5",
+"ne": "",
+"nw": "FATTD4D6",
+"s": "FATTD1",
+"se": "",
+"sw": "FATTD2D8",
+"w": "FATTD3D7"
+},
+"E": {
+"e": "",
+"n": "FATTE5",
+"ne": "",
+"nw": "FATTE4E6",
+"s": "FATTE1",
+"se": "",
+"sw": "FATTE2E8",
+"w": "FATTE3E7"
+},
+"F": {
+"e": "",
+"n": "FATTF5",
+"ne": "",
+"nw": "FATTF4F6",
+"s": "FATTF1",
+"se": "",
+"sw": "FATTF2F8",
+"w": "FATTF3F7"
+},
+"G": {
+"e": "",
+"n": "FATTG5",
+"ne": "",
+"nw": "FATTG4G6",
+"s": "FATTG1",
+"se": "",
+"sw": "FATTG2G8",
+"w": "FATTG3G7"
+},
+"H": {
+"e": "",
+"n": "FATTH5",
+"ne": "",
+"nw": "FATTH4H6",
+"s": "FATTH1",
+"se": "",
+"sw": "FATTH2H8",
+"w": "FATTH3H7"
+},
+"I": {
+"e": "",
+"n": "FATTI5",
+"ne": "",
+"nw": "FATTI4I6",
+"s": "FATTI1",
+"se": "",
+"sw": "FATTI2I8",
+"w": "FATTI3I7"
+},
+"J": {
+"e": "FATTJ7",
+"n": "FATTJ5",
+"ne": "FATTJ6",
+"nw": "FATTJ4",
+"s": "FATTJ1",
+"se": "FATTJ8",
+"sw": "FATTJ2",
+"w": "FATTJ3"
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTN0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "FATTT0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T" ],
+"sheetWidth": 695.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

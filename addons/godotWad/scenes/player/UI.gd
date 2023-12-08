@@ -11,15 +11,17 @@ func _ready():
 	pass # Replace with function body.
 
 
-func _input(ev):
-	if Input.is_key_pressed(KEY_K):
-		print("i")
-		visible = !visible
+func _input(event):
+	
+	if event.type == InputEvent.KEY:
+		if event.scancode == KEY_W && event.pressed == false:
+			visible = !visible
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if !visible:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		pass
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-#	pass
+	pass

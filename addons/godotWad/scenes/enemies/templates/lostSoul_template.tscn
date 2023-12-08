@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/lostSoulSprites.tres" type="Resource" id=2]
+
+[sub_resource type="QuadMesh" id=4]
+size = Vector2( 1.364, 1.457 )
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 10, 10, 10 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 10, 0.05, 10 )
+
+[node name="LostSoul" instance=ExtResource( 1 )]
+initialHP = 100.0
+deleteOnDeath = true
+painChance = 1.0
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource( 4 )
+
+[node name="CollisionShape" parent="." index="3"]
+shape = SubResource( 1 )
+
+[node name="Generator" parent="." index="7"]
+sprites = ExtResource( 2 )
+idle = "AB"
+chase = "AB"
+melee = "CDCD"
+hurt = "E"
+dying = "FGHIJK"
+deathSounds = [ "DSFIRXPL" ]
+painSounds = [ "DSDMPAIN" ]
+alertSounds = [  ]
+
+[node name="footCast" parent="." index="8"]
+shape = SubResource( 3 )
+target_position = Vector3( 0, -0.1, 0 )
+
+[editable path="AnimatedSprite3D"]

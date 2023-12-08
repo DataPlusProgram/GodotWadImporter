@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/projectiles/projectileBase.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/godotWad/scenes/projectiles/cusotmHit.gd" type="Script" id=2]
+
+[node name="Missile" instance=ExtResource( 1 )]
+dmg = 40
+
+[node name="Generator" parent="." index="4"]
+front = [ "FATBA1", "FATBB1" ]
+frontLeft = [ "FATBA2A8", "FATBB2B8" ]
+left = [ "FATBA3A7", "FATBB3B7" ]
+backLeft = [ "FATBA4A6", "FATBB4B6" ]
+back = [ "FATBA5", "FATBB5" ]
+backRight = [  ]
+right = [  ]
+frontRight = [  ]
+explosion = [ "FBXPA0", "FBXPB0", "FBXPC0" ]
+spawnSound = "DSSKEATK"
+sizeIncrease = 0.2
+
+[node name="cusotmHit" type="Node" parent="." index="6"]
+script = ExtResource( 2 )

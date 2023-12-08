@@ -1,0 +1,42 @@
+tool
+extends Node
+
+
+
+func initialize(wadArr = [],gameName = "gameName"):
+	pass
+	
+func getReqDirs():
+	return ["textures","materials","sounds","sprites","entities","fonts","maps"]
+
+
+func getConfigs():
+	return ["gameName"]
+
+
+func getReqs(configName):
+	var base = {
+		"UIname" : "gameName:",
+		"required" : true,
+		"ext" : ".",
+		"multi" : false,
+		"fileNames" : ["gameName.txt"],
+		"hints" : ["Program Files,gameName"]
+	}
+	
+	if configName == "gameName": 
+		return [base]
+	
+
+func getAll():
+	var ent = []
+	var maps = []
+	var sounds = []
+	return {"entities":ent,"maps":maps,"sounds":sounds}
+
+func createEntityResourcesOnDisk(entStr,editorInteface):
+	pass
+
+
+func createMapResourcesOnDisk(mapname,editorInteface):
+	pass

@@ -4,6 +4,8 @@ extends Node
 
 var primitiveType = Mesh.PRIMITIVE_TRIANGLES
 
+var meshScale = Vector3.ONE
+
 func _ready():
 	set_meta("hidden",true)
 
@@ -29,18 +31,17 @@ func seperateByTexture(arr):
 
 	
 
-func merge(arr,geomNode):
-	for sector in arr.keys():#we have array of walls grouped by sector. for every sector:
-		mergeSector(arr[sector],sector,geomNode)#merge all of sector
-	
+func merge(sectorToSides,geomNode,mapName):
+	for sector in sectorToSides.keys():#we have array of walls grouped by sector. for every sector:
+		mergeSector(sectorToSides[sector],sector,geomNode,mapName)#merge all of sector
 
-func mergeSector(arr,sectorIdx,geomNode):
+func mergeSector(arr,sectorIdx,geomNode,mapName):
+	
 	var textureGroup
-	var textureGroupSolid
-	var textureGroupShootThrough
+	var ceilFloorFlag = false
+	
 	if typeof(arr) != TYPE_DICTIONARY:
 		textureGroup = seperateByTexture(arr)#we create of dict of each unique texture along with their corresponding walls
-		
 	else:
 		textureGroup = arr
 		
@@ -55,8 +56,8 @@ func mergeSector(arr,sectorIdx,geomNode):
 			if i%2 != 0: dictB[textureNames[i]] = textureGroup[textureNames[i]]
 			
 		
-		mergeSector(dictA,sectorIdx,geomNode)
-		mergeSector(dictB,sectorIdx,geomNode)
+		mergeSector(dictA,sectorIdx,geomNode,mapName)
+		mergeSector(dictB,sectorIdx,geomNode,mapName)
 		return
 		
 	#we can only have one light level per sector
@@ -64,30 +65,35 @@ func mergeSector(arr,sectorIdx,geomNode):
 	var runningMesh = ArrayMesh.new()#this is the final mesh which will have sub surf for each material
 	var runningSolid  = ArrayMesh.new()
 	var runningShootThrough = ArrayMesh.new()
+	
+	
 	var sectors = $"../LevelBuilder".sectors
 	var sectorNode = null
+	
 	surf.begin(primitiveType)
 	
 	var meshInstance = MeshInstance.new()
-	meshInstance.name = "merged sector " + String(sectorIdx)
 	meshInstance.set_meta("sectorIdx",sectorIdx)
 	var t = sectors[sectorIdx]
-	sectorNode = textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough)
-	
-	#var meshInstancePath = get_parent().get_path() + "/merged sector " + String(sectorIdx)
-	
-	if get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR:
-		addFloorAndCeilingToMesh(runningMesh,sectorNode,sectorIdx,false,true,meshInstance)
-		addFloorAndCeilingToMesh(runningSolid,sectorNode,sectorIdx,true,false)
 
-	#var solidMeshInstance = MeshInstance.new()
-#	solidMeshInstance.mesh = runningSolid
+
 	
-	var solidBody = dumbFunc(runningSolid)
-	if solidBody == null:
-		return
-	solidBody.name = "solidCol"
+	sectorNode = textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough,mapName)
 	
+	if sectorNode == null:
+		print("missing sector node:",sectorIdx)
+		
+	
+	
+	var floorCeilOveride = false
+
+	
+	if get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR and !floorCeilOveride and sectorNode !=  null:
+			addFloorAndCeilingToMesh(runningMesh,sectorNode,sectorIdx,false,true,meshInstance)
+			addFloorAndCeilingToMesh(runningSolid,sectorNode,sectorIdx,true,false)
+
+	
+	var solidBody : StaticBody = dumbFunc(runningSolid)
 	var shootTroughBody = null
 
 	
@@ -95,42 +101,54 @@ func mergeSector(arr,sectorIdx,geomNode):
 	if runningShootThrough.get_surface_count() > 0:
 		shootTroughBody= dumbFunc(runningShootThrough)
 	
-	
+
+
 	if shootTroughBody != null:
 		shootTroughBody.name = "shootThroughCol"
 		shootTroughBody.collision_layer = 0
 	
 	
-	
+	if get_parent().unwrapLightmap:
+		runningMesh.lightmap_unwrap(Transform.IDENTITY,1.0)
 	
 	meshInstance.cast_shadow = MeshInstance.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 	meshInstance.use_in_baked_light = true
+	meshInstance.scale = meshScale
 	meshInstance.mesh = runningMesh
 	
-	meshInstance.set_meta("merged",true)
 	
+	meshInstance.set_meta("merged",true)
 	geomNode.add_child(meshInstance)
-	meshInstance.add_child(solidBody)
+	
+	if solidBody != null:
+		solidBody.name = "solidCol"
+		solidBody.set_collision_layer_bit(1,true)
+		
+		meshInstance.add_child(solidBody)
+
+	
 	if shootTroughBody != null:
 		meshInstance.add_child(shootTroughBody)
 	
-	#meshInstance.create_trimesh_collision()
 	
 
-func textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough):
+func textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough,mapName):
 	var sectorNode
 	for textureName in textureGroup.keys():
 		
 		var localSurf = SurfaceTool.new()
 		var localSolid = SurfaceTool.new()
+		var localNotSolid = SurfaceTool.new()
 		var localShootThrough = SurfaceTool.new()
 		
 		localSurf.begin(Mesh.PRIMITIVE_TRIANGLES)
 		localSolid.begin(Mesh.PRIMITIVE_TRIANGLES)
+		localNotSolid.begin(Mesh.PRIMITIVE_TRIANGLES)
 		localShootThrough.begin(Mesh.PRIMITIVE_TRIANGLES)
 		
 		var meshCenter = Vector3.ZERO
 		var mat
+		
 		for mesh in textureGroup[textureName]:
 			 meshCenter += getMeshCenter(mesh)
 			
@@ -141,26 +159,40 @@ func textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSoli
 		if textureName!=null:
 			if textureName != "F_SKY1":
 				text = textureGroup[textureName][0]["texture"]
-				mat = $"../ResourceManager".fetchMaterial(textureName,text,sectors[sectorIdx]["lightLevel"],0,1,0,true)
+				mat = $"../ResourceManager".fetchMaterial(textureName,text,sectors[sectorIdx]["lightLevel"],Vector2.ZERO,1,0,true)
 			else:
-				mat = $"../ResourceManager".createSkyMat(true)
+				mat = $"../ResourceManager".fetchSkyMat($"../ImageBuilder".getSkyboxTextureForMap(mapName),true)
+
 
 		
 		localSurf.set_material(mat)
+		
+		
 		for meshInfo in textureGroup[textureName]:#we keep appending to localSurf
 			createMesh(localSurf,meshInfo,meshCenter,mat,text)
 			
-			if meshInfo["colMask"] == 1:
+			if meshInfo["hasCol"] == false:
+				continue
+				
+				
+			elif meshInfo["colMask"] == 1:
 				createMesh(localSolid,meshInfo,meshCenter,mat,text)
 				
-			if meshInfo["colMask"] == 0:
+			elif meshInfo["colMask"] == 0:
 				createMesh(localShootThrough,meshInfo,meshCenter,mat,text)
+			
 				
 			sectorNode = meshInfo["sectorNode"]
 		
+		
+		
 		localSolid.commit(runningSolid)
 		localShootThrough.commit(runningShootThrough)
-		localSurf.commit(runningMesh)#then append localSurf to
+		
+		
+		
+		addToMeshWall(localSurf,runningMesh)
+		
 		
 		runningMesh.surface_set_name(runningMesh.get_surface_count()-1,textureName)
 		
@@ -189,7 +221,7 @@ func createMesh(localSurf,meshInfo,origin,mat,texture):
 
 func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,sideIndex,sector,textureName,localSurf,origin,mat):
 
-	
+	var scaleFactor = get_parent().scaleFactor
 	var height = ceilZ-floorZ 
 	var startUVy = 0
 	var startUVx = 0
@@ -198,7 +230,7 @@ func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,side
 	
 	
 	if texture != null:
-		var textureDim = texture.get_size()
+		var textureDim = texture.get_size()*Vector2(scaleFactor.x,scaleFactor.y)
 		endUVx = ((start-end).length()/textureDim.x)
 		if uvType == TEXTUREDRAW.TOPBOTTOM:
 			endUVy = height
@@ -216,11 +248,11 @@ func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,side
 			endUVy = startUVy+(ceilZ-floorZ)/textureDim.y
 	
 	 
-		startUVy += textureOffset.y / texture.get_height() 
-		endUVy += textureOffset.y / texture.get_height() 
+		startUVy += textureOffset.y / textureDim.y
+		endUVy += textureOffset.y / textureDim.y
 	
-		startUVx += textureOffset.x / texture.get_width() 
-		endUVx += textureOffset.x / texture.get_width() 
+		startUVx += textureOffset.x / textureDim.x
+		endUVx += textureOffset.x / textureDim.x
 	
 	var TL = Vector3(start.x,ceilZ,start.y)# - origin
 	var BL = Vector3(start.x,floorZ,start.y)# -origin
@@ -231,8 +263,6 @@ func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,side
 	var line2 = TL - BL
 	var normal = -line1.cross(line2).normalized()
 
-	#var subSurf = SurfaceTool.new()
-	#subSurf.set_material(mat)
 
 	localSurf.add_normal(normal)
 	localSurf.add_uv(Vector2(startUVx,startUVy))
@@ -259,9 +289,7 @@ func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,side
 	localSurf.add_uv(Vector2(startUVx,endUVy))
 	localSurf.add_vertex(BL)
 	
-	
-	#subSurf.commit(runningMesh)
-	
+
 	
 func getMeshCenter(meshDict):
 	var start = meshDict["start"]
@@ -273,6 +301,7 @@ func getFloorAndCeilingMesh(sectorNode):
 	var ceilingNode
 	
 	for i in sectorNode.get_children():
+		var x = i.name
 		if i.has_meta("ceil"): 
 			ceilingNode = i
 		if i.has_meta("floor"):
@@ -282,6 +311,13 @@ func getFloorAndCeilingMesh(sectorNode):
 	if ceilingNode == null : return null
 	
 	
+	if floorNode.has_meta("special"):
+		return null
+		
+	if ceilingNode.has_meta("special"):
+		return null
+	
+	var ml = floorNode.get_meta_list()
 	
 	var ceilingMat = ceilingNode.mesh.surface_get_material(0)
 	var floorMat = floorNode.mesh.surface_get_material(0)
@@ -305,16 +341,20 @@ func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenD
 	
 	var ceilingMesh = ret["ceilingMesh"]
 	var floorMesh = ret["floorMesh"]
+	
+	
+	
 	var surf = SurfaceTool.new()
 	
 	surf.set_material(ret["ceilingMat"])
-	surf.append_from(ceilingMesh,0,ret["ceilingTransform"])
+	addToMeshFlat(surf,mesh,ceilingMesh,ret["ceilingTransform"].origin)
 	
 	if delete:
 		ret["ceilingNode"].get_parent().remove_child(ret["ceilingNode"])
 		ret["ceilingNode"].queue_free()
 	
-	surf.commit(mesh)
+	#surf.commit(mesh)
+	
 	surf = SurfaceTool.new()
 	
 	for baseSector in mapDict["stairLookup"].keys():
@@ -323,10 +363,10 @@ func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenD
 			
 			
 	surf.set_material(ret["floorMat"])
+	addToMeshFlat(surf,mesh,floorMesh,ret["floorTransform"].origin)
+
+
 	var surfname = floorMesh.surface_get_name(0)
-	surf.append_from(floorMesh,0,ret["floorTransform"])
-	
-	surf.commit(mesh)
 	mesh.surface_set_name(mesh.get_surface_count()-1,surfname)
 	
 	if childrenDupe:
@@ -344,15 +384,71 @@ func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenD
 
 func dumbFunc(mesh):
 	var meshInstance = MeshInstance.new()
+	meshInstance.scale = meshScale
 	meshInstance.mesh = mesh
+	
 	meshInstance.create_trimesh_collision()
 	
 	if meshInstance.get_child_count() != 0:
 		var a = meshInstance.get_child(0)
+		
 		if a == null:
+			meshInstance.queue_free()
 			return
+		
+		
 		var t =a.duplicate()
+		meshInstance.queue_free()
+		#a.queue_free()
 		return t
 		
+	meshInstance.queue_free()
 	return null
+	
+func addToMeshFlat(surf,dest,source,translation):
+	var data = WADG.getVertsFromMeshArrayMesh(source,translation)
+	
+	var verts = data["verts"]
+	var normals = data["normals"]
+	var uv = data["uv"]
+	var mat = data["material"]
+	
+	surf.begin(Mesh.PRIMITIVE_TRIANGLES)
+	surf.set_material(mat)
+	for i in verts.size():
+		surf.add_normal(normals[i])
+		surf.add_uv(uv[i])
+		surf.add_vertex(verts[i])
+		
+		
+	
+	surf.commit(dest)
+
+func addToMeshWall(source,dest):
+	
+	var m = ArrayMesh.new()
+	source.commit(m)
+	
+	var data = WADG.getVertsFromMeshArrayMesh(m,Vector3.ZERO)
+	
+	var verts = data["verts"]
+	var normals = data["normals"]
+	var mat = data["material"]
+	var uv = data["uv"]
+	
+	var surf = SurfaceTool.new()
+	
+	surf.begin(Mesh.PRIMITIVE_TRIANGLES)
+	
+	surf.set_material(mat)
+	
+	for i in verts.size():
+		surf.add_normal(normals[i])
+		surf.add_uv(uv[i])
+		surf.add_vertex(verts[i])
+	
+		
+
+	surf.commit(dest)
+	
 	

@@ -16,6 +16,7 @@ export(String) var bringdownAnim = "bringDown"
 export(Array,AudioStream) var shootSounds = []
 export(String, FILE, "*.tscn,*.scn") var projectile = null
 export(Texture) var bulletImpactTexture = load("res://addons/godotWad/sprites/bulletImpact.png")
+export(Vector3) var scaleFactor
 export(Dictionary) var reloadSounds = {
 	0:""
 	}
@@ -193,7 +194,8 @@ func _physics_process(delta):
 				soundPlayer.stream =shootSounds[shootSoundIdx]
 				soundPlayer.play()
 				
-			if magSize >0 :curMag -= 1
+			if magSize >0 :
+				curMag -= 1
 			anims.stop(true)
 			if !fireAnims.empty():
 				if !idleAnims.empty():
@@ -251,17 +253,9 @@ func drawSphere(pos):
 	add_child(meshInstance)
 
 func hit(collider):
-	#if collider.has_meta("breakable"):
-	#	var t = collider.get_meta("breakable")
-	#	if t != null:
-	#		t.takeDamage(7)
-		
 	
-	#if collider.has_method("takeDamage"):
-	#	collider.takeDamage(7)
-	
-	if collider.has_method("damage"):
-		collider.damage(damage)
+	if collider.has_method("takeDamage"):
+		collider.takeDamage(damage)
 	
 	
 func shootBullets():
