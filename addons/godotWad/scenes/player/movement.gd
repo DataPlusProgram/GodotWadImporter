@@ -358,9 +358,11 @@ func isOnGround():
 	for i in $footCast.get_collision_count():
 		#print($movement/footCast.get_collider(i))
 		var norm = normalToDegree($footCast.get_collision_normal(i))
-		var h = $footCast.get_collision_point(i).y - get_parent().translation.y
+		var h = $footCast.get_collision_point(i).y - get_parent().global_translation.y
+
 		colliders.append($footCast.get_collider(i))
 		norm = stepify(norm,0.01)
+		
 		if h <= get_parent().height/2.0 and h > -0.1:
 			if norm < slopeAngle:
 				groundAngle = norm
