@@ -9,7 +9,6 @@ export(String) var pickupSoundName = "DSSGCOCK"
 var weaponNode
 
 func _ready():
-	
 	if Engine.editor_hint: 
 		return
 	

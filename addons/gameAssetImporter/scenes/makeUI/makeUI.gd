@@ -80,6 +80,13 @@ func _ready():
 	
 	makeHistoryFile()
 	
+	
+	if gameList.get_selected_items().empty():
+		if gameList.get_item_count() > 0:
+			gameList.select(0)
+	
+	
+	
 	previewWorld.get_node("CameraTopDown").current = false
 	previewWorld.get_node("Camera").current = true
 
@@ -88,6 +95,9 @@ func _ready():
 	
 	if texturePreview.texture == null:
 			texturePreview.texture = ImageTexture.new()
+			
+			
+
 
 func getLoaders():
 	if !ENTG.doesDirExist("res://addons"):
@@ -555,8 +565,17 @@ func _on_instanceButton_pressed():
 		
 	
 	if cat ==  "maps":
+		var pGameName = cur.gameName
+		print("curNAme is:",curName)
+		cur.gameName = curName
+		ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur.getCreatorScript(),editedNode)
 		var map = cur.createMap(curEntTxt,curMeta)
-		return emit_signal("instance",map,null)
+		
+		cur.gameName = pGameName
+		
+		var returnCache = ENTG.fetchEntityCaches(targetTree,nameLabel.text,true)
+		
+		return emit_signal("instance",map,returnCache)
 	
 	if cat == "textures":
 		var texture = cur.createTexture(curEntTxt,curMeta)
@@ -569,7 +588,6 @@ func _on_instanceButton_pressed():
 	ENTG.updateEntitiesOnDisk(targetTree)
 	
 	var e = ENTG.fetchEntityCaches(targetTree,"")
-	print("return form fec:",e)
 	
 	#if e.empty():
 	#	print("create enitty cache for game")
@@ -584,18 +602,14 @@ func _on_instanceButton_pressed():
 			ENTG.fetchEntity(info["depends"],targetTree,nameLabel.text,false).queue_free()
 		else:
 			for i in info["depends"]:
-				print("depend arr:",i)
 				ENTG.fetchEntity(i,targetTree,nameLabel.text,false).queue_free()
 			
 			
 		
 	var returnCache = null
-	print("info:",info)
 	if info.has("depends"):
 		returnCache = ENTG.fetchEntityCaches(targetTree,nameLabel.text,true)
 	
-	
-	print("return cache:",returnCache)
 	
 	emit_signal("instance",ent,returnCache)
 	
@@ -792,6 +806,8 @@ var mapThread = Thread.new()
 
 func _physics_process(delta):
 	
+	
+	
 	if texturePreview != null:
 		texturePreview.visible = false
 	
@@ -825,10 +841,26 @@ func _physics_process(delta):
 		$h/v2/ui/instanceButton.visible = true
 		$h/v2/ui/importButton.visible = true
 		
-	
+#	var playVisible = true
+##
+#	if playMode:
+#
+#		if paths.get_child_count() == 0:
+#			playVisible = false
+#
+#		for i in paths.get_children():
+#			if i.required == true and i.getPath().empty():
+#				playVisible = false
+#
+#
+#		$h/v1/paths/v/HBoxContainer/playButton.disabled = !playVisible
+#
 
 func importTailFlagSet():#need to call it via physics_process because if I call it in a signal it will be threaded
 	runTailImport = true
+
+func gameListGrabFocus():
+	gameList.grab_focus()
 
 func importTail(entStr,cat):
 	ENTG.updateEntitiesOnDisk(get_tree())
@@ -881,15 +913,7 @@ func createDirectories(var gameName,var dirs = ["textures","materials","sounds",
 	for i in dirs:
 		createDirIfNotExist(i,directory)
 	
-#	createDirIfNotExist("textures",directory)
-#	createDirIfNotExist("player",directory)
-#	createDirIfNotExist("materials",directory)
-#	createDirIfNotExist("sounds",directory)
-#	createDirIfNotExist("sprites",directory)
-#	createDirIfNotExist("textures/animated",directory)
-#	createDirIfNotExist("entities",directory)
-#	createDirIfNotExist("fonts",directory)
-#	createDirIfNotExist("maps",directory)
+
 	
 	
 	var e = cur.getEntityDict()
@@ -936,6 +960,15 @@ func setOptionsVisibility(visible):
 
 
 func _on_playButton_pressed():
+	
+	if cur == null:
+		return
+	
+	for i in paths.get_children():
+		if i.required == true and i.getPath().empty():
+			i.setErrorText("*required")
+			return
+	
 	loaderInit()
 
 	var all = cur.getAll()

@@ -164,7 +164,7 @@ static func fetchResourcesForEntity(entityStrId : String,tree:SceneTree,game : S
 	
 
 
-static func fetchEntity(entityStrId : String,tree:SceneTree,game : String ,saveToDisk : bool) -> Node:
+static func fetchEntity(entityStrId : String,tree:SceneTree,game : String ,saveToDisk : bool,hideInCache : bool = false) -> Node:
 	entityStrId = entityStrId.to_lower()
 	game = game.to_lower()
 	
@@ -227,6 +227,9 @@ static func fetchEntity(entityStrId : String,tree:SceneTree,game : String ,saveT
 			if ent == null:
 				return null
 			
+			if hideInCache == true:
+				ent.set_meta("hidden",true)
+			
 			if Engine.editor_hint:#in this case it will exist in the world and need to be turned on
 				ent.set_physics_process(false)
 				if ent.get("disabled") != null:
@@ -246,7 +249,8 @@ static func fetchEntity(entityStrId : String,tree:SceneTree,game : String ,saveT
 			ent.owner = cache
 			
 			dupe = ent.duplicate(7)
-			
+			if hideInCache:
+				dupe.set_meta("hidden",null)
 			return dupe
 
 				
@@ -512,10 +516,10 @@ static func recursiveOwn(node,newOwner):
 
 
 		
-static func spawn(tree : SceneTree,entityStr : String,pos: Vector3,rot : Vector3,game : String="",entityParentNode : Node = null,toDisk : bool = false):
+static func spawn(tree : SceneTree,entityStr : String,pos: Vector3,rot : Vector3,game : String="",entityParentNode : Node = null,toDisk : bool = false,hideInCache =false):
 	entityStr = entityStr.to_lower()
 	
-	var entity : Node = fetchEntity(entityStr,tree,game,toDisk)
+	var entity : Node = fetchEntity(entityStr,tree,game,toDisk,hideInCache)
 	
 	if entity == null:
 		return null
@@ -547,6 +551,9 @@ static func spawn(tree : SceneTree,entityStr : String,pos: Vector3,rot : Vector3
 		entity.rotation_degrees = rot
 	
 	entity.visible = true
+	
+	entity.set_meta("hidden",null)
+	
 	return entity
 
 

@@ -9,6 +9,7 @@ extends Control
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$makeUI.popup_centered_ratio(1)
+	$makeUI.gameListGrabFocus()
 	pass # Replace with function body.
 
 

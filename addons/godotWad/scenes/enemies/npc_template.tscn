@@ -59,6 +59,7 @@ max_results = 1
 
 [node name="VisibilityNotifier" type="VisibilityNotifier" parent="."]
 aabb = AABB( -1, 0, -1, 2, 32, 2 )
+max_distance = 200.0
 
 [connection signal="camera_entered" from="VisibilityNotifier" to="AnimatedSprite3D" method="_on_VisibilityNotifier_camera_entered"]
 

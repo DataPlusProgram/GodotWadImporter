@@ -761,7 +761,8 @@ static func createCastShapeForBody(node,target = Vector3.ZERO):
 	
 	
 	cast.shape = node.get_parent().mesh.create_convex_shape()
-	
+	#cast.visible = true
+	#cast.debug_shape_custom_color = Color.palevioletred
 	cast.scale *= Vector3(0.8,1,0.8) 
 	cast.target_position = target
 	cast.enabled = false

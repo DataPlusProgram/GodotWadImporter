@@ -85,10 +85,17 @@ func getAsDict() -> Dictionary:
 		var retEntry = {}
 		var empty = true
 		for value in ret[key]:
-			if !ret[key][value].empty():
+			if typeof(ret[key][value]) == TYPE_STRING:
+				if !ret[key][value].empty():
+					if !ret2.has(key):
+						ret2[key] = {}
+					
+					ret2[key][value] = ret[key][value]
+					empty = false
+			else:
 				if !ret2.has(key):
 					ret2[key] = {}
-				
+					
 				ret2[key][value] = ret[key][value]
 				empty = false
 			

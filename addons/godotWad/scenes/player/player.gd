@@ -134,9 +134,14 @@ func _ready():
 	if !InputMap.has_action("interact"): InputMap.add_action("interact")
 	if !InputMap.has_action("pause"):InputMap.add_action("pause")
 	if !InputMap.has_action("strafe"):InputMap.add_action("strafe")
+	if !InputMap.has_action("strafeLeft"):InputMap.add_action("strafeLeft")
+	if !InputMap.has_action("strafeRight"):InputMap.add_action("strafeRight")
 	if !InputMap.has_action("turnRight"):InputMap.add_action("turnRight")
 	if !InputMap.has_action("turnLeft"):InputMap.add_action("turnLeft")
 	if !InputMap.has_action("debug"):InputMap.add_action("debug")
+	if !InputMap.has_action("forward"):InputMap.add_action("forward")
+	if !InputMap.has_action("backward"):InputMap.add_action("backward")
+	
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -432,10 +437,15 @@ func _physics_process(delta):
 	
 	
 	if onGround and processInput:
-		if Input.is_action_pressed("ui_up"): dir -= Vector3(0,0,1)
-		if Input.is_action_pressed("ui_down"): dir += Vector3(0,0,1)
-		if Input.is_action_pressed("ui_right"): dir += Vector3(1,0,0)
-		if Input.is_action_pressed("ui_left"): dir -= Vector3(1,0,0)
+		if Input.is_action_pressed("ui_up") or Input.is_action_pressed("forward"):  dir -= Vector3(0,0,1)
+		if Input.is_action_pressed("ui_down") or Input.is_action_pressed("backward"): dir += Vector3(0,0,1)
+		if Input.is_action_pressed("ui_right") or Input.is_action_pressed("strafeRight"):dir += Vector3(1,0,0)
+		if Input.is_action_pressed("ui_left") or Input.is_action_pressed("strafeLeft"):dir -= Vector3(1,0,0)
+		
+		if Input.get_action_strength("forward") != 0: dir.z *= Input.get_action_strength("forward")
+		if Input.get_action_strength("backward") != 0: dir.z *= Input.get_action_strength("backward")
+		if Input.get_action_strength("strafeRight") != 0: dir.x *= Input.get_action_strength("strafeRight")
+		if Input.get_action_strength("strafeLeft") != 0: dir.x *= Input.get_action_strength("strafeLeft")
 	
 	if dir != Vector3.ZERO:
 		inputPressedThisTick = true

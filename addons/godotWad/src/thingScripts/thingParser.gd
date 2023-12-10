@@ -343,7 +343,9 @@ func createThings(things):
 			else:
 				return
 
-		var ent = ENTG.spawn(get_tree(),idStr,thing["pos"],Vector3(0,thing["rot"],0),get_parent().gameName,entityNode,get_parent().toDisk)
+		var ent = ENTG.spawn(get_tree(),idStr,thing["pos"],Vector3(0,thing["rot"],0),get_parent().gameName,entityNode,get_parent().toDisk,true)
+		
+		
 		
 		if Engine.is_editor_hint() and get_parent().toDisk:
 			for i in ent.get_children():
@@ -373,7 +375,7 @@ func getEntityDict():
 	
 func createEntity(var idString):
 	var entry = thingDirectory[idString.to_lower()]
-	
+	var hidden = false
 	var ent = null
 	
 	if get_parent().npcsDisabled:
@@ -384,11 +386,14 @@ func createEntity(var idString):
 	if entry.has("depends"):
 		if typeof(entry["depends"]) == TYPE_ARRAY:
 			for i in entry["depends"]:
+				hidden = true
 				var t = get_tree()
-				ENTG.fetchEntity(i,get_tree(),get_parent().gameName,get_parent().toDisk).queue_free()#look into deleting this
+				var cache = ENTG.fetchEntity(i,get_tree(),get_parent().gameName,get_parent().toDisk,false).queue_free()#look into deleting this
+				
 		else:
+			hidden = true
 			var t = get_tree()
-			ENTG.fetchEntity(entry["depends"],get_tree(),get_parent().gameName,get_parent().toDisk).queue_free()#look into delteing this
+			ENTG.fetchEntity(entry["depends"],get_tree(),get_parent().gameName,get_parent().toDisk,false).queue_free()#look into delteing this
 
 	if entry.has("func"):
 		if !entry["func"].empty():
@@ -421,7 +426,7 @@ func createEntity(var idString):
 			
 	
 	ent.name = idString
-	
+
 	
 	
 	return ent

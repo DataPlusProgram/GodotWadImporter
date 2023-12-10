@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/godotWad/scenes/gameModes/main/options/option.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/scenes/gameModes/main/options/inputList.tscn" type="PackedScene" id=3]
 
 [sub_resource type="Animation" id=2]
 resource_name = "audioFadeIn"
@@ -191,50 +192,8 @@ margin_bottom = 15.0
 size_flags_stretch_ratio = 0.43
 text = "100"
 
-[node name="Input" type="HSplitContainer" parent="TabContainer"]
+[node name="Input" parent="TabContainer" instance=ExtResource( 3 )]
 visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 32.0
-margin_right = -4.0
-margin_bottom = -4.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-split_offset = -400
-
-[node name="VBoxContainer2" type="HSplitContainer" parent="TabContainer/Input"]
-visible = false
-margin_right = 351.0
-margin_bottom = 508.36
-size_flags_horizontal = 3
-size_flags_vertical = 3
-split_offset = 200
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="TabContainer/Input/VBoxContainer2"]
-margin_right = 281.0
-margin_bottom = 508.36
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="TabContainer/Input/VBoxContainer2/VBoxContainer2"]
-margin_right = 281.0
-margin_bottom = 31.0
-text = "Forward
-"
-valign = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Input/VBoxContainer2"]
-margin_left = 293.0
-margin_right = 351.0
-margin_bottom = 508.36
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="LineEdit" type="LineEdit" parent="TabContainer/Input/VBoxContainer2/VBoxContainer"]
-margin_right = 58.0
-margin_bottom = 24.0
-text = "w"
 
 [node name="Sound" type="HSplitContainer" parent="TabContainer"]
 visible = false
@@ -264,7 +223,8 @@ margin_bottom = 508.36
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MasterSlider" type="HSlider" parent="TabContainer/Sound/v2"]
+[node name="masterSlider" type="HSlider" parent="TabContainer/Sound/v2"]
+unique_name_in_owner = true
 margin_right = 402.0
 margin_bottom = 16.0
 max_value = 1.2
@@ -296,7 +256,7 @@ anims/audioFadeOut = SubResource( 1 )
 [connection signal="item_selected" from="TabContainer/Video/VSync" to="." method="_on_VSync_item_selected"]
 [connection signal="value_changed" from="TabContainer/Video/fovSlider/FOVslider" to="." method="_on_FOVslider_value_changed"]
 [connection signal="value_changed" from="TabContainer/Video/mouseSensSlider/mouseSensSlider" to="." method="_on_mouseSensSlider_value_changed"]
-[connection signal="drag_ended" from="TabContainer/Sound/v2/MasterSlider" to="." method="_on_MasterSlider_drag_ended"]
-[connection signal="drag_started" from="TabContainer/Sound/v2/MasterSlider" to="." method="_on_MasterSlider_drag_started"]
-[connection signal="value_changed" from="TabContainer/Sound/v2/MasterSlider" to="." method="_on_MasterSlider_value_changed"]
+[connection signal="drag_ended" from="TabContainer/Sound/v2/masterSlider" to="." method="_on_MasterSlider_drag_ended"]
+[connection signal="drag_started" from="TabContainer/Sound/v2/masterSlider" to="." method="_on_MasterSlider_drag_started"]
+[connection signal="value_changed" from="TabContainer/Sound/v2/masterSlider" to="." method="_on_MasterSlider_value_changed"]
 [connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]

@@ -248,11 +248,12 @@ func addColumn(title : String,emitSignal : bool = true,idx : int = -1,addToUndoS
 				
 	if idx != -1:
 		for x in range(idx-1,numCols):#for each column
-			colsTop[x].get_child(0).set_meta("index",x)
-			
-			for yIdx in cols[x].get_children().size():
-				var y = cols[x].get_children()[yIdx]
-				y.set_meta("cellId",[x,yIdx])
+			if colsTop.size() > 0:
+				colsTop[x].get_child(0).set_meta("index",x)
+				
+				for yIdx in cols[x].get_children().size():
+					var y = cols[x].get_children()[yIdx]
+					y.set_meta("cellId",[x,yIdx])
 	
 	
 	if addToUndoStack:

@@ -56,14 +56,27 @@ func setMat(args : Array) -> void:
 	curFrame = args[0]
 	
 	
+	if isPlayerTooFar() == true:
+		return
+
+	
 	if visibility != null:
 		if !visibility.is_on_screen():
 			latestFrame = args
+			visible =false
 			return
+		else:
+			visible =true
+			
 	
 	if visible == false:
 		return
-		
+	
+
+#if tooFar:
+	#	return
+	
+	
 		
 	if frameList[curAnimation].size() <= args[0]:
 		print("missing frame:",args[0], "on ",curAnimation)
@@ -73,6 +86,7 @@ func setMat(args : Array) -> void:
 	if t == null:
 		return
 		
+	
 	
 	if get_surface_material(0) == t:
 		latestFrame = args
@@ -111,6 +125,7 @@ func _physics_process(delta):
 		return
 	
 	
+	
 	if modulate != pModulate or pFrame != curFrame:
 		var mat = get_surface_material(0)
 		
@@ -140,9 +155,19 @@ func _physics_process(delta):
 	if t.get_class() == "ShaderMaterial":
 		translation.y = (t.get_shader_param("texture_albedo").get_size().y/2.0) *scaleFactor.y - 0.035 - offset.y
 	
-	
-	
-	
-			
-	
 
+
+
+func isPlayerTooFar():
+	var skip = true
+	
+	if get_tree() == null:
+		return
+
+	for node in get_tree().get_nodes_in_group("player"):
+		var diff : Vector3 = node.global_translation - global_translation
+
+		if diff.length() <= 100:
+			skip = false
+			
+	return skip

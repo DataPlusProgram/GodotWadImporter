@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/gameModes/main/options/inputSelector.gd" type="Script" id=1]
+
+[node name="inputSelector" type="LineEdit"]
+align = 1
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+script = ExtResource( 1 )
+
+[connection signal="text_change_rejected" from="." to="." method="_on_inputSelector_text_change_rejected"]
+[connection signal="text_changed" from="." to="." method="_on_inputSelector_text_changed"]

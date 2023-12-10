@@ -23,6 +23,9 @@ var rotV = 0
 
 export var sensH = 0.25
 export var sensV = 0.25
+export var controllerSensH = 2.3
+export var controllerSensV = 2.3
+
 var rotationChildrenX = []
 var rotationChildrenY = []
 
@@ -32,6 +35,11 @@ func _ready():
 	translation.x = offset.x
 	translation.y = offset.y
 	
+	if !InputMap.has_action("lookUp"): InputMap.add_action("lookUp")
+	if !InputMap.has_action("lookDown"): InputMap.add_action("lookDown")
+	if !InputMap.has_action("lookLeft"): InputMap.add_action("lookLeft")
+	if !InputMap.has_action("lookRight"): InputMap.add_action("lookRight")
+	
 	if get_parent()!= null:
 		if get_parent().has_method("get_shape_owners"):
 			$h/v/ClippedCamera.add_exception(get_parent())
@@ -39,10 +47,12 @@ func _ready():
 	$h/v/ClippedCamera.clip_to_bodies = collides
 
 	
-
+	
 func _input(event):
 	if processInput == false:
 		return
+		
+	
 	if !(event is InputEventMouseButton) and !(event is InputEventMouseMotion):
 		return
 	
@@ -66,16 +76,31 @@ func _input(event):
 			translation.x += (event.relative.x * sensH)
 			translation.y += -event.relative.y * sensV 
 			
-	
-		#_physics_process(0)
-		
-	
+
+
 
 func fovChange(ifov):
 	if ifov != null:
 		$h/v/ClippedCamera.fov = ifov
 
 func _process(delta):
+	
+	if Input.is_action_pressed("lookUp"):
+		var strength = Input.get_action_strength("lookUp",true)
+		rotV += strength * controllerSensV
+	
+	if Input.is_action_pressed("lookDown"):
+		var strength = Input.get_action_strength("lookDown")
+		rotV -= strength * controllerSensV
+		
+	if Input.is_action_pressed("lookLeft"):
+		var strength = Input.get_action_strength("lookLeft")
+		rotH += strength * controllerSensH
+		
+	if Input.is_action_pressed("lookRight"):
+		var strength = Input.get_action_strength("lookRight")
+		rotH -= strength * controllerSensH
+	
 	pingTransforms()
 
 		
@@ -107,6 +132,8 @@ func attach(par):
 		
 	par.add_child(self)
 
+var pRot = Vector3.ZERO
+
 func pingTransforms():
 	for i in rotationChildrenX:
 		if is_instance_valid(i):
@@ -115,3 +142,5 @@ func pingTransforms():
 	for i in rotationChildrenY:
 		if is_instance_valid(i):
 			i.rotation.y = $h.rotation.y
+			
+	

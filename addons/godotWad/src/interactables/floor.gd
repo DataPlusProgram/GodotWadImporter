@@ -35,6 +35,7 @@ enum STATE{
 }
 
 func _ready():
+	
 	speed *= globalScale.y
 	if has_meta("loop"): loop = true
 	if !get_parent().has_meta("curH"):

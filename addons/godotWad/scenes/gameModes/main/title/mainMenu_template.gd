@@ -42,8 +42,10 @@ func mouseIn(caller):
 		caller.grab_focus()
 		cur = caller
 
-
 func _physics_process(delta):
+	
+	if options.visible == true:
+		return
 	
 	if get_focus_owner() !=null and pFocus != null and get_focus_owner() != pFocus:
 		$move.play()

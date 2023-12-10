@@ -24,9 +24,6 @@ thickness = 17.4
 height = 55.0
 hudIndex = 1
 
-[node name="debug" parent="." index="0"]
-visible = false
-
 [node name="UI" parent="." index="1"]
 mouse_filter = 1
 input_pass_on_modal_close_click = false

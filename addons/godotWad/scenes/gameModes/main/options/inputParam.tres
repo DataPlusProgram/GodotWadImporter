@@ -1,0 +1,130 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"backward": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS1-",
+"controllerOnly": "",
+"key": "KEY_S"
+},
+"forward": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS1+",
+"controllerOnly": "",
+"key": "KEY_W"
+},
+"interact": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "GAMEPAD2",
+"controllerOnly": "",
+"key": "KEY_F"
+},
+"lookDown": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS3-",
+"controllerOnly": true,
+"key": ""
+},
+"lookLeft": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS2+",
+"controllerOnly": true,
+"key": ""
+},
+"lookRight": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS2-",
+"controllerOnly": true,
+"key": ""
+},
+"lookUp": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS3+",
+"controllerOnly": true,
+"key": ""
+},
+"meta": {
+"colNames": [ "key", "controller", "controllerOnly", "3", "4", "5" ],
+"enumColumns": {
+},
+"enumColumnsPrefix": {
+},
+"hasId": false,
+"rowOrder": [ "forward", "backward", "strafeLeft", "strafeRight", "interact", "pause", "shoot", "lookUp", "lookDown", "lookLeft", "lookRight", "weaponSwitchCategory+", "weaponSwitchCategory-" ],
+"sheetWidth": 746.0,
+"splitSize": {
+0: 17,
+1: 22,
+2: 64,
+3: 93,
+4: 0,
+5: 0
+}
+},
+"pause": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "GAMEPAD11",
+"controllerOnly": "",
+"key": "KEY_ESCAPE"
+},
+"shoot": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS7-",
+"controllerOnly": "",
+"key": "MOUSE1"
+},
+"strafeLeft": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS0+",
+"controllerOnly": "",
+"key": "KEY_A"
+},
+"strafeRight": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "AXIS0-",
+"controllerOnly": "",
+"key": "KEY_D"
+},
+"weaponSwitchCategory+": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "GAMEPAD4",
+"controllerOnly": "",
+"key": "MOUSE_BUTTON_WHEEL_UP"
+},
+"weaponSwitchCategory-": {
+"3": "",
+"4": "",
+"5": "",
+"controller": "GAMEPAD5",
+"controllerOnly": "",
+"key": ""
+}
+}

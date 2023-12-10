@@ -26,11 +26,12 @@ var dTickTracker : float = 0
 var aiArrIndex = 0
 var updateAi : bool = false
 var spawnsReady = false
-
+var timer = Timer.new()
 
 
 func _ready():
-	
+	add_child(timer)
+	timer.connect("timeout",self,"bakeAgain")
 	add_to_group("levels",true)
 	
 	if Engine.editor_hint: 
@@ -38,23 +39,45 @@ func _ready():
 	
 	clearFullscreenImage()
 	 
-	bakeStart = OS.get_system_time_msecs()
+	#bakeStart = OS.get_system_time_msecs()
 	
 	if get_node_or_null("Geometry")!=null:
-		$"Geometry".connect("bake_finished",self,"rebakePath")
-		
+		#bakeAgain()
+		get_node("Geometry").bake_navigation_mesh()
+		$"Geometry".connect("bake_finished",self,"bakeFinished")
 	
-	rebakePath()
 	
+	
+	timer.autostart = false
+	
+	#rebakePath()
+	spawnsReady = true
 	
 
-func rebakePath():
+func bakeFinished():
+	
 	canBake = true
 	bakeEnd = OS.get_system_time_msecs()
+	
+	if bakeStart == null:
+		bakeStart = OS.get_system_time_msecs()
+	var nextBake = max(0,1000-(bakeEnd-bakeStart))
+	
+	
+	#print(nextBake/1000.0)
+	
+	if nextBake > 0:
+		timer.wait_time = nextBake/1000.0
+		timer.start()
+	else:
+		bakeAgain()
+
+	
+	
+func bakeAgain():
+	bakeStart = OS.get_system_time_msecs()
 	get_node("Geometry").bake_navigation_mesh()
-	
-	
-	
+
 
 func getSpawns(teamIdx):
 	var spawnLocations = []

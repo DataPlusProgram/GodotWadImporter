@@ -109,7 +109,6 @@ func createSpriteMat(spriteName: String,texture : Texture,fovIndependant : bool)
 	
 
 func fetchBitmapFont(numberChars):
-	print("in fetch bitmap font")
 	if !get_parent().toDisk:
 		get_parent().toDisk = false
 		if font == null:
@@ -120,9 +119,7 @@ func fetchBitmapFont(numberChars):
 	if get_parent().toDisk:
 		var fontPath = WADG.destPath+"/"+get_parent().gameName+"/fonts/bm.tres"
 		if !WADG.doesFileExist(fontPath):
-			print("font doesn't exist creating....")
 			font = createBitmapFont(numberChars)
-			print("ret from font")
 			ResourceSaver.save(fontPath,font)
 		
 		return ResourceLoader.load(fontPath)

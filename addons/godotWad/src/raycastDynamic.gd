@@ -11,12 +11,14 @@ var pRot = 0
 var pMe = Vector3.ZERO
 var pTarget = Vector3.ZERO
 var pDiff = Vector3.ZERO
+
 func _physics_process(delta):
+	
 	
 	
 	if targetNode != null:
 		if is_instance_valid(targetNode):
-			if pRot != get_parent().rotation.y:
+			if pRot != -get_parent().rotation.y:#if we have rotated since last frame adjust
 				rotation.y = -get_parent().rotation.y
 		
 			pRot = -get_parent().rotation.y
@@ -34,10 +36,9 @@ func _physics_process(delta):
 	
 	
 	if !is_colliding():
-		curLen = min(curLen+1,maxLength)
+		curLen = min(curLen+1,maxLength)#we increase the length and return so we can see what the next frame says
 		return
 
-	
 	var colPoint =  get_collision_point()
 	
 	
@@ -50,12 +51,11 @@ func _physics_process(delta):
 				curLen = (global_translation- get_collision_point()).length()*1.01
 
 	if get_collider() != null:
-		curLen = (global_translation- get_collision_point()).length()
+		curLen = (global_translation- get_collision_point()).length()*1.01
 
 func towardsTarget():
 	var diff = pDiff
 	
-	#if pMe != global_translation or pTarget != targetNode.global_translation:
 	diff = global_translation - targetNode.global_translation
 	
 	var h = 0
@@ -68,7 +68,12 @@ func towardsTarget():
 	pMe =global_translation
 	pTarget = targetNode.global_translation
 	
+	var toCast = diff.normalized()*-curLen
 	
 	
-	if cast_to != diff.normalized()*-curLen:
-		cast_to = diff.normalized()*-curLen
+	if toCast != cast_to:
+		if cast_to != toCast:#*-curLen:
+			cast_to = toCast#*-curLen
+			
+			
+	

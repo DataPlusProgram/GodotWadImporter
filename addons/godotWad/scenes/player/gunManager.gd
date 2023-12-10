@@ -62,8 +62,6 @@ func _ready():
 			g.set_physics_process(false)
 			
 
-	
-
 
 func _physics_process(delta):
 	
@@ -115,7 +113,10 @@ func _physics_process(delta):
 		nextWeapon()
 		
 	if Input.is_action_just_released("weaponSwitchCategory-"):
-		nextWeapon()
+		prevWeapon()
+	
+	if curGun.shooter == null:
+		curGun.shooter = get_parent()
 			
 
 func initWeapons():

@@ -23,7 +23,6 @@ func quit():
 func _input(event):
 	
 	
-	
 	if Input.is_action_just_pressed("pause"):
 		if get_tree().get_nodes_in_group("player").size() == 0:
 			return
@@ -34,7 +33,9 @@ func _input(event):
 			else:
 				unpause()
 		else:
-			 mainMenu.options.visible = false
+			#mainMenu.options.relaseFocusOwner()
+			mainMenu.options.visible = false
+			
 
 
 func pause():

@@ -1,4 +1,4 @@
-extends Spatial
+extends RigidBody
 export var itemName = "nullItem"
 
 var velo = Vector3.ZERO
@@ -12,6 +12,10 @@ export(float) var limit = -1
 var h = 0
 
 func _ready():
+	can_sleep = true
+	
+	
+	$groundCast.enabled = false
 	#sleeping = true
 	$Area.connect("body_entered",self,"bodyIn")
 	h = WADG.getCollisionShapeHeight($CollisionShape)
@@ -21,10 +25,22 @@ func _ready():
 	
 
 func _physics_process(delta):
-	pass
 	
-	#if $groundCast.get_collider() == null:
-	#	translation.y += $groundCast.cast_to.y
+	var skip = true
+
+	for node in get_tree().get_nodes_in_group("player"):
+		var diff : Vector3 = node.translation - translation
+
+		if diff.length() <= 100:
+			skip = false
+
+	if skip == true:
+		if sleeping == false:
+			sleeping = true
+	else:
+		if sleeping == true:
+			sleeping = false
+
 
 func bodyIn(body):
 	

@@ -157,6 +157,7 @@ func _physics_process(delta):
 	
 	if Engine.editor_hint: return
 	
+	
 	if shooter != null:
 		if "processInput" in shooter:
 			if shooter.processInput == false:

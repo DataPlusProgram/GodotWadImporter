@@ -26,11 +26,11 @@ var stateChanged : bool = false
 var target : Node = null
 var pTarget = null
 var aiId : int = -1
-var doTick = false
+var doTick : bool = false
 var damageImunity = ["nukage"]
-var hurtCooldown = 0
-var createdBloodDecal = []
-var canHear = []
+var hurtCooldown : float = 0
+var createdBloodDecal : Array = []
+var canHear : Array = []
 var projectileSpawnPoints = []
 var projectilesPerShot = 1
 var castDamage = 12
@@ -52,8 +52,8 @@ enum STATE {
 
 var state = STATE.WALK
 var pState = null
-var map = null
-var broadphaseThisTick = null
+var map : Node = null
+var broadphaseThisTick : bool = false
 onready var hp = initialHP
 
 var velo : Vector3 = Vector3.ZERO
@@ -63,7 +63,7 @@ func _init():
 	set_meta("originAtFeet",true)
 
 func _ready():
-	
+
 	if Engine.editor_hint: 
 		return
 	
@@ -123,11 +123,9 @@ func _physics_process(delta):
 		return
 	
 	
-	broadphaseThisTick == null
-	
 	
 	for i in createdBloodDecal:
-		if is_instance_valid(createdBloodDecal):
+		if is_instance_valid(i):
 			createdBloodDecal.erase(i)
 		
 	
@@ -150,7 +148,26 @@ func _physics_process(delta):
 	
 	pTarget = target
 	if !dead:
-		look()
+		if look()== false:
+			set_physics_process_internal(false)
+			$cast.enabled = false
+			
+			if get_node_or_null("CollisionShape") != null:
+				$CollisionShape.disabled = true
+			
+			if $footCast.enabled:
+				$footCast.enabled = false
+			
+			
+			return
+		else:
+			$cast.set_physics_process(true)
+			$cast.enabled = true
+			
+			if get_node_or_null("CollisionShape") != null:
+				$CollisionShape.disabled = false
+	else:
+		set_physics_process_internal(false)
 	
 	if get_node_or_null("lightValue") != null:
 		$lightValue.tick()
@@ -273,7 +290,7 @@ func stateWalk() -> void:
 	
 	if target !=null and is_instance_valid(target):
 		
-		var distTo : float =  translation.distance_to(target.translation)
+		
 	
 		
 		
@@ -296,7 +313,7 @@ func stateWalk() -> void:
 		
 		
 		
-		
+		var distTo : float =  translation.distance_to(target.translation)
 		
 		if distTo <= meleeRange or (distTo <= projectileRange and projectileRange > 0):
 			state = STATE.ATTACK
@@ -364,8 +381,10 @@ func deadState(delta) -> void:
 			spawnPos.y += height / 2.0
 			
 			var ent = ENTG.spawn(get_tree(),drops,spawnPos,Vector3.ZERO,"",map)
-			if ent.get_class() == "RigidBody":
-				ent.add_central_force(-Vector3.UP*1000)
+			
+			if ent != null:
+				if ent.get_class() == "RigidBody":
+					ent.add_central_force(-Vector3.UP*1000)
 			#ent.linear_velocity.x = 10
 			
 #		if drops != null:
@@ -547,13 +566,13 @@ func getCurSpriteWidth() -> int:
 
 
 
-func look() -> void:
+func look() -> bool:
 	
 	for i in canHear:
 		if i.is_in_group("player"):
 			target = i
 			canHear = []
-			return
+			return true
 	
 	
 	
@@ -561,26 +580,43 @@ func look() -> void:
 	canHear = []
 	var forward : Vector3 = -get_global_transform().basis.z
 	
-	var allPlayers = get_tree().get_nodes_in_group("player")
+	var allPlayers : Array = get_tree().get_nodes_in_group("player")
 	
+	var skip = true
+	
+	for node in allPlayers:
+		var diff : Vector3 = node.translation - translation
+		
+		if diff.length() <= 100:
+			skip = false
+			
+	
+
+	
+	if skip ==  true:
+		return false
+		
 	for node in allPlayers:
 		var diff : Vector3 = node.translation - translation
 		if "hp" in node:
 			if node.hp <= 0:
 				continue
 		
+		
 		if diff.length() <= 2:
 			target = node
-			return
+			return true
 		
 		if lookBroadphaseCheck(node.translation,forward):
-		#if true:
 			if canSeeNodeCast(node):
 				target = node
 				$cast.targetNode = node
 				
 		else:
 			$cast.targetNode = null
+			
+			
+	return true
 
 
 var pDiff : Vector3 = Vector3(0,0,0)
