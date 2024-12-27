@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cr0tdavj3vweb"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_56ibn"]
+
+[resource]
+script = ExtResource("1_56ibn")
+data = {
+"0": {
+"": "",
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "PUNGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"PostFunction": "",
+"Sprite": "PUNGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"PostFunction": "",
+"Sprite": "PUNGC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"3": {
+"": "",
+"Dur": 5,
+"Frame": "D",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"PostFunction": "",
+"Sprite": "PUNGD",
+"flashFrame": "",
+"flashSprite": ""
+},
+"5": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 5,
+"PostFunction": "",
+"Sprite": "PUNGC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"6": {
+"": "",
+"Dur": 5,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "PUNGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "PostFunction", "flashSprite", "flashFrame", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "5", "6"],
+"sheetWidth": 2498.0,
+"splitSize": {
+0: 64,
+1: 64,
+2: 0,
+3: 98,
+4: 0,
+5: 115,
+6: 100,
+7: 97,
+8: 88,
+9: 0
+}
+}
+}

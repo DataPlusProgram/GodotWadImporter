@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://nvokp2ifo3mc"]
+
+[ext_resource type="PackedScene" uid="uid://c6twtortk7i2r" path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.tscn" id="1_7psiv"]
+
+[node name="mainMode_template3" instance=ExtResource("1_7psiv")]
+modeName = "Doom 1 mode"
+firstMap = "E1M1"
+
+[node name="Generator" parent="." index="0"]
+dependantChildren = Array[String](["res://addons/godotWad/scenes/gameModes/templates/D1/D1mainMenu.tscn"])
+
+[node name="WadLoader" parent="." index="1"]
+fontCharsHexen = null

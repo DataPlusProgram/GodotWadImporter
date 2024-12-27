@@ -1,0 +1,83 @@
+[gd_scene load_steps=6 format=3 uid="uid://cvwi0hfgko6pi"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_6po5f"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_a8w68"]
+
+[sub_resource type="Shader" id="Shader_wywwi"]
+code = "shader_type spatial;
+render_mode blend_mix;
+
+uniform vec4 albedo : source_color = vec4(1,1,1,1);
+uniform sampler2D texture_albedo : source_color,filter_nearest_mipmap,repeat_disable;
+uniform float point_size : hint_range(0,128);
+uniform float fov  = 90.0;
+void vertex() {
+	//float oneTanFov = 1.0f / tan(0.5f *(fov* PI / 180.0f));
+	float oneTanFov = 1.0f / tan(0.5f * radians(fov));
+	float aspect = (VIEWPORT_SIZE.x / VIEWPORT_SIZE.y);
+	
+	
+	//PROJECTION_MATRIX[0][0] = oneTanFov / aspect;
+	
+	PROJECTION_MATRIX[1][1] = -oneTanFov;
+	PROJECTION_MATRIX[0][0] = oneTanFov/aspect; //this keeps the aspect ratio from wapring
+	
+	POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX.xyz, 1.0);
+    POSITION.z = mix(POSITION.z, 0, 0.9);
+	//POSITION = PROJECTION_MATRIX * MODELVIEW_MATRIX * vec4(VERTEX.xyz, 1.0);
+	
+    PROJECTION_MATRIX[2][2] *= 0.1f; // Draw viewmodel over  everything
+}
+
+void fragment() {
+	vec2 base_uv = UV;
+	vec2 texelCords;
+	
+
+	vec4 albedo_tex = texture(texture_albedo,base_uv);
+
+	ALPHA =  albedo_tex.a;
+	ALPHA_SCISSOR_THRESHOLD = 0.8;
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	
+	//ec3 emission_tex = texture(texture_emission,base_uv).rgb;
+	//EMISSION = (emission.rgb + emission_tex) * emission_energy;
+	
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gbxxk"]
+render_priority = 0
+shader = SubResource("Shader_wywwi")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = null
+shader_parameter/fov = 90.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_rbh21"]
+material = SubResource("ShaderMaterial_gbxxk")
+
+[node name="shotgun" instance=ExtResource("1_6po5f")]
+weaponName = "shotgun"
+category = 3
+ammoType = "shell"
+initialSpread = Vector2(18, 0)
+maxSpread = Vector2(18, 0)
+bulletPerShot = 7
+firstShotAccuracy = 0
+stateResPath = "res://addons/godotWad/resources/shotgunStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_a8w68")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_rbh21")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["SHTGA0", "SHTGB0", "SHTGC0", "SHTGD0"])
+spriteListMuzzleFlash = Array[String](["SHTFA0", "SHTFB0"])
+worldSprite = "SHOTA0"
+fireSounds = Array[String](["DSSHOTGN"])
+
+[node name="AnimationPlayer" parent="." index="5"]
+callback_mode_process = 1

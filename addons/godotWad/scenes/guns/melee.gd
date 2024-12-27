@@ -2,41 +2,41 @@ extends Node
 
 var meshNode = null
 var soundCache = {}
-var cast : RayCast
+var cast : RayCast3D
 
 
 
-export(String) var weaponName = ""
-export(int) var category = 1
-export(Array,String) var idleAnims = []
-export(Array,String) var fireAnims = []
-export(Array,String) var reloadAnims = []
-export(String) var bringupAnim = "bringUp"
-export(String) var bringdownAnim = "bringDown"
-export(Array,AudioStream) var shootSounds = []
-export(String, FILE, "*.tscn,*.scn") var projectile = null
-export(Texture) var bulletImpactTexture = load("res://addons/godotWad/sprites/bulletImpact.png")
-export(Vector3) var scaleFactor
-export(Dictionary) var reloadSounds = {
+@export var weaponName: String = ""
+@export var category: int = 1
+@export var idleAnims = [] # (Array,String)
+@export var fireAnims = [] # (Array,String)
+@export var reloadAnims = [] # (Array,String)
+@export var bringupAnim: String = "bringUp"
+@export var bringdownAnim: String = "bringDown"
+@export var shootSounds = [] # (Array,AudioStream)
+@export var projectile = null # (String, FILE, "*.tscn,*.scn")
+@export var bulletImpactTexture: Texture2D = load("res://addons/godotWad/sprites/bulletImpact.png")
+@export var scaleFactor: Vector3
+@export var reloadSounds: Dictionary = {
 	0:""
 	}
 #export(Array,int,0,10000,1,String) var test = []
 
-export var fullyAutomatic = true
-export var shootDurationMS = 270
-export var magSize = 17
-export var damage = 8
-export var timeTillIdleAnim = 1000
-export var spread = Vector2(20,20)
-export var bulletPerShot = 1
-export var reloadDurMs = 1000
+@export var fullyAutomatic = true
+@export var shootDurationMS = 270
+@export var magSize = 17
+@export var damage = 8
+@export var timeTillIdleAnim = 1000
+@export var spread = Vector2(20,20)
+@export var bulletPerShot = 1
+@export var reloadDurMs = 1000
 
-export(int) var firstShotAccuracy = 1
-export(int) var firstShotCooldonwMS = 100
+@export var firstShotAccuracy: int = 1
+@export var firstShotCooldonwMS: int = 100
 
 
 
-onready var curMag = magSize
+@onready var curMag = magSize
 
 var soundPlayer
 var anims : AnimationPlayer = null
@@ -57,10 +57,10 @@ var reloadSoundQueue = []
 var sphere = null
 var curReloadTarget = -1
 
-onready var curfirstShotAccuracy = firstShotAccuracy
-onready var curFirstShotCooldown =  0
+@onready var curfirstShotAccuracy = firstShotAccuracy
+@onready var curFirstShotCooldown =  0
 
-func _get_configuration_warning():
+func _get_configuration_warnings():
 	
 	if !has_node("AnimationPlayer"):
 		return "Child AnimationPlayer Node required"
@@ -134,7 +134,7 @@ func _physics_process(delta):
 		else:
 			return
 	
-	if Engine.editor_hint: return
+	if Engine.is_editor_hint(): return
 	
 	
 	curFirstShotCooldown = max(0,curFirstShotCooldown-(1000.0*delta))# every tick we decrement first bullet timer
@@ -150,16 +150,16 @@ func _physics_process(delta):
 
 	if state == IDLE:#if we are in idle state
 		
-		if OS.get_system_time_msecs() >lastShootEndTime+timeTillIdleAnim:
+		if Time.get_ticks_msec() >lastShootEndTime+timeTillIdleAnim:
 			if !idleAnims.has(anims.current_animation):#if not currently in idle anim
 				idleAnims.shuffle()
-				if !idleAnims.empty():
+				if !idleAnims.is_empty():
 					if anims.get_animation(idleAnims[0]):
 						anims.play(idleAnims[0])
 					else: 
 						print("idle animation:",idleAnims[0], " not found")
 						idleAnims.erase(idleAnims[0])
-		elif !idleAnims.empty():
+		elif !idleAnims.is_empty():
 			anims.play(idleAnims[0])
 
 		if fullyAutomatic and Input.is_action_pressed("shoot"):
@@ -188,8 +188,8 @@ func _physics_process(delta):
 			shootBullets()
 			curFirstShotCooldown = firstShotCooldonwMS
 		
-			shootStartTime = OS.get_system_time_msecs()
-			if !shootSounds.empty():
+			shootStartTime = Time.get_ticks_msec()
+			if !shootSounds.is_empty():
 				shootSoundIdx = (shootSoundIdx+1)%shootSounds.size()
 				soundPlayer.stream =shootSounds[shootSoundIdx]
 				soundPlayer.play()
@@ -197,27 +197,27 @@ func _physics_process(delta):
 			if magSize >0 :
 				curMag -= 1
 			anims.stop(true)
-			if !fireAnims.empty():
-				if !idleAnims.empty():
+			if !fireAnims.is_empty():
+				if !idleAnims.is_empty():
 					anims.animation_set_next(fireAnims[0],idleAnims[0])
 					anims.play(fireAnims[0]) 
 		
 	
 		
-		if (shootStartTime+shootDurationMS) < OS.get_system_time_msecs():
-			lastShootEndTime = OS.get_system_time_msecs()
+		if (shootStartTime+shootDurationMS) < Time.get_ticks_msec():
+			lastShootEndTime = Time.get_ticks_msec()
 			state = IDLE
 		
 	if state == RELOADING:
 		
-		var thisTime =  OS.get_system_time_msecs()
+		var thisTime =  Time.get_ticks_msec()
 
 			
 		if reloadStartTime == -1:
 			reloadSoundQueue = reloadSounds.duplicate()#we have mutliple sound clips in case of diffent sound for mag going in and out
 			curReloadTarget = -1
-			reloadStartTime = OS.get_system_time_msecs()
-			if !reloadAnims.empty():
+			reloadStartTime = Time.get_ticks_msec()
+			if !reloadAnims.is_empty():
 				if anims.has_animation(reloadAnims[0]):
 					anims.play(reloadAnims[0])
 		
@@ -234,7 +234,7 @@ func _physics_process(delta):
 					#reloadSoundQueue.erase(reloadSoundQueue.keys()[0])
 		
 		
-		if state == RELOADING and  OS.get_system_time_msecs()-reloadStartTime >= reloadDurMs:
+		if state == RELOADING and  Time.get_ticks_msec()-reloadStartTime >= reloadDurMs:
 			anims.stop()
 			state = IDLE
 			curMag = magSize
@@ -247,9 +247,9 @@ func drawSphere(pos):
 		shape.height = 0.5/2
 		sphere = shape
 	
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	meshInstance.mesh = sphere
-	meshInstance.translation = pos
+	meshInstance.position = pos
 	add_child(meshInstance)
 
 func hit(collider):
@@ -259,7 +259,7 @@ func hit(collider):
 	
 	
 func shootBullets():
-	var n : Area = get_node("Area") 
+	var n : Area3D = get_node("Area3D") 
 	var bodies = n.get_overlapping_bodies()
 	for i in bodies:
 		if i != get_parent().get_parent().get_parent():
@@ -273,13 +273,13 @@ func createDecal(pos,obj,normal):
 	obj.add_child(spr)
 	spr.pixel_size = 0.2
 	spr.global_transform.origin = pos
-	spr.translation+= normal*0.1
+	spr.position+= normal*0.1
 	
-	var tangent
+	var orthogonal
 	
-	if    normal == Vector3.UP   : tangent =  Vector3.RIGHT
-	elif  normal == Vector3.DOWN : tangent =  Vector3.RIGHT
-	else: tangent = Vector3.DOWN
+	if    normal == Vector3.UP   : orthogonal =  Vector3.RIGHT
+	elif  normal == Vector3.DOWN : orthogonal =  Vector3.RIGHT
+	else: orthogonal = Vector3.DOWN
 	
-	spr.look_at(pos + normal, tangent)
+	spr.look_at(pos + normal, orthogonal)
 

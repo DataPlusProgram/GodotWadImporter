@@ -1,28 +1,33 @@
 extends AudioStreamPlayer3D
 
 
-# Declare member variables here. Examples:
-# var a = 2
 # var b = "text"
-export(Array,AudioStreamSample) var explosionSounds = []
-export(Array,AudioStreamSample) var idleSounds = []
-export(Array,AudioStreamSample) var spawnSounds = []
+@export var explosionSounds = [] # (Array,AudioStreamWAV)
+@export var idleSounds = [] # (Array,AudioStreamWAV)
+@export var spawnSounds = [] # (Array,AudioStreamWAV)
 
 func playSpawn():
-	if spawnSounds.empty():
+	if spawnSounds.is_empty():
 		return
 	stream = spawnSounds[0]
-	play()
+	ENTG.getSoundManager(get_tree()).play( stream,self,{"unique":true})
 	
 func playExplode():
-	if explosionSounds.empty():
-		return
+	if explosionSounds.is_empty():
+		return 0
 	
-	stream = explosionSounds[0]
-	play() 
+	ENTG.getSoundManager(get_tree()).play( explosionSounds[0],self,{"unique":true})
+	
+	if explosionSounds[0] == null:
+		return 0
+	
+	return explosionSounds[0].get_length()
+	
+	
+
 	
 func playIdle():
-	if idleSounds.empty():
+	if idleSounds.is_empty():
 		return
 	
 	stream = idleSounds[0]
@@ -35,12 +40,5 @@ func playRandom(streamArr):
 	
 	var idx = randi()%streamArr.size()
 	stream = streamArr[idx]
+	
 	play()
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass

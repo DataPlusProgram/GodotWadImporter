@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwccuewx80x7x"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/makeUI/option_list.gd" id="1_l2vvo"]
+
+[node name="optionList" type="PopupMenu"]
+visible = true
+unfocusable = true
+script = ExtResource("1_l2vvo")
+
+[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]

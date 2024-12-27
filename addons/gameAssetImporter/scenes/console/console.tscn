@@ -1,0 +1,67 @@
+[gd_scene load_steps=6 format=3 uid="uid://dku0k1jhjyjpm"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/console/console.gd" id="1_w2nb2"]
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/console/execute.gd" id="2_nu70b"]
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/console/nativeFuncs.gd" id="4_p86el"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_vhftn"]
+keycode = 4194309
+
+[sub_resource type="Shortcut" id="Shortcut_gly34"]
+events = [SubResource("InputEventKey_vhftn")]
+
+[node name="Console" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_w2nb2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="logText" type="RichTextLabel" parent="VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+bbcode_enabled = true
+text = " "
+fit_content = true
+autowrap_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="input" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="inputSend" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+shortcut = SubResource("Shortcut_gly34")
+
+[node name="execute" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_nu70b")
+
+[node name="nativeFuncs" type="Node" parent="execute"]
+script = ExtResource("4_p86el")
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="gui_input" from="VBoxContainer/HBoxContainer/input" to="." method="_on_input_gui_input"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/inputSend" to="." method="_on_input_send_pressed"]

@@ -1,40 +1,34 @@
-tool
+@tool
 extends LineEdit
 
 signal update
 signal updateRowHeight
 signal focusEntered
 signal focusExit
-signal index_pressed
+signal indexPressedSignal
 
-export var value = ""
-
+@export var value = ""
+const maxDisplayChar = 80
 var menu : PopupMenu
 var inFocus = false
 var preview = null
-onready var optionButton : OptionButton = null
+@onready var optionButton : OptionButton = null
 var dataFromTexDialog : ConfirmationDialog = null
 var hoverColor : Color
 var optionMode = false
+var expressionMode = false
 #var previousText = ""
 var sheet = null
+var arrayPopup = null
 var par
+var waitForFocus = 0
 
 func _ready():
-	if has_meta("index"):
-		for i in get_children():
-			if i.get_class() == "PopupMenu":
-				menu=i
-				i.connect("index_pressed",self,"index_pressed")
 	
-	
-
-	connect("text_changed",self,"_on_typedLineEdit_text_changed")
-
-
+	text_changed.connect(_on_typedLineEdit_text_changed)
 
 func getOptionRectSize():
-	return optionButton.rect_size
+	return optionButton.size
 
 func activateOptionMode(enumValues,enumStr):
 	
@@ -46,34 +40,41 @@ func activateOptionMode(enumValues,enumStr):
 	
 	
 	optionButton = OptionButton.new()
-	optionButton.rect_min_size.x = rect_min_size.x
+	#optionButton.rect_min_size.x = rect_min_size.x
+	optionButton.custom_minimum_size.x = custom_minimum_size.x
 	optionButton.anchor_right = 1
 	optionButton.anchor_bottom = 1
 	optionButton.visible = true
 	
-	optionButton.connect("item_selected",self,"_on_OptionButton_item_selected")
-	optionButton.connect("focus_entered",self,"_on_typedLineEdit_focus_entered")
-	optionButton.connect("focus_exited",self,"_on_typedLineEdit_focus_exited")
+	#optionButton.connect("item_selected",self,"_on_OptionButton_item_selected")
+	#optionButton.connect("focus_entered",self,"_on_typedLineEdit_focus_entered")
+	#optionButton.connect("focus_exited",self,"_on_typedLineEdit_focus_exited")
+	
+	optionButton.item_selected.connect(_on_OptionButton_item_selected)
+	optionButton.focus_entered.connect(_on_typedLineEdit_focus_entered)
+	optionButton.focus_exited.connect(_on_typedLineEdit_focus_exited)
+
+	
 	add_child(optionButton)
 
 	
 	
-	var curStyle = get("custom_styles/normal")
-	optionButton.set("custom_styles/normal",curStyle)
-	optionButton.set("custom_styles/hover",curStyle)
+	var curStyle = get("theme_override_styles/normal")
+	optionButton.set("theme_override_styles/normal",curStyle)
+	optionButton.set("theme_override_styles/hover",curStyle)
 	
-	var fontColor = get("custom_colors/font_color")
-	var cursorColor = get("custom_colors/cursor_color")
+	var fontColor = get("theme_override_colors/font_color")
+	var cursorColor = get("theme_override_colors/cursor_color")
 
 	
 	
 	
-	optionButton.set("custom_colors/font_color",fontColor)
-	optionButton.set("custom_colors/font_color_focus",fontColor)
-	optionButton.set("custom_colors/cursor_color",cursorColor)
-	optionButton.set("custom_colors/font_color_hover",hoverColor)
+	optionButton.set("theme_override_colors/font_color",fontColor)
+	optionButton.set("theme_override_colors/font_focus_color",fontColor)
+	optionButton.set("theme_override_colors/cursor_color",cursorColor)
+	optionButton.set("theme_override_colors/font_hover_color",hoverColor)
 	
-	var t = optionButton.get("custom_styles/normal")
+	var t = optionButton.get("theme_override_styles/normal")
 	
 	set_meta("enumStrToValue",enumValues)
 	#var test = values.keys() #values wont get placed in their correct order unless keys is sorted by mapped index instead of alphanumeric order
@@ -98,17 +99,6 @@ func activateOptionMode(enumValues,enumStr):
 				#valueIndex[key] = i
 				valueIndex[key] = optionButton.get_item_count()-1
 				
-#	for i in values.keys():
-#
-#		var optionButtonItemCount = optionButton.get_item_count()
-#
-#		if i == "@DUMMY":
-#			valueIndex[i] = optionButtonItemCount
-#			i = ""
-#		else:
-#			valueIndex[i] = optionButtonItemCount
-#		optionButton.add_item(i)
-		
 
 	var existingText = enumStr
 	var keys = enumValues.keys()
@@ -124,7 +114,7 @@ func activateOptionMode(enumValues,enumStr):
 			optionButton.select(valueIndex["@DUMMY"])
 			value = enumValues["@DUMMY"]
 		
-		if existingText.is_valid_integer():
+		if existingText.is_valid_int():
 			optionButton.queue_free()
 			_on_typedLineEdit_text_changed(existingText)
 			
@@ -159,22 +149,26 @@ func deactivateOptionMode():
 
 func createLineEdit():
 	var ret = LineEdit.new()
-	var curStyle = get("custom_styles/normal")
+	var curStyle = get("theme_override_styles/normal")
 	
-	ret.set("custom_styles/normal",curStyle)
+	ret.set("theme_override_styles/normal",curStyle)
 	return ret
 	
-
-
+	
+func inputGui(event):
+	breakpoint
 func _on_typedLineEdit_text_changed(new_text : String) -> void:
-#	print(new_text)
-	
-	#if new_text == previousText:
-	#	text = new_text
-	#	print("boop")
-	#	return
-	
-	#previousText = new_text
+
+	if expressionMode:
+		doExpression(new_text)
+		return
+
+	if new_text == &"--expression ":
+		expressionMode = true
+		set("theme_override_colors/font_color",Color.CHARTREUSE)
+		text = ""
+		return
+
 	
 	if is_instance_valid(preview):
 		setChildrenVisible(false)
@@ -182,64 +176,86 @@ func _on_typedLineEdit_text_changed(new_text : String) -> void:
 		
 	new_text = new_text.strip_edges()
 	
-	var vari = str2var(new_text)
+	var vari = str_to_var(new_text)
 	
+
 	if typeof(vari) == TYPE_INT:
 		if(new_text.find(" ") != -1):
 			vari = new_text
+			
+		if !new_text.is_valid_int():
+			vari = new_text
 	value = vari
 	
-	#if new_text.find("deathSounds") != -1:
-	#	breakpoint
+
+	if typeof(vari) != TYPE_COLOR:
+		self_modulate = Color.WHITE
+	elif typeof(vari) == TYPE_COLOR:
+		#var button = Button.new()
+		#initHboxMode()
+		#get_parent().add_child(button)
+		#button.size_flags_horizontal = Control.SIZE_EXPAND
+		#button.size_flags_vertical = Control.SIZE_EXPAND
+		
+		
+		#button.anchor_bottom = 1
+		self_modulate = value
 	
-	#if typeof(vari) != TYPE_COLOR:
-	#	self_modulate = Color.white
-	#elif typeof(vari) == TYPE_COLOR:
-	#	self_modulate = value
-	
-	
-	if typeof(vari) == TYPE_STRING:
+	if value == null:
+		value = new_text
+		
+	if typeof(value) == TYPE_STRING:
 		
 		if new_text.length() > 1:
 			if new_text[0] == "{":
 				parseDict(new_text)
 		
 		if new_text.find("http") == 0:
-			if new_text.count("png") or new_text.count("jpg") or new_text.count("bmp") or new_text.count("tga"):
+			if new_text.find(".png") or new_text.find(".jpg") or new_text.find(".bmp") or new_text.find(".tga") or new_text.find(".svg") or new_text.find(".webp"):
 				texturefromURL(new_text)
 		
-		elif new_text.is_abs_path():
+		elif new_text.is_absolute_path():
 			parsePath(new_text)
 			
 		value = new_text
-#	if new_text.is_valid_integer():
-#		value = new_text.to_int()
-#	elif new_text.is_valid_float(): 
-#		value = new_text.to_float()
-#	elif new_text.is_valid_html_color():
-#		value = Color(new_text)
-#		self_modulate = value
-#	elif new_text.to_lower() == "true":
-#		value = true
-#	elif new_text.to_lower() == "false":
-#		value = false
-#		#activateOptionMode(["true","false"])
-#	elif new_text.is_abs_path():
-#		parsePath(new_text)
-#	elif new_text[0] == "[":
-#		parseArrayPre(new_text)
-#	else:
-#		value = new_text
+		
+		emit_signal("update",self)#without this changes won't take effect
+		return
 	
 	
-	
-	emit_signal("update",self)
+	#if typeof(value) == TYPE_STRING:
+		#var exp = Expression.new()
+		#var ret = exp.parse(value)
+		#if ret == 0:
+			#var err =exp.execute()
+			#var t = exp.has_execute_failed()
 
-func gotImage(img):
+			
+	#text = new_text
+	emit_signal("update",self)#without this changes won't take effect
+
+func doExpression(expressionStr):
+	var expression = Expression.new()
+	var err = expression.parse(expressionStr)
+	
+	var ret = expression.execute()
+
+
+
+func gotImage(img:ImageTexture):
+	
+	if img == null:
+		return
+	
+	if img.get_image() == null:
+		return
 
 	var spr = TextureRect.new()
 	spr.texture = img
 	spr.visible = true
+	spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	spr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	spr.size = Vector2(150,60)
 	
 	add_child(spr)
 	sheetGlobal.getChildOfClass(self,"HTTPRequest").queue_free()
@@ -268,7 +284,8 @@ func texturefromURL(url):
 	
 
 	http.set_script(load("res://addons/gSheet/scenes/typedLineEdit/HTTPRequest.gd"))
-	http.connect("gotImage",self,"gotImage")
+	http.gotImage.connect(gotImage)
+
 	
 	add_child(http)
 	http.fetch(url)
@@ -318,7 +335,7 @@ func parseRes(path,pre):
 	
 	
 	add_child(tex)
-	setChildrenVisible(false)
+	setChildrenVisible(true)
 	
 func loadImageFromPath(path):
 	var img = Image.new()
@@ -326,26 +343,32 @@ func loadImageFromPath(path):
 	
 	var err = img.load(path)
 	
+	
+	
 	if err != 0:
 		return null
-	tex.create_from_image(img)
+	tex = tex.create_from_image(img)
+
 	
-	var spr = TextureRect.new()
+	var spr : TextureRect= TextureRect.new()
+
+	spr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	spr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	spr.size = Vector2(150,60)
 	spr.texture = tex
 	spr.visible = true
-	
 	return spr
 	
 	
 func loadAudioFromPath(path):
 	var stream
-	var file = File.new()
-	var err = file.open(path, File.READ)
+	#var file = FileAccess #File.new()
+	var file = FileAccess.open(path, FileAccess.READ)
 	
-	if err != 0: 
-		return null
+	#if err != 0: 
+	#	return null
 	
-	var data = file.get_buffer(file.get_len())
+	var data = file.get_buffer(file.get_length())
 	var ext = path.get_extension().to_lower()
 	
 	file.close()
@@ -355,14 +378,14 @@ func loadAudioFromPath(path):
 		stream.data = data
 	elif ext == "ogg": 
 		stream.data = data
-		stream = AudioStreamOGGVorbis.new()
+		stream = AudioStreamOggVorbis.new()
 	elif ext == "wav": 
 		var script = load("res://addons/gSheet/scenes/typedLineEdit/wavLoad.gd").new()
 		stream = script.getStreamFromWAV(path)
 	else:
 		return null
 		
-	var audioPlayer = load("res://addons/gSheet/scenes/typedLineEdit/scenes/audioPreview.tscn").instance()
+	var audioPlayer = load("res://addons/gSheet/scenes/typedLineEdit/scenes/audioPreview.tscn").instantiate()
 	audioPlayer.setAudio(stream)
 	audioPlayer.setText(path)
 	
@@ -372,8 +395,14 @@ func loadAudioFromPath(path):
 
 func _on_typedLineEdit_focus_entered():
 	inFocus = true
+
+	if typeof(value) == TYPE_STRING:
+		text = value
 	
 	updateMeta()
+	if typeof(value) == TYPE_ARRAY and arrayPopup == null:
+		activateArrayMode(value)
+	
 	emit_signal("focusEntered",self)
 
 
@@ -381,25 +410,48 @@ func _on_typedLineEdit_focus_exited():
 	inFocus = false
 	updateMeta()
 
+	if arrayPopup != null:
+		
+		var i = getViewport()
+			
+			
+		if i != null:
+			var focusOwner : Control = i.gui_get_focus_owner()
+			if focusOwner == null:
+				createFocusCheckTimer()
+				
+				
+				
+				
+			elif !is_ancestor_of(focusOwner) and arrayPopup != focusOwner:
+				arrayPopup.queue_free()
+				arrayPopup = null
 	
-
 	
+	#shortenText()
 	emit_signal("focusExit",self)
 	
+
+func shortenText():
+	if text.length() > maxDisplayChar:
+		text = text.substr(0,maxDisplayChar-3) + "..."
 
 func setChildrenVisible(isVisible):
 	
 	if is_instance_valid(preview):
 		if isVisible:
 			preview.visible = true
-			var t = preview.rect_size
-			rect_size = preview.rect_size
-			rect_min_size = preview.rect_size
+			var t = preview.size
+			#rect_size = preview.rect_size
+			#rect_min_size = preview.rect_size
+			size = preview.size
+			custom_minimum_size = preview.size
 		else:
 			preview.visible = false
-			rect_min_size = Vector2.ZERO
+			#rect_min_size = Vector2.ZERO
+			custom_minimum_size = Vector2.ZERO
 		
-		emit_signal("updateRowHeight",get_meta("cellId"),rect_min_size)
+		emit_signal("updateRowHeight",get_meta("cellId"),custom_minimum_size)
 	
 
 
@@ -421,7 +473,8 @@ func isInternalSupportedAudio(ext):
 	return false
 
 func index_pressed(index):
-	emit_signal("index_pressed",self,index,get_meta("index"))
+	
+	emit_signal("indexPressedSignal",self,menu.get_item_text(index),get_meta("index"))
 	
  
 
@@ -429,8 +482,7 @@ func _on_OptionButton_item_selected(index):
 	var txt = optionButton.get_item_text(index)
 	var enumStrToValue = get_meta("enumStrToValue")
 	
-	print(txt)
-	
+
 	if txt == "":
 		value = enumStrToValue["@DUMMY"]
 		text = ""
@@ -468,6 +520,7 @@ func getData(dict):
 		text = data
 		_on_typedLineEdit_text_changed(text)
 		
+		
 	if dict["type"] == "enum":
 		activateOptionMode(data,text)
 	return
@@ -475,3 +528,100 @@ func getData(dict):
 
 func parseDict(dstr):
 	pass
+
+func getViewport():
+	var i = self
+		
+	while !(i is Viewport): 
+		i = i.get_node_or_null("../")
+		if i == null:
+			return null
+	
+	if i == self:
+		return null
+	
+	return i
+func _on_child_entered_tree(node):
+	if node.get_class() != &"PopupMenu":
+		
+		return
+	
+	
+	if !node.has_meta("uiPopup"):
+		var enumPopupIndex = node.get_item_count()
+		node.add_item("set ENUM type")
+		menu = node
+		
+		node.index_pressed.connect(index_pressed)
+		return
+		
+
+
+func _on_text_submitted(new_text):
+	if typeof(value) == TYPE_ARRAY:
+		activateArrayMode(value)
+	pass # Replace with function body.
+
+func activateArrayMode(data : Array):
+	
+	
+	arrayPopup = load("res://addons/gSheet/scenes/typedLineEdit/arrayDisplay.tscn").instantiate()
+	arrayPopup.set_meta("uiPopup",true)
+	arrayPopup.focus_exited.connect(arrayListElementLoseFocus)
+	arrayPopup.position = Vector2(global_position.x,global_position.y+size.y+5)
+	arrayPopup.size.x = 200
+	arrayPopup.size.y = 200
+	arrayPopup.setArrToList(data)
+	add_child(arrayPopup)
+	
+	
+	#gui_input.connect(inputGui)
+	
+
+func initHboxMode():
+	if get_parent().get_class() == "HBoxContainer":
+		return
+	
+	var myChildIndex = -1
+	
+	for i in get_parent().get_child_count():
+		if get_parent().get_child(i) == self:
+			myChildIndex = i
+			break
+	
+	var hbox = HBoxContainer.new()
+	
+	hbox.custom_minimum_size.x = custom_minimum_size.x
+	#button.anchor_right = 1
+	
+	get_parent().add_child(hbox)
+	get_parent().move_child(hbox,myChildIndex)
+	reparent(hbox)
+
+func createFocusCheckTimer():
+	var timer = Timer.new()
+	timer.one_shot = true
+	timer.wait_time = 0.05
+	timer.autostart = true
+	timer.timeout.connect(focusCheck)
+	add_child(timer)
+
+func arrayListElementLoseFocus():
+	createFocusCheckTimer()
+	
+
+func focusCheck():
+	
+	if arrayPopup == null:
+		return
+	
+	if !is_instance_valid(arrayPopup):
+		return
+	
+	
+	var focusOwner = getViewport().gui_get_focus_owner()
+	
+	if !is_ancestor_of(focusOwner) and arrayPopup != focusOwner and focusOwner != self:
+		arrayPopup.queue_free()
+		arrayPopup = null
+	

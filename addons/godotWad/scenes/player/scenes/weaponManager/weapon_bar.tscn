@@ -1,0 +1,150 @@
+[gd_scene load_steps=7 format=3 uid="uid://cmpog4jmqm6ak"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/scenes/weaponManager/weaponBar.gd" id="1_nkaa3"]
+[ext_resource type="Script" path="res://addons/controller_icons/objects/TextureRect.gd" id="2_iujcy"]
+
+[sub_resource type="Animation" id="Animation_ksf4e"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_jugct"]
+resource_name = "fadeIn"
+length = 0.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_mww8q"]
+resource_name = "fadeOut"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_f8mgp"]
+_data = {
+"RESET": SubResource("Animation_ksf4e"),
+"fadeIn": SubResource("Animation_jugct"),
+"fadeOut": SubResource("Animation_mww8q")
+}
+
+[node name="weaponBar" type="HBoxContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+alignment = 1
+script = ExtResource("1_nkaa3")
+
+[node name="1" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="1"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory1"
+
+[node name="2" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="2"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory2"
+
+[node name="3" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="3"]
+modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory3"
+
+[node name="4" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="4"]
+modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory4"
+
+[node name="5" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="5"]
+modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory5"
+
+[node name="6" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="6"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory6"
+
+[node name="7" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ControllerTextureRect" type="TextureRect" parent="7"]
+modulate = Color(1, 0, 0, 1)
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("2_iujcy")
+path = "weaponSwitchCategory7"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_f8mgp")
+}

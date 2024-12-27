@@ -1,29 +1,29 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://coxftrhkte0tg"]
 
-[ext_resource path="res://addons/godotWad/scenes/player/Camera2D.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/scenes/player/HUD.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/Camera2D.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/HUD.gd" id="2"]
 
-[node name="ViewportContainer" type="ViewportContainer"]
+[node name="SubViewportContainer" type="SubViewportContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -745.0
-margin_bottom = -467.0
+offset_right = -745.0
+offset_bottom = -467.0
 stretch = true
-script = ExtResource( 2 )
+script = ExtResource("2")
 
-[node name="Control" type="Viewport" parent="."]
-size = Vector2( 279, 133 )
+[node name="Control" type="SubViewport" parent="."]
 transparent_bg = true
 handle_input_locally = false
-render_target_update_mode = 3
+size = Vector2i(407, 181)
+render_target_update_mode = 4
 
 [node name="Label" type="Label" parent="Control"]
-margin_right = 39.0
-margin_bottom = 16.0
+offset_right = 39.0
+offset_bottom = 16.0
 text = "100"
 
 [node name="Camera2D" type="Camera2D" parent="Control"]
 anchor_mode = 0
-current = true
-zoom = Vector2( 0.139785, 0.120301 )
-script = ExtResource( 1 )
+zoom = Vector2(0.139785, 0.120301)
+script = ExtResource("1")

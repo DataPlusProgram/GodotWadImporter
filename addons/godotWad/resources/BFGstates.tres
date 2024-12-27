@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cm56j3wounku6"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_2tmqd"]
+
+[resource]
+script = ExtResource("1_2tmqd")
+data = {
+"0": {
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Sprite": "BFGGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"Dur": 20,
+"Frame": "A",
+"Function": "playExtraSound1",
+"Lit": "",
+"Next": 2,
+"Sprite": "BFGGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"Dur": 10,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 3,
+"Sprite": "BFGGB",
+"flashFrame": "A",
+"flashSprite": "BFGFA0"
+},
+"3": {
+"Dur": 10,
+"Frame": "B",
+"Function": "shootState",
+"Lit": "",
+"Next": 4,
+"Sprite": "BFGGB",
+"flashFrame": "B",
+"flashSprite": "BFGFB0"
+},
+"4": {
+"Dur": 20,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"Sprite": "BFGGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "flashSprite", "flashFrame"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4"],
+"sheetWidth": 2304.0,
+"splitSize": {
+0: 92,
+1: 64,
+2: 0,
+3: 0,
+4: 64,
+5: 99,
+6: 114,
+7: 0
+}
+}
+}

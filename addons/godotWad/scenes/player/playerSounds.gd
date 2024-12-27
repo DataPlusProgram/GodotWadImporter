@@ -1,9 +1,9 @@
-tool
+@tool
 extends AudioStreamPlayer3D
 
-export(Array,AudioStreamSample) var deathSounds 
-export(Array,AudioStreamSample) var hurtSounds 
-export(AudioStreamSample) var gruntSound
+@export var deathSounds : Array # (Array,AudioStreamWAV)
+@export var hurtSounds : Array # (Array,AudioStreamWAV)
+@export var gruntSound: AudioStreamWAV
 
 # Declare member variables here. Examples:
 # var a = 2

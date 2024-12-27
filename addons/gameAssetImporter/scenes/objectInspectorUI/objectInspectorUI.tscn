@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://c8bxe3bn688w0"]
+
+[ext_resource type="Theme" uid="uid://dyf67c0ud50ts" path="res://addons/object-inspector/inspector_theme.tres" id="1_b4emf"]
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/objectInspectorUI/objectInspectorUI.gd" id="1_xl7d3"]
+[ext_resource type="Script" path="res://addons/object-inspector/scripts/inspector.gd" id="2_3m0d3"]
+
+[node name="MemeberInspector" type="Window"]
+size = Vector2i(800, 600)
+script = ExtResource("1_xl7d3")
+
+[node name="ObjectInspector" type="VBoxContainer" parent="."]
+offset_right = 83.0
+offset_bottom = 35.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_b4emf")
+theme_type_variation = &"Inspector"
+script = ExtResource("2_3m0d3")
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]

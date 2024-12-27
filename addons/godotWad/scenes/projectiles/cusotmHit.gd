@@ -1,5 +1,5 @@
 extends Node
-export var overrideParentBehaviour = false
+@export var overrideParentBehaviour = false
 
 # Declare member variables here. Examples:
 # var a = 2

@@ -1,35 +1,37 @@
-tool
+@tool
 extends HBoxContainer
 
 
 var enumPopupIndex = -1
 
 func _ready():
-	$"../../../FileDialog".connect("file_selected",self,"file_selected")
-	$"enumPopup".connect("selectedItem",self,"selectedItem")
+	
+	$"../../../enumSelectorDialog".file_selected.connect(file_selected)
+	$"enumPopup".selectedItem.connect(selectedItem)
+	
 
 
 func newChild(node):
-	if node.menu == null:
-		return
+	#if node.menu == null:
+	#	return
 
 
-	var idx = node.get_meta("index")
-	enumPopupIndex = node.menu.get_item_count()
-	node.menu.add_item("set ENUM type")
-	node.connect("index_pressed",self,"index_pressed")
+	#var idx = node.get_meta("index")
+	#enumPopupIndex = node.menu.get_item_count()
+	#node.menu.add_item("set ENUM type")
+	node.connect("indexPressedSignal", Callable(self, "index_pressed"))
 	
 
 
 func index_pressed(called,index,colIdx):
-	if index == enumPopupIndex:
-		$"../../../FileDialog".set_meta("forCol",colIdx)
-		$"../../../FileDialog".popup_centered()
+	if index == "set ENUM type":
+		$"../../../enumSelectorDialog".set_meta("forCol",colIdx)
+		$"../../../enumSelectorDialog".popup_centered()
 	
 
 func selectedItem(dict,colIdx,enumPrefix):
 	var data = dict.values()[0]
-	var t = $"../../../VBoxContainer/HBoxContainer/Spreadsheet/Control"
+	var t = $"../../../".mainSheet
 	var col = t.cols[colIdx]
 	col.set_meta("enum",dict)
 	col.set_meta("enumPrefix",enumPrefix)
@@ -41,8 +43,8 @@ func selectedItem(dict,colIdx,enumPrefix):
 	
 	
 func file_selected(file):
-	var coldId = $"../../../FileDialog".get_meta("forCol",null)
-	$"../../../FileDialog".set_meta("forCol",null)
+	var coldId = $"../../../enumSelectorDialog".get_meta("forCol",null)
+	$"../../../enumSelectorDialog".set_meta("forCol",null)
 	
 	if file.get_extension() != "gd":
 		return
@@ -51,7 +53,7 @@ func file_selected(file):
 	
 	values = addDummyEntryToEnumsDict(values)
 	
-	if values.empty():
+	if values.is_empty():
 		$AcceptDialog.popup_centered()
 		return
 		

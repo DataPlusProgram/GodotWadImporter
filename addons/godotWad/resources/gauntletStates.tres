@@ -1,0 +1,100 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://dqp4peng44y1q"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_ogt5c"]
+
+[resource]
+script = ExtResource("1_ogt5c")
+data = {
+"0": {
+"": "",
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "FPCHA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"PostFunction": "",
+"Sprite": "FPCHB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"PostFunction": "",
+"Sprite": "FPCHC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"3": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"PostFunction": "",
+"Sprite": "FPCHD",
+"flashFrame": "",
+"flashSprite": ""
+},
+"4": {
+"": "",
+"Dur": 5,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 5,
+"PostFunction": "",
+"Sprite": "FPCHC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"5": {
+"": "",
+"Dur": 5,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "FPCHB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "PostFunction", "flashSprite", "flashFrame", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5"],
+"sheetWidth": 2498.0,
+"splitSize": {
+0: 64,
+1: 0,
+2: 0,
+3: 98,
+4: 124,
+5: 115,
+6: 100,
+7: 97,
+8: 88,
+9: 0
+}
+}
+}

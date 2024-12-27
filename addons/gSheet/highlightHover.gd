@@ -1,9 +1,9 @@
-tool
+@tool
 extends TextureButton
 
-export var makeDarkToggleTexture = false
-export var amt = .4
-export var tint = Color(1,1,1)
+@export var makeDarkToggleTexture = false
+@export var amt = .4
+@export var tint = Color(1,1,1)
 var normalTexture
 var pressedTexture
 var normalDark
@@ -41,17 +41,16 @@ func _ready():
 		texture_pressed = normalDark
 		
 	
-	connect("mouse_entered",self,"mouseIn")
-	connect("mouse_exited",self,"mouseOut")
+	mouse_entered.connect(mouseIn)
+	mouse_exited.connect(mouseOut)
+	
 	
 
-
-
-func brighten(texture : Texture,amt : float):
+func brighten(texture : Texture2D,amt : float):
 	
-	var image = texture.get_data().duplicate()
+	var image : Image  = texture.get_image()
 	
-	image.lock()
+
 	
 	for x in image.get_width():
 		for y in image.get_height():
@@ -61,11 +60,9 @@ func brighten(texture : Texture,amt : float):
 			image.set_pixel(x,y,post)
 			
 			
-	image.unlock()
+
 	
-	var newTexture =  ImageTexture.new()
-	newTexture.create_from_image(image)
-	
+	var newTexture =  ImageTexture.create_from_image(image)
 	return newTexture
 	
 
@@ -86,4 +83,3 @@ func mouseOut():
 	if makeDarkToggleTexture:
 		texture_pressed = normalDark
 	
-

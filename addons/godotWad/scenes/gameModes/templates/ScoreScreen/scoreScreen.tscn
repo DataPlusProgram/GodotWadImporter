@@ -1,0 +1,132 @@
+[gd_scene load_steps=3 format=3 uid="uid://t1mrjy0uapia"]
+
+[ext_resource type="Texture2D" uid="uid://cl15uxs12aiar" path="res://addons/godotWad/scenes/guns/icon.png" id="1_mcdeb"]
+[ext_resource type="PackedScene" uid="uid://doas350f5b056" path="res://addons/godotWad/scenes/player/scenes/resizableText/resizableText.tscn" id="2_uc3u8"]
+
+[node name="ScoreScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_mcdeb")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.534
+anchor_top = 0.5
+anchor_right = 0.534
+anchor_bottom = 0.535494
+offset_left = -311.168
+offset_top = -82.0
+offset_right = 310.832
+offset_bottom = 76.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 240
+theme_override_constants/v_separation = 19
+columns = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="kills" type="TextureRect" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="killsCount" parent="GridContainer" instance=ExtResource("2_uc3u8")]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+scaleFactor = Vector2(1, 3.5)
+
+[node name="Label" parent="GridContainer/killsCount" index="0"]
+offset_top = -3.0
+offset_bottom = 20.0
+scale = Vector2(3.27869, 4.71739)
+text = "1000"
+
+[node name="items" type="TextureRect" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+expand_mode = 2
+
+[node name="itemsCount" parent="GridContainer" instance=ExtResource("2_uc3u8")]
+layout_mode = 2
+scaleFactor = Vector2(1, 3.5)
+
+[node name="Label" parent="GridContainer/itemsCount" index="0"]
+offset_top = -3.0
+offset_bottom = 20.0
+scale = Vector2(3.27869, 4.71739)
+text = "2000"
+
+[node name="secret" type="TextureRect" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="secretCount" parent="GridContainer" instance=ExtResource("2_uc3u8")]
+unique_name_in_owner = true
+layout_mode = 2
+scaleFactor = Vector2(1, 3.5)
+
+[node name="Label" parent="GridContainer/secretCount" index="0"]
+offset_top = -3.0
+offset_bottom = 20.0
+scale = Vector2(3.27869, 4.71739)
+text = "2000"
+
+[node name="time" type="TextureRect" parent="GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="timeCount" parent="GridContainer" instance=ExtResource("2_uc3u8")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+scaleFactor = Vector2(0.8, 1.4)
+
+[node name="Label" parent="GridContainer/timeCount" index="0"]
+offset_top = -5.0
+offset_bottom = 18.0
+scale = Vector2(2.62295, 1.88696)
+text = "1000"
+vertical_alignment = 1
+
+[node name="finished" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.467507
+anchor_top = 0.0948395
+anchor_right = 0.533479
+anchor_bottom = 0.209037
+offset_left = -104.568
+offset_top = -32.456
+offset_right = 103.432
+offset_bottom = 32.544
+grow_horizontal = 2
+texture = ExtResource("1_mcdeb")
+stretch_mode = 5
+metadata/_edit_use_anchors_ = true
+
+[editable path="GridContainer/killsCount"]
+[editable path="GridContainer/itemsCount"]
+[editable path="GridContainer/secretCount"]
+[editable path="GridContainer/timeCount"]

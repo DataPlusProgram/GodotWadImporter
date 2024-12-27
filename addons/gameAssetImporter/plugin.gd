@@ -1,10 +1,11 @@
-tool
+@tool
 extends EditorPlugin
 var editorInterface
 var editorSceneTree
 var scriptEditor
 var dock
 var curObj = null
+var curRoot = null
 var thread 
 var waiting = false
 var runTail = false
@@ -13,11 +14,11 @@ var reimportFiles = []
 var tryingToCollapse = false
 var waitingOnCharacterCreation = false
 var characterControllerThread = Thread.new()
-
+var lastSelectedObject = null
 
 func _enter_tree():
-	dock = load("res://addons/gameAssetImporter/scenes/toolbar.tscn").instance()
-	dock.get_node("createAll").connect("pressed", self, "openMaker")
+	dock = load("res://addons/gameAssetImporter/scenes/toolbar.tscn").instantiate()
+	dock.get_node("createAll").connect("pressed", Callable(self, "openMaker"))
 	
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU,dock)
 	dock.visible = false
@@ -25,10 +26,11 @@ func _enter_tree():
 	
 
 
-func handles(object):
-	return object
+func _handles(object):
+	if "name" in object:
+		return object
 
-func make_visible(visible: bool) -> void:
+func _make_visible(visible: bool) -> void:
 	if dock:
 		dock.set_visible(visible)
 
@@ -40,11 +42,12 @@ func _exit_tree():
 
 
 
-func edit(object):
+func _edit(object):
 	if waiting:
 		return
 		
 	curObj = object
+	lastSelectedObject = curObj
 
 func waitOverFlag():
 	runTail = true
@@ -53,26 +56,8 @@ func waitOverFlag():
 func _physics_process(delta):
 	
 	if tryingToCollapse:
-		collpaseUnderScriptName("mapNode.gd")
+		collpaseUnderScriptName("levelNode.gd")
 		tryingToCollapse = false
-		
-		
-	
-	if runTail:
-		runTail = false
-		
-		curObj.createMapTail()
-		
-		
-		recursiveOwn(curObj.mapNode,get_tree().edited_scene_root)
-
-		
-		waiting = false
-		dock.get_node("createMap").disabled = false
-		dock.get_node("createCharacterController").disabled = false
-		curObj.editorFileSystem = get_editor_interface().get_resource_filesystem()
-		tryingToCollapse = true
-		
 		
 
 
@@ -170,46 +155,59 @@ func findNodeByClass(node,className):
 			return ret
 			
 
-var m = null
+var m : Window = null
+
 func openMaker():
 	if m == null:
-		m = load("res://addons/gameAssetImporter/scenes/makeUI/makeUI.tscn").instance()
-		m.connect("instance",self,"makeInstanced")
-		m.connect("diskInstance",self,"diskInstanced")
+		m = load("res://addons/gameAssetImporter/scenes/makeUI/makeUI.tscn").instantiate()
+		m.connect("instance", Callable(self, "makeInstanced"))
+		m.connect("diskInstance", Callable(self, "diskInstanced"))
 		get_tree().get_root().add_child(m)
+		m.setStyles()
 		m.editorInterface = get_editor_interface()
 		m.editedNode = get_tree().edited_scene_root
-		
+	
+	
+	
 	m.popup_centered_ratio(0.9)
+	m.grab_focus()
 
-
-func makeInstanced(entity,cache):
-	print("make instanced")
+func makeInstanced(entity : Node,cache):
+	
 	if cache != null:
 		if typeof(cache) == TYPE_ARRAY:
 			for i in cache:
-				recursiveOwn(i,get_tree().edited_scene_root)
+				print("the pat of cache:",i.get_path())
+				i.print_tree_pretty()
+				if i.get_child_count() > 0:
+					print("recrusive owning cache")
+					recursiveOwn(i,get_tree().edited_scene_root)
 				
 		else:
-			recursiveOwn(cache,get_tree().edited_scene_root)
+			if cache.get_child_count() > 0:
+				recursiveOwn(cache,get_tree().edited_scene_root)
+				
 	
-	if curObj != null:
-		
-		if entity.get_parent() != null:
-			entity.get_parent().remove_child(entity)
-		
-		#curObj.get_parent().add_child(entity)
-		curObj.add_child(entity)
-		recursiveOwn(entity,get_tree().edited_scene_root)
+	if lastSelectedObject != null:
+		if is_instance_valid(lastSelectedObject):
+			if entity.get_parent() != null:
+				entity.get_parent().remove_child(entity)
+			
+			#curObj.get_parent().add_child(entity)
+			curObj.add_child(entity)
+			
+			
+			recursiveOwn(entity,get_tree().edited_scene_root)
 		
 	
 func diskInstanced(entity):
+	
+	if lastSelectedObject != null:
+		if is_instance_valid(lastSelectedObject):
+			if entity.get_parent() != null:
+				entity.get_parent().remove_child(entity)
+			
 
-	if curObj != null:
-		if entity.get_parent() != null:
-			entity.get_parent().remove_child(entity)
-		
-		print(entity)
-		curObj.add_child(entity)
-		entity.owner = get_tree().edited_scene_root
+			curObj.add_child(entity)
+			entity.owner = get_tree().edited_scene_root
 		

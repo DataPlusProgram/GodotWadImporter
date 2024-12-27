@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://doas350f5b056"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/scenes/resizableText/resizableText.gd" id="1_ux7ue"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_r4pdk"]
+
+[node name="resizableText" type="Control"]
+layout_mode = 3
+anchor_right = 0.0547222
+anchor_bottom = 0.059037
+offset_right = -0.0400009
+offset_bottom = -0.256001
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ux7ue")
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_top = -1.5
+offset_right = 61.0
+offset_bottom = 24.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.03279, 1.46154)
+label_settings = SubResource("LabelSettings_r4pdk")

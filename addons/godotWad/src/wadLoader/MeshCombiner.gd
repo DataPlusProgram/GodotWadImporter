@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 
 
@@ -6,6 +6,9 @@ var primitiveType = Mesh.PRIMITIVE_TRIANGLES
 
 var meshScale = Vector3.ONE
 
+@onready var levelBuilder : Node =  $"../LevelBuilder"
+@onready var resourceManager : Node = $"../ResourceManager"
+@onready var materialManager : Node = $"../MaterialManager"
 func _ready():
 	set_meta("hidden",true)
 
@@ -16,13 +19,13 @@ enum TEXTUREDRAW{
 	GRID,
 }
 
-
-	
-func seperateByTexture(arr):
-	var groups = {}
-	var ret = []
+var allStairSector : Array
+var dynamicFloors : Array 
+func seperateByTexture(arr : Array) -> Dictionary:
+	var groups : Dictionary = {}
+	var ret : Array = []
 	for i in arr:
-		var texture = i["textureName"]
+		var texture = i["textureName"] +","+str(i["alpha"])+","+str(i["scroll"])
 		if !groups.has(texture): groups[texture] = []
 		groups[texture].append(i)
 	
@@ -31,11 +34,14 @@ func seperateByTexture(arr):
 
 	
 
-func merge(sectorToSides,geomNode,mapName):
-	for sector in sectorToSides.keys():#we have array of walls grouped by sector. for every sector:
-		mergeSector(sectorToSides[sector],sector,geomNode,mapName)#merge all of sector
+func merge(preInstancedMeshes : Dictionary,geomNode : Node,mapName : String,hasCollision : bool):
+	
+	allStairSector = getStairDict($"../LevelBuilder".mapDict["stairLookup"])
+	dynamicFloors = $"../LevelBuilder".mapDict["dynamicFloors"]
+	for sector : int in preInstancedMeshes.keys():#we have array of walls grouped by sector. for every sector:
+		mergeSector(preInstancedMeshes[sector],sector,geomNode,mapName)#merge all of sector
 
-func mergeSector(arr,sectorIdx,geomNode,mapName):
+func mergeSector(arr,sectorIdx:int,geomNode:Node,mapName:String) -> void:
 	
 	var textureGroup
 	var ceilFloorFlag = false
@@ -46,8 +52,8 @@ func mergeSector(arr,sectorIdx,geomNode,mapName):
 		textureGroup = arr
 		
 	if textureGroup.keys().size() > get_parent().maxMaterialPerMesh:#if we have more than 4 textures in a group
-		var dictA = {}
-		var dictB = {}
+		var dictA : Dictionary = {}
+		var dictB : Dictionary= {}
 		var textureNames = textureGroup.keys()
 		
 		
@@ -61,137 +67,212 @@ func mergeSector(arr,sectorIdx,geomNode,mapName):
 		return
 		
 	#we can only have one light level per sector
-	var surf = SurfaceTool.new()
-	var runningMesh = ArrayMesh.new()#this is the final mesh which will have sub surf for each material
-	var runningSolid  = ArrayMesh.new()
-	var runningShootThrough = ArrayMesh.new()
+	var runningMesh : ArrayMesh= ArrayMesh.new()#this is the final mesh which will have sub surf for each material
+	var runningSolid : ArrayMesh= ArrayMesh.new()
+	var runningShootThrough: ArrayMesh= ArrayMesh.new()
+
+	var sectors = levelBuilder.sectors
+	var sectorNode : Node3D = null
+
 	
-	
-	var sectors = $"../LevelBuilder".sectors
-	var sectorNode = null
-	
-	surf.begin(primitiveType)
-	
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	meshInstance.set_meta("sectorIdx",sectorIdx)
-	var t = sectors[sectorIdx]
+	
 
 
+	sectorNode = textureGroupIntoMesh(textureGroup,runningMesh,sectors[sectorIdx],runningSolid,runningShootThrough,mapName)
 	
-	sectorNode = textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough,mapName)
 	
-	if sectorNode == null:
-		print("missing sector node:",sectorIdx)
+	
+	var keepWallsConvex = get_parent().KEEP_WALLS_CONVEX
+	
+	if (get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR or get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR_2)   and sectorNode !=  null and !allStairSector.has(sectorIdx):
+		
+			addFloorAndCeilingToMesh(runningMesh,runningMesh,sectorNode,sectorIdx,false,true,meshInstance)
+			var floorRunning = runningSolid
+			var ceilRunning = runningSolid
+			var t = sectors[sectorIdx]
+			
+			if t["ceilingTexture"] == &"F_SKY1":
+				floorRunning = runningShootThrough
+			
+			if get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR :
+				addFloorAndCeilingToMesh(runningSolid,runningSolid,sectorNode,sectorIdx,true,false)
+			
+			if get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR_2 and !dynamicFloors.has(sectorIdx):
+				var ret = getFloorAndCeilingMesh(sectorNode)
+				if ret != null:
+
+					var ceilingMesh = ret["ceilingNode"]
+					var floorMesh = ret["floorNode"]
+				
+				
+				
+				
+					
+					if floorMesh.get_child_count() > 0:
+						var floorCol = floorMesh.get_child(0)
+						if floorCol != null:
+							
+							floorMesh.remove_child(floorCol)
+							floorMesh.get_parent().add_child(floorCol)
+							floorCol.position = floorMesh.position
+							floorMesh.get_parent().remove_child(floorMesh)
+							floorMesh.queue_free()
+					
+				
+					
+					if ceilingMesh.get_child_count() > 0:
+						var ceilCol = ceilingMesh.get_child(0)
+						
+						if ceilCol != null:
+							ceilingMesh.remove_child(ceilCol)
+							ceilingMesh.get_parent().add_child(ceilCol)
+							ceilCol.position = ceilingMesh.position
+							ceilingMesh.get_parent().remove_child(ceilingMesh)
+							ceilingMesh.queue_free()
+							
+
+	
+	if !keepWallsConvex:
+		var solidBody : StaticBody3D
+		
+		var shootTroughBody = null
+
+		solidBody  = dumbFunc(runningSolid)
+
+		if runningShootThrough.get_surface_count() > 0:
+			shootTroughBody= dumbFunc(runningShootThrough)
+		
+
+
+		if shootTroughBody != null:
+			shootTroughBody.name = "shootThroughCol"
+			shootTroughBody.set_collision_layer_value(1,true)#stops players
+			shootTroughBody.set_collision_layer_value(2,false)
+			
+		if solidBody != null:
+			solidBody.name = "solidCol"
+			solidBody.set_collision_layer_value(1,true)#stops actors
+			solidBody.set_collision_layer_value(2,true)#stops bullets
+			
+			meshInstance.add_child(solidBody)
+
+		
+		if shootTroughBody != null:
+			meshInstance.add_child(shootTroughBody)
 		
 	
-	
-	var floorCeilOveride = false
-
-	
-	if get_parent().mergeMesh == get_parent().MERGE.WALLS_AND_FLOOR and !floorCeilOveride and sectorNode !=  null:
-			addFloorAndCeilingToMesh(runningMesh,sectorNode,sectorIdx,false,true,meshInstance)
-			addFloorAndCeilingToMesh(runningSolid,sectorNode,sectorIdx,true,false)
-
-	
-	var solidBody : StaticBody = dumbFunc(runningSolid)
-	var shootTroughBody = null
-
-	
-
-	if runningShootThrough.get_surface_count() > 0:
-		shootTroughBody= dumbFunc(runningShootThrough)
-	
-
-
-	if shootTroughBody != null:
-		shootTroughBody.name = "shootThroughCol"
-		shootTroughBody.collision_layer = 0
-	
-	
 	if get_parent().unwrapLightmap:
-		runningMesh.lightmap_unwrap(Transform.IDENTITY,1.0)
+		runningMesh.lightmap_unwrap(Transform3D.IDENTITY,1.0)
 	
-	meshInstance.cast_shadow = MeshInstance.SHADOW_CASTING_SETTING_DOUBLE_SIDED
+	meshInstance.cast_shadow = MeshInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 	meshInstance.use_in_baked_light = true
 	meshInstance.scale = meshScale
 	meshInstance.mesh = runningMesh
 	
+
+	var lightLevel = WADG.getLightLevel(sectors[sectorIdx]["lightLevel"])
+	
+	
+	#for i in meshInstance.mesh.get_surface_count():
+	#	meshInstance.mesh.surface_get_material(i).set_shader_parameter("tint",Color(lightLevel,lightLevel,lightLevel))
+	if get_parent().useInstanceShaderParam:
+		#meshInstance.set("instance_shader_parameters/alpha",arr[0]["alpha"])
+		meshInstance.set("instance_shader_parameters/sectorLight",Color(lightLevel,lightLevel,lightLevel))
 	
 	meshInstance.set_meta("merged",true)
 	geomNode.add_child(meshInstance)
 	
-	if solidBody != null:
-		solidBody.name = "solidCol"
-		solidBody.set_collision_layer_bit(1,true)
-		
-		meshInstance.add_child(solidBody)
 
-	
-	if shootTroughBody != null:
-		meshInstance.add_child(shootTroughBody)
 	
 	
 
-func textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSolid,runningShootThrough,mapName):
+func textureGroupIntoMesh(textureGroup:Dictionary,runningMesh:ArrayMesh,sector : Dictionary,runningSolid:ArrayMesh,runningShootThrough : ArrayMesh,mapName : String) -> Node3D:
 	var sectorNode
-	for textureName in textureGroup.keys():
+	
+	var keepWallsConvex = get_parent().KEEP_WALLS_CONVEX
+	
+	for textureName : String in textureGroup.keys():
 		
-		var localSurf = SurfaceTool.new()
-		var localSolid = SurfaceTool.new()
-		var localNotSolid = SurfaceTool.new()
-		var localShootThrough = SurfaceTool.new()
+		var localMesh: SurfaceTool= SurfaceTool.new()
+		var localSolid : SurfaceTool= SurfaceTool.new()
+		var localShootThrough : SurfaceTool= SurfaceTool.new()
 		
-		localSurf.begin(Mesh.PRIMITIVE_TRIANGLES)
-		localSolid.begin(Mesh.PRIMITIVE_TRIANGLES)
-		localNotSolid.begin(Mesh.PRIMITIVE_TRIANGLES)
-		localShootThrough.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var params = textureName.split(",")
+		var alpha = float(params[1])
+		
+		localMesh.begin(Mesh.PRIMITIVE_TRIANGLES)
+		
+		if !keepWallsConvex:
+			localSolid.begin(Mesh.PRIMITIVE_TRIANGLES)
+			localShootThrough.begin(Mesh.PRIMITIVE_TRIANGLES)
 		
 		var meshCenter = Vector3.ZERO
-		var mat
+		var mat : Material
 		
-		for mesh in textureGroup[textureName]:
-			 meshCenter += getMeshCenter(mesh)
+		for mesh : Dictionary in textureGroup[textureName]:
+			meshCenter += getMeshCenter(mesh["start"],mesh["ceilZ"])
 			
 		meshCenter /=  textureGroup[textureName].size()
 		
-		var text
+		var text : Texture
 
 		if textureName!=null:
-			if textureName != "F_SKY1":
+			if textureName.substr(0,6) != "F_SKY1":
 				text = textureGroup[textureName][0]["texture"]
-				mat = $"../ResourceManager".fetchMaterial(textureName,text,sectors[sectorIdx]["lightLevel"],Vector2.ZERO,1,0,true)
+				var lightAdjusted = WADG.getLightLevel(sector["lightLevel"])
+				var sectorColor : Color = Color(lightAdjusted,lightAdjusted,lightAdjusted)
+				var realTextureName : String = textureName.split(",")[0]#after the comma is alpha to stop same textures of different alpha being lost in merge
+				mat = materialManager.fetchGeometryMaterial(realTextureName,text,sectorColor,Vector2.ZERO,alpha,true)
+				
 			else:
-				mat = $"../ResourceManager".fetchSkyMat($"../ImageBuilder".getSkyboxTextureForMap(mapName),true)
+				mat = materialManager.fetchSkyMat($"../ImageBuilder".getSkyboxTextureForMap(mapName),true)
 
 
 		
-		localSurf.set_material(mat)
+		localMesh.set_material(mat)
 		
 		
-		for meshInfo in textureGroup[textureName]:#we keep appending to localSurf
-			createMesh(localSurf,meshInfo,meshCenter,mat,text)
+		for meshInfo : Dictionary in textureGroup[textureName]:#we keep appending to localSurf
+			
+			var start : Vector2= meshInfo["start"]
+			var end : Vector2= meshInfo["end"]
+			var floorZ : float= meshInfo["floorZ"]
+			var ceilZ : float= meshInfo["ceilZ"]
+			var fCeil : float= meshInfo["fCeil"]
+			var uvType : TEXTUREDRAW = meshInfo["uvType"]
+			var textureOffset : Vector2= meshInfo["textureOffset"]
+			var sideIndex : int = meshInfo["sideIndex"]
+			
+			makeSideMesh(start,end,floorZ,ceilZ,fCeil,text,uvType,textureOffset,sideIndex,textureName,localMesh,meshCenter,mat)
+			#createMesh(localMesh,meshInfo,meshCenter,mat,text)
 			
 			if meshInfo["hasCol"] == false:
 				continue
-				
-				
-			elif meshInfo["colMask"] == 1:
-				createMesh(localSolid,meshInfo,meshCenter,mat,text)
-				
-			elif meshInfo["colMask"] == 0:
-				createMesh(localShootThrough,meshInfo,meshCenter,mat,text)
+			
+			if !keepWallsConvex:
+				if meshInfo["colMask"] == 1:
+					makeSideMesh(start,end,floorZ,ceilZ,fCeil,text,uvType,textureOffset,sideIndex,textureName,localSolid,meshCenter,mat)
+					#createMesh(localSolid,meshInfo,meshCenter,mat,text)
+					
+				elif meshInfo["colMask"] == 0:
+					makeSideMesh(start,end,floorZ,ceilZ,fCeil,text,uvType,textureOffset,sideIndex,textureName,localShootThrough,meshCenter,mat)
+					#createMesh(localShootThrough,meshInfo,meshCenter,mat,text)
 			
 				
 			sectorNode = meshInfo["sectorNode"]
 		
 		
+		if !keepWallsConvex:
+			localSolid.commit(runningSolid)
+			localShootThrough.commit(runningShootThrough)
 		
-		localSolid.commit(runningSolid)
-		localShootThrough.commit(runningShootThrough)
 		
-		
-		
-		addToMeshWall(localSurf,runningMesh)
+		runningMesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,localMesh.commit_to_arrays())
+		runningMesh.surface_set_material(runningMesh.get_surface_count()-1,mat)
+		#runningMesh.append_from(localMesh)
+		#addToMeshWall(localMesh,runningMesh)
 		
 		
 		runningMesh.surface_set_name(runningMesh.get_surface_count()-1,textureName)
@@ -200,37 +281,38 @@ func textureGroupIntoMesh(textureGroup,runningMesh,sectors,sectorIdx,runningSoli
 
 
 	
-func createMesh(localSurf,meshInfo,origin,mat,texture):
-	var start = meshInfo["start"]
-	var end = meshInfo["end"]
-	var floorZ = meshInfo["floorZ"]
-	var ceilZ = meshInfo["ceilZ"]
-	var fCeil = meshInfo["fCeil"]
-	var uvType = meshInfo["uvType"]
-	var textureOffset = meshInfo["textureOffset"]
-	var sideIndex = meshInfo["sideIndex"]
+func createMesh(localSurf : SurfaceTool,meshInfo : Dictionary,origin : Vector3,mat : Material,texture : Texture) -> void:
+	var start : Vector2= meshInfo["start"]
+	var end : Vector2= meshInfo["end"]
+	var floorZ : float= meshInfo["floorZ"]
+	var ceilZ : float= meshInfo["ceilZ"]
+	var fCeil : float= meshInfo["fCeil"]
+	var uvType : TEXTUREDRAW = meshInfo["uvType"]
+	var textureOffset : Vector2= meshInfo["textureOffset"]
+	var sideIndex : int = meshInfo["sideIndex"]
 
-	var textureName = meshInfo["textureName"]
+	var textureName : String= meshInfo["textureName"]
 
-	var sector = meshInfo["sector"]
-
-	makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,sideIndex,sector,textureName,localSurf,origin,mat)
+	
+	
+	makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,sideIndex,textureName,localSurf,origin,mat)
 	
 
+var meshCache : Dictionary = {}
 
+func makeSideMesh(start:Vector2,end:Vector2,floorZ:float,ceilZ:float,fCeil:float,texture:Texture,uvType:TEXTUREDRAW,textureOffset:Vector2,sideIndex:int,textureName:String,localSurf:SurfaceTool,origin:Vector3,mat:Material) -> void:
 
-func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,sideIndex,sector,textureName,localSurf,origin,mat):
-
-	var scaleFactor = get_parent().scaleFactor
-	var height = ceilZ-floorZ 
-	var startUVy = 0
-	var startUVx = 0
-	var endUVy= 0
-	var endUVx = 0
+	var scaleFactor : Vector3= get_parent().scaleFactor
+	var height : float = ceilZ-floorZ 
+	var startUVy : float= 0
+	var startUVx : float= 0
+	var endUVy : float= 0
+	var endUVx : float= 0
 	
+	var textureDim : Vector2 = Vector2.ZERO
 	
 	if texture != null:
-		var textureDim = texture.get_size()*Vector2(scaleFactor.x,scaleFactor.y)
+		textureDim = texture.get_size()*Vector2(scaleFactor.x,scaleFactor.y)
 		endUVx = ((start-end).length()/textureDim.x)
 		if uvType == TEXTUREDRAW.TOPBOTTOM:
 			endUVy = height
@@ -259,49 +341,59 @@ func makeSideMesh(start,end,floorZ,ceilZ,fCeil,texture,uvType,textureOffset,side
 	var TR = Vector3(end.x,ceilZ,end.y)# - origin
 	var BR = Vector3(end.x,floorZ,end.y)# - origin
 	
-	var line1 = TL - TR
-	var line2 = TL - BL
-	var normal = -line1.cross(line2).normalized()
+	var line1 : Vector3 = TL - TR
+	var line2 : Vector3 = TL - BL
+	var normal : Vector3 = -line1.cross(line2).normalized()
 
-
-	localSurf.add_normal(normal)
-	localSurf.add_uv(Vector2(startUVx,startUVy))
+	#var meshKey = [TL-TL,TR-TL,BR-TL,BL-TL,textureOffset,textureDim]
+	
+	#if !meshCache.has(meshKey):
+	#	meshCache[meshKey] = true
+	#else:
+	#	breakpoint
+	
+	localSurf.set_normal(normal)
+	localSurf.set_uv(Vector2(startUVx,startUVy))
+	localSurf.set_uv2(Vector2(startUVx,startUVy))
 	localSurf.add_vertex(TL)
 	
-	localSurf.add_normal(normal)
-	localSurf.add_uv((Vector2(endUVx,startUVy)))
+	localSurf.set_normal(normal)
+	localSurf.set_uv((Vector2(endUVx,startUVy)))
+	localSurf.set_uv2((Vector2(endUVx,startUVy)))
 	localSurf.add_vertex(TR)
 	
-	localSurf.add_normal(normal)
-	localSurf.add_uv(Vector2(endUVx,endUVy))
+	localSurf.set_normal(normal)
+	localSurf.set_uv(Vector2(endUVx,endUVy))
+	localSurf.set_uv2(Vector2(endUVx,endUVy))
 	localSurf.add_vertex(BR)
 	
 	
-	localSurf.add_normal(normal)
-	localSurf.add_uv(Vector2(startUVx,startUVy))
+	localSurf.set_normal(normal)
+	localSurf.set_uv(Vector2(startUVx,startUVy))
+	localSurf.set_uv2(Vector2(startUVx,startUVy))
 	localSurf.add_vertex(TL)
 	
-	localSurf.add_normal(normal)
-	localSurf.add_uv(Vector2(endUVx,endUVy))
+	localSurf.set_normal(normal)
+	localSurf.set_uv(Vector2(endUVx,endUVy))
+	localSurf.set_uv2(Vector2(endUVx,endUVy))
 	localSurf.add_vertex(BR)
 	
-	localSurf.add_normal(normal)
-	localSurf.add_uv(Vector2(startUVx,endUVy))
+	localSurf.set_normal(normal)
+	localSurf.set_uv(Vector2(startUVx,endUVy))
+	localSurf.set_uv2(Vector2(startUVx,endUVy))
 	localSurf.add_vertex(BL)
 	
 
-	
-func getMeshCenter(meshDict):
-	var start = meshDict["start"]
-	var origin = Vector3(start.x,meshDict["ceilZ"],start.y)
+func getMeshCenter(start,ceilZ) -> Vector3:
+	var origin : Vector3 = Vector3(start.x,ceilZ,start.y)
 	return origin
 	
-func getFloorAndCeilingMesh(sectorNode):
-	var floorNode
-	var ceilingNode
+func getFloorAndCeilingMesh(sectorNode : Node3D):
+	var floorNode : Node3D
+	var ceilingNode: Node3D
 	
-	for i in sectorNode.get_children():
-		var x = i.name
+	for i : Node in sectorNode.get_children():
+
 		if i.has_meta("ceil"): 
 			ceilingNode = i
 		if i.has_meta("floor"):
@@ -311,13 +403,12 @@ func getFloorAndCeilingMesh(sectorNode):
 	if ceilingNode == null : return null
 	
 	
-	if floorNode.has_meta("special"):
+	if floorNode.has_meta("special") or floorNode.has_meta("damage"):
 		return null
 		
-	if ceilingNode.has_meta("special"):
+	if ceilingNode.has_meta("special") or floorNode.has_meta("damage"):
 		return null
 	
-	var ml = floorNode.get_meta_list()
 	
 	var ceilingMat = ceilingNode.mesh.surface_get_material(0)
 	var floorMat = floorNode.mesh.surface_get_material(0)
@@ -328,11 +419,7 @@ func getFloorAndCeilingMesh(sectorNode):
 		}
 	
 	
-func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenDupe = false,meshInstance=null):
-	
-	var mapDict = $"../LevelBuilder".mapDict
-	
-	
+func addFloorAndCeilingToMesh(srcMeshForFloor : ArrayMesh, srcMeshForCeil : ArrayMesh,sectorNode : Node3D,sectorIdx : int,delete : bool= false,childrenDupe : bool= false,meshInstance:MeshInstance3D=null) -> void:
 	
 	var ret = getFloorAndCeilingMesh(sectorNode)
 	if ret == null:
@@ -343,31 +430,11 @@ func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenD
 	var floorMesh = ret["floorMesh"]
 	
 	
+	addFloorOrCeilToMesh(ret["ceilingMat"],srcMeshForCeil,ceilingMesh,ret["ceilingTransform"].origin,delete,ret["ceilingNode"])
 	
-	var surf = SurfaceTool.new()
+	if !dynamicFloors.has(sectorIdx):
+		addFloorOrCeilToMesh(ret["floorMat"],srcMeshForFloor,floorMesh,ret["floorTransform"].origin,delete,ret["floorNode"])
 	
-	surf.set_material(ret["ceilingMat"])
-	addToMeshFlat(surf,mesh,ceilingMesh,ret["ceilingTransform"].origin)
-	
-	if delete:
-		ret["ceilingNode"].get_parent().remove_child(ret["ceilingNode"])
-		ret["ceilingNode"].queue_free()
-	
-	#surf.commit(mesh)
-	
-	surf = SurfaceTool.new()
-	
-	for baseSector in mapDict["stairLookup"].keys():
-		if mapDict["stairLookup"][baseSector].has(sectorIdx):
-			return
-			
-			
-	surf.set_material(ret["floorMat"])
-	addToMeshFlat(surf,mesh,floorMesh,ret["floorTransform"].origin)
-
-
-	var surfname = floorMesh.surface_get_name(0)
-	mesh.surface_set_name(mesh.get_surface_count()-1,surfname)
 	
 	if childrenDupe:
 		if ret["floorNode"].has_meta("special"):
@@ -376,17 +443,26 @@ func addFloorAndCeilingToMesh(mesh,sectorNode,sectorIdx,delete = false,childrenD
 			specialNode.meshPath = "../../Geometry/" + meshInstance.name
 
 	
+
+func addFloorOrCeilToMesh(mat : Material,inputMesh : ArrayMesh,meshToAdd : ArrayMesh,origin : Vector3,delete : bool,oldNode : Node3D) -> void:
+	var surf : SurfaceTool = SurfaceTool.new()
+	
+	surf.set_material(mat)
+	addToMeshFlat(surf,inputMesh,meshToAdd,origin)
+	
 	if delete:
-		ret["floorNode"].get_parent().remove_child(ret["floorNode"])
-		ret["floorNode"].queue_free()
+		oldNode.get_parent().remove_child(oldNode)
+		oldNode.queue_free()
 		
+	var surfname = meshToAdd.surface_get_name(0)
+	inputMesh.surface_set_name(inputMesh.get_surface_count()-1,surfname)
+	
 
-
-func dumbFunc(mesh):
-	var meshInstance = MeshInstance.new()
+func dumbFunc(mesh : ArrayMesh):
+	var meshInstance : MeshInstance3D= MeshInstance3D.new()
 	meshInstance.scale = meshScale
 	meshInstance.mesh = mesh
-	
+
 	meshInstance.create_trimesh_collision()
 	
 	if meshInstance.get_child_count() != 0:
@@ -397,16 +473,16 @@ func dumbFunc(mesh):
 			return
 		
 		
-		var t =a.duplicate()
+		var t  =a.duplicate()
 		meshInstance.queue_free()
-		#a.queue_free()
 		return t
 		
 	meshInstance.queue_free()
 	return null
 	
-func addToMeshFlat(surf,dest,source,translation):
-	var data = WADG.getVertsFromMeshArrayMesh(source,translation)
+func addToMeshFlat(surf : SurfaceTool,dest:ArrayMesh,source:ArrayMesh,position:Vector3):
+
+	var data : Dictionary = WADG.getVertsFromMeshArrayMesh(source,position)
 	
 	var verts = data["verts"]
 	var normals = data["normals"]
@@ -416,39 +492,24 @@ func addToMeshFlat(surf,dest,source,translation):
 	surf.begin(Mesh.PRIMITIVE_TRIANGLES)
 	surf.set_material(mat)
 	for i in verts.size():
-		surf.add_normal(normals[i])
-		surf.add_uv(uv[i])
+		surf.set_normal(normals[i])
+		surf.set_uv(uv[i])
+		surf.set_uv2(uv[i])
 		surf.add_vertex(verts[i])
 		
 		
 	
 	surf.commit(dest)
 
-func addToMeshWall(source,dest):
+func getStairDict(dict) -> Array:
+	var allStairs  = []
 	
-	var m = ArrayMesh.new()
-	source.commit(m)
-	
-	var data = WADG.getVertsFromMeshArrayMesh(m,Vector3.ZERO)
-	
-	var verts = data["verts"]
-	var normals = data["normals"]
-	var mat = data["material"]
-	var uv = data["uv"]
-	
-	var surf = SurfaceTool.new()
-	
-	surf.begin(Mesh.PRIMITIVE_TRIANGLES)
-	
-	surf.set_material(mat)
-	
-	for i in verts.size():
-		surf.add_normal(normals[i])
-		surf.add_uv(uv[i])
-		surf.add_vertex(verts[i])
-	
+	for i in dict.keys():
+		if !allStairs.has(i):
+			allStairs.append(i)
 		
-
-	surf.commit(dest)
+		for j in dict[i]:
+			if !allStairs.has(j):
+				allStairs.append(j)
 	
-	
+	return allStairs

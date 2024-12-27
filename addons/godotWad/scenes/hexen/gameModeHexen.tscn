@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0wgldpq6xt4"]
+
+[ext_resource type="PackedScene" uid="uid://c6twtortk7i2r" path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.tscn" id="1_xper8"]
+
+[node name="mainMode_template2" instance=ExtResource("1_xper8")]
+intermissionMusic = ""
+characterEntity = "Fighter"
+
+[node name="Generator" parent="." index="0"]
+dependantChildren = Array[String](["res://addons/godotWad/scenes/hexen/main_menuHexen.tscn"])
+scoreScreenImg = null
+killsImageStr = ""
+itemsImageStr = ""
+finishedImageStr = ""
+totalImageStr = ""
+timeImageStr = ""
+parImageStr = ""
+secretImageStr = ""
+
+[node name="WadLoader" parent="." index="1"]
+fontCharsHexen = {
+33: ["FONTA01", Vector2i(0, 0)],
+34: ["FONTA02", Vector2i(0, 0)],
+35: ["FONTA03", Vector2i(0, 0)],
+36: ["FONTA04", Vector2i(0, 0)],
+37: ["FONTA05", Vector2i(0, 0)],
+38: ["FONTA06", Vector2i(0, 0)],
+39: ["FONTA07", Vector2i(0, 0)],
+40: ["FONTA08", Vector2i(0, 0)],
+41: ["FONTA09", Vector2i(0, 0)],
+42: ["FONTA10", Vector2i(0, 0)],
+43: ["FONTA11", Vector2i(0, 0)],
+44: ["FONTA12", Vector2i(0, 0)],
+45: ["FONTA13", Vector2i(0, 0)],
+46: ["FONTA14", Vector2i(0, 0)],
+47: ["FONTA15", Vector2i(0, 0)],
+48: ["FONTA16", Vector2i(0, 0)],
+49: ["FONTA17", Vector2i(0, 0)],
+50: ["FONTA18", Vector2i(0, 0)],
+51: ["FONTA19", Vector2i(0, 0)],
+52: ["FONTA20", Vector2i(0, 0)],
+53: ["FONTA21", Vector2i(0, 0)],
+54: ["FONTA22", Vector2i(0, 0)],
+55: ["FONTA23", Vector2i(0, 0)],
+56: ["FONTA24", Vector2i(0, 0)],
+57: ["FONTA25", Vector2i(0, 0)],
+58: ["FONTA26", Vector2i(0, 0)],
+59: ["FONTA27", Vector2i(0, 0)],
+60: ["FONTA28", Vector2i(0, 0)],
+61: ["FONTA29", Vector2i(0, 0)],
+62: ["FONTA30", Vector2i(0, 0)],
+63: ["FONTA31", Vector2i(0, 0)],
+100: ["FONTAY36", Vector2i(0, 0)],
+101: ["FONTAY37", Vector2i(0, 0)],
+102: ["FONTAY38", Vector2i(0, 0)],
+103: ["FONTAY39", Vector2i(0, 0)],
+104: ["FONTAY40", Vector2i(0, 0)],
+105: ["FONTAY41", Vector2i(0, 0)],
+106: ["FONTAY42", Vector2i(0, 0)],
+107: ["FONTAY43", Vector2i(0, 0)],
+108: ["FONTAY44", Vector2i(0, 0)],
+109: ["FONTAY45", Vector2i(0, 0)],
+110: ["FONTAY46", Vector2i(0, 0)],
+111: ["FONTAY47", Vector2i(0, 0)],
+112: ["FONTAY48", Vector2i(0, 0)],
+113: ["FONTAY49", Vector2i(0, 0)],
+114: ["FONTAY50", Vector2i(0, 0)],
+115: ["FONTAY51", Vector2i(0, 0)],
+116: ["FONTAY52", Vector2i(0, 0)],
+117: ["FONTAY53", Vector2i(0, 0)],
+118: ["FONTAY54", Vector2i(0, 0)],
+119: ["FONTAY55", Vector2i(0, 0)],
+120: ["FONTAY56", Vector2i(0, 0)],
+121: ["FONTAY57", Vector2i(0, 0)],
+122: ["FONTAY58", Vector2i(0, 0)]
+}

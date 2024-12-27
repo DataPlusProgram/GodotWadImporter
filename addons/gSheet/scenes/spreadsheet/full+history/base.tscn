@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://cq4opgub0sk2x"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/spreadsheet/full+history/base.gd" id="1_3yhaw"]
+[ext_resource type="PackedScene" uid="uid://cffknv4d5tc1v" path="res://addons/gameAssetImporter/scenes/richList/richList.tscn" id="1_diuu6"]
+[ext_resource type="PackedScene" uid="uid://ctflwppp4dnmp" path="res://addons/gSheet/scenes/spreadsheet/full/spreadsheetFull.tscn" id="2_1oa4h"]
+
+[node name="Base" type="HSplitContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+split_offset = -400
+script = ExtResource("1_3yhaw")
+
+[node name="RichList" parent="." instance=ExtResource("1_diuu6")]
+layout_mode = 2
+hoverColor = Color(0.254902, 0.286275, 0.376471, 1)
+borderColor = Color(0.176471, 0.2, 0.266667, 1)
+borderThicknes = 2
+
+[node name="root3" parent="." instance=ExtResource("2_1oa4h")]
+layout_mode = 2
+size_flags_horizontal = 3

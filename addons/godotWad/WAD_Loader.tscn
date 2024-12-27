@@ -1,77 +1,59 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=3 uid="uid://dhl77huh1s1at"]
 
-[ext_resource path="res://addons/godotWad/src/wadLoader/wadLoaderScript.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/src/wadLoader/floorCreator.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/src/wadLoader/lumpParser.gd" type="Script" id=3]
-[ext_resource path="res://addons/godotWad/src/wadLoader/LevelBuilder.gd" type="Script" id=4]
-[ext_resource path="res://addons/godotWad/src/wadLoader/MeshCombiner.gd" type="Script" id=5]
-[ext_resource path="res://addons/godotWad/src/thingScripts/thingParser.gd" type="Script" id=6]
-[ext_resource path="res://addons/godotWad/src/wadLoader/ResourceManager.gd" type="Script" id=7]
-[ext_resource path="res://addons/godotWad/src/wadLoader/ImagerBuilder.gd" type="Script" id=8]
-[ext_resource path="res://addons/godotWad/gameModeCreator.gd" type="Script" id=9]
-[ext_resource path="res://addons/godotWad/src/wadLoader/floorCreator3.gd" type="Script" id=10]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/wadLoaderScript.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/lumpParser.gd" id="3"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/LevelBuilder.gd" id="4"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/MeshCombiner.gd" id="5"]
+[ext_resource type="Script" path="res://addons/godotWad/src/thingScripts/thingParser.gd" id="6"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/ResourceManager.gd" id="7"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/ImagerBuilder.gd" id="8"]
+[ext_resource type="Script" path="res://addons/godotWad/gameModeCreator.gd" id="9"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/floorCreator3.gd" id="10"]
+[ext_resource type="Script" path="res://addons/godotWad/src/wadLoader/musConverter.gd" id="11_3hbe1"]
+[ext_resource type="Script" path="res://addons/godotWad/acs.gd" id="12_1y6nm"]
+[ext_resource type="Script" path="res://addons/godotWad/materialManager.gd" id="12_nbowk"]
 
-[node name="WadLoader" type="Spatial"]
-script = ExtResource( 1 )
-__meta__ = {
-"_editor_description_": "
-
-
-
-
-",
-"mapNames": [  ]
-}
-occluderBBclip = 30
+[node name="WadLoader" type="Node3D"]
+script = ExtResource("1")
+mergeMesh = 3
+unwrapLightmap = false
 
 [node name="LumpParser" type="Node" parent="."]
-script = ExtResource( 3 )
-__meta__ = {
-"hidden": true
-}
+script = ExtResource("3")
+metadata/hidden = true
 
-[node name="LevelBuilder" type="Spatial" parent="."]
-script = ExtResource( 4 )
-__meta__ = {
-"hidden": true
-}
+[node name="LevelBuilder" type="Node3D" parent="."]
+script = ExtResource("4")
+metadata/hidden = true
 
 [node name="ImageBuilder" type="Node" parent="."]
-script = ExtResource( 8 )
-__meta__ = {
-"hidden": true
-}
+script = ExtResource("8")
+metadata/hidden = true
 
-[node name="FloorBuilder" type="Node" parent="."]
-script = ExtResource( 2 )
-__meta__ = {
-"hidden": true
-}
-
-[node name="ThingParser" type="Spatial" parent="."]
-script = ExtResource( 6 )
-__meta__ = {
-"hidden": true,
-"ready": true
-}
+[node name="ThingParser" type="Node3D" parent="."]
+script = ExtResource("6")
+metadata/hidden = true
 
 [node name="MeshCombiner" type="Node" parent="."]
-script = ExtResource( 5 )
-__meta__ = {
-"hidden": true
-}
+script = ExtResource("5")
+metadata/hidden = true
 
 [node name="ResourceManager" type="Node" parent="."]
-script = ExtResource( 7 )
-__meta__ = {
-"hidden": true
-}
+script = ExtResource("7")
+metadata/hidden = true
 
 [node name="FloorBuilder3" type="Node" parent="."]
-script = ExtResource( 10 )
-__meta__ = {
-"hidden": true
-}
+script = ExtResource("10")
+metadata/hidden = true
 
 [node name="gameModeCreator" type="Node" parent="."]
-script = ExtResource( 9 )
+script = ExtResource("9")
+
+[node name="musConverter" type="Node" parent="."]
+script = ExtResource("11_3hbe1")
+
+[node name="MaterialManager" type="Node" parent="."]
+script = ExtResource("12_nbowk")
+
+[node name="ACS" type="Node" parent="."]
+script = ExtResource("12_1y6nm")

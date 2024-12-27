@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://b41turepijbnk"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_cu12o"]
+
+[resource]
+script = ExtResource("1_cu12o")
+data = {
+"*": {
+"0": "INTERPIC"
+},
+"E1*": {
+"0": "WIMAP0"
+},
+"E2*": {
+"0": "WIMAP1"
+},
+"E3*": {
+"0": "WIMAP2"
+},
+"meta": {
+"colNames": ["0"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["E1*", "E2*", "E3*", "*"],
+"sheetWidth": 77.0,
+"splitSize": {
+0: 0
+}
+}
+}

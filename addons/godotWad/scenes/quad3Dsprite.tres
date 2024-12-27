@@ -1,7 +1,8 @@
-[gd_resource type="SpatialMaterial" format=2]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://da1a4pj44frdw"]
 
 [resource]
-flags_unshaded = true
-params_billboard_mode = 2
-params_use_alpha_scissor = true
-params_alpha_scissor_threshold = 0.98
+transparency = 2
+alpha_scissor_threshold = 0.98
+alpha_antialiasing_mode = 0
+shading_mode = 0
+billboard_mode = 2

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cb2xuhbv1eon2"]
+
+[ext_resource type="PackedScene" uid="uid://c6twtortk7i2r" path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.tscn" id="1_435bc"]
+
+[node name="SRBCmainMode" instance=ExtResource("1_435bc")]
+characterEntity = "Hedgehog"
+
+[node name="Generator" parent="." index="0"]
+dependantChildren = Array[String](["res://addons/godotWad/scenes/srb/srbc/SRBCmainMenu.tscn"])

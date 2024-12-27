@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cfjb3dfk8io58"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_iki0n"]
+
+[resource]
+script = ExtResource("1_iki0n")
+data = {
+"9mm": {
+"amt": 200
+},
+"energy": {
+"amt": 300
+},
+"meta": {
+"colNames": ["amt"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["9mm", "shell", "energy", "rocket"],
+"sheetWidth": 280.0,
+"splitSize": {
+0: 0
+}
+},
+"rocket": {
+"amt": 50
+},
+"shell": {
+"amt": 50
+}
+}

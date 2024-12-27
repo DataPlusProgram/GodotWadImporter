@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://yunqo1d2kcnk"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/projectiles/archvile_fire.gd" id="1_nyqi5"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/projectiles/archvileFireGenerator.gd" id="1_vy2kc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_l8d3h"]
+size = Vector3(70, 70, 70)
+
+[node name="ArchvileFire" type="Node3D"]
+script = ExtResource("1_nyqi5")
+stateDataPath = "res://addons/godotWad/resources/monsterStates/archvileFireStates.tres"
+
+[node name="Generator" type="Node" parent="."]
+script = ExtResource("1_vy2kc")
+sprites = Array[String](["FIREA0", "FIREB0", "FIREC0", "FIRED0", "FIREE0", "FIREF0", "FIREG0", "FIREH0"])
+sounds = Array[String](["DSVILATK", "DSFLAMST", "DSFLAME", "DSBAREXP"])
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+modulate = Color(1, 1, 1, 0.639216)
+billboard = 2
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+autoplay = true
+
+[node name="BlastZone" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlastZone"]
+shape = SubResource("BoxShape3D_l8d3h")

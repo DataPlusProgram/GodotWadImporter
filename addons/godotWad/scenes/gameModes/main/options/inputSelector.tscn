@@ -1,14 +1,48 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://c0u0cjdalwbn8"]
 
-[ext_resource path="res://addons/godotWad/scenes/gameModes/main/options/inputSelector.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/options/inputSelector.gd" id="1"]
+[ext_resource type="Script" path="res://addons/controller_icons/objects/ControllerIconTexture.gd" id="2_qjrbu"]
+
+[sub_resource type="Texture2D" id="Texture2D_0jm1e"]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("2_qjrbu")
+path = ""
+show_mode = 0
+force_type = 0
 
 [node name="inputSelector" type="LineEdit"]
-align = 1
+offset_right = 67.0625
+offset_bottom = 44.0
+alignment = 1
 editable = false
 context_menu_enabled = false
 shortcut_keys_enabled = false
 middle_mouse_paste_enabled = false
-script = ExtResource( 1 )
+caret_blink = true
+caret_blink_interval = 0.5
+script = ExtResource("1")
 
+[node name="ControllerTextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0002
+offset_top = -21.0
+offset_right = 19.9997
+offset_bottom = 19.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("Texture2D_0jm1e")
+expand_mode = 1
+stretch_mode = 5
+
+[connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="text_change_rejected" from="." to="." method="_on_inputSelector_text_change_rejected"]
 [connection signal="text_changed" from="." to="." method="_on_inputSelector_text_changed"]

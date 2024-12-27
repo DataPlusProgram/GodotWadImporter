@@ -1,0 +1,139 @@
+[gd_scene load_steps=5 format=3 uid="uid://dyr0nmjpo3o8x"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/saveLoadMenu/saveLoadUI.gd" id="1_vyt7u"]
+[ext_resource type="Script" path="res://addons/godotWad/src/saveLoad.gd" id="2_68sv0"]
+[ext_resource type="PackedScene" uid="uid://cffknv4d5tc1v" path="res://addons/gameAssetImporter/scenes/richList/richList.tscn" id="2_b0nam"]
+[ext_resource type="Texture2D" uid="uid://dhska36omja2w" path="res://addons/godotWad/sprites/saveEmpty.png" id="3_i25ka"]
+
+[node name="SaveLoadUi" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vyt7u")
+mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+
+[node name="CloseButton" type="Button" parent="VBoxContainer/MarginContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+text = " X "
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SplitContainer" type="HSplitContainer" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 100
+split_offset = 8
+dragger_visibility = 1
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/MarginContainer/SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="fileList" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/ScrollContainer" instance=ExtResource("2_b0nam")]
+unique_name_in_owner = true
+layout_mode = 2
+textColor = Color(0.698039, 0.698039, 0.698039, 1)
+separatorColor = Color(0.196078, 0.207843, 0.215686, 1)
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Load"
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Save"
+
+[node name="DeleteButton" type="Button" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Delete"
+
+[node name="DeleteConfirmationDialog" type="ConfirmationDialog" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/DeleteButton"]
+unique_name_in_owner = true
+title = "Deletion Confirmation"
+position = Vector2i(500, 275)
+size = Vector2i(440, 120)
+ok_button_text = "Yes"
+dialog_text = "           Are you sure you wish to delete this save? "
+cancel_button_text = "No"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 15
+
+[node name="previewImage" type="TextureRect" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("3_i25ka")
+
+[node name="Panel" type="Panel" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer/Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer/Panel/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="dateTime" type="Label" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="mapName" type="Label" parent="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer/Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("2_68sv0")
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer2/CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/LoadButton" to="." method="_on_load_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/DeleteButton" to="." method="_on_dekete_button_pressed"]
+[connection signal="confirmed" from="VBoxContainer/MarginContainer/SplitContainer/VBoxContainer2/DeleteButton/DeleteConfirmationDialog" to="." method="_on_delete_confirmation_dialog_confirmed"]
+[connection signal="loadFinishedSignal" from="Node" to="." method="_on_node_load_finished_signal"]

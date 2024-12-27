@@ -1,12 +1,20 @@
-extends Spatial
+@tool
+extends Node3D
 
 var overlappingBodies = []
-export(WADG.TTYPE) var triggerType
+var walkOverBodies : Array = []
+
+@export var triggerType :WADG.TTYPE
 
 func _physics_process(delta):
 	#if get_node_or_null("trigger") != null:# X1 triggers will get deleted after first trigger
 	for i in overlappingBodies:
 		bodyIn(i)
+	
+	for body in walkOverBodies:
+		bodyIn(body)
+	
+	walkOverBodies = []
 
 
 
@@ -18,7 +26,7 @@ func bodyIn(body):
 		if body.interactPressed == false:
 			return
 	
-	if body.get_class() != "StaticBody" and "interactPressed" in body:
+	if body.get_class() != "StaticBody3D" and "interactPressed" in body:
 		for c in get_parent().get_children():
 			if c == self : continue
 			
@@ -30,12 +38,17 @@ func bodyIn(body):
 					
 				
 
+func walkOverTrigger(body):
+	if !walkOverBodies.has(body):
+		walkOverBodies.append(body)
+	
+
 func bin(body):
 	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
 		if !"interactPressed" in body:
 			return
 			
-	if body.get_class() == "StaticBody": return
+	if body.get_class() == "StaticBody3D": return
 	
 	
 	if !overlappingBodies.has(body):

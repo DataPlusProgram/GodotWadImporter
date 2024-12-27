@@ -1,0 +1,286 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://c8hr8pm817k6y"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_21xw2"]
+
+[resource]
+script = ExtResource("1_21xw2")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "SARGA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "SARGB"
+},
+"10": {
+"": "",
+"Dur": 8,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "SARGE"
+},
+"11": {
+"": "",
+"Dur": 8,
+"Frame": "F",
+"Function": "face",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "SARGF"
+},
+"12": {
+"": "",
+"Dur": 8,
+"Frame": "G",
+"Function": "attack",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SARGG"
+},
+"13": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SARGH"
+},
+"14": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "deadState",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "SARGI"
+},
+"15": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "playDeath",
+"Lit": false,
+"Next": 16,
+"Paramters": "",
+"Sprite": "SARGJ"
+},
+"16": {
+"": "",
+"Dur": 4,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 17,
+"Paramters": "",
+"Sprite": "SARGK"
+},
+"17": {
+"": "",
+"Dur": 4,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "SARGL"
+},
+"18": {
+"": "",
+"Dur": 4,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "SARGM"
+},
+"19": {
+"": "",
+"Dur": -1,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "SARGN"
+},
+"2": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "SARGA"
+},
+"20": {
+"": "",
+"Dur": 5,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "SARGN"
+},
+"21": {
+"": "",
+"Dur": 5,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 22,
+"Paramters": "",
+"Sprite": "SARGM"
+},
+"22": {
+"": "",
+"Dur": 5,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 23,
+"Paramters": "",
+"Sprite": "SARGL"
+},
+"23": {
+"": "",
+"Dur": 5,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 24,
+"Paramters": "",
+"Sprite": "SARGK"
+},
+"24": {
+"": "",
+"Dur": 5,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "SARGJ"
+},
+"25": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SARGI"
+},
+"3": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "SARGA"
+},
+"4": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "SARGB"
+},
+"5": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "SARGB"
+},
+"6": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "SARGC"
+},
+"7": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "SARGC"
+},
+"8": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "SARGD"
+},
+"9": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SARGD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"],
+"sheetWidth": 2056.0,
+"splitSize": {
+0: 95,
+1: 64,
+2: 0,
+3: 64,
+4: 65,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

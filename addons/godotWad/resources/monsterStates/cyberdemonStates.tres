@@ -1,0 +1,286 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://4b8e0v6e2hjf"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_24ncc"]
+
+[resource]
+script = ExtResource("1_24ncc")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "CYBRA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "CYBRB"
+},
+"10": {
+"": "",
+"Dur": 6,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "CYBRE"
+},
+"11": {
+"": "",
+"Dur": 12,
+"Frame": "F",
+"Function": "attack",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "CYBRF"
+},
+"12": {
+"": "",
+"Dur": 12,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "CYBRE"
+},
+"13": {
+"": "",
+"Dur": 12,
+"Frame": "F",
+"Function": "attack",
+"Lit": false,
+"Next": 14,
+"Paramters": "",
+"Sprite": "CYBRF"
+},
+"14": {
+"": "",
+"Dur": 12,
+"Frame": "F",
+"Function": "face",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "CYBRF"
+},
+"15": {
+"": "",
+"Dur": 12,
+"Frame": "F",
+"Function": "attack",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "CYBRF"
+},
+"16": {
+"": "",
+"Dur": 10,
+"Frame": "G",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "CYBRG"
+},
+"17": {
+"": "",
+"Dur": 10,
+"Frame": "H",
+"Function": "",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "CYBRH"
+},
+"18": {
+"": "",
+"Dur": 10,
+"Frame": "I",
+"Function": "playDeath",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "CYBRI"
+},
+"19": {
+"": "",
+"Dur": 10,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 20,
+"Paramters": "",
+"Sprite": "CYBRJ"
+},
+"2": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "CYBRA"
+},
+"20": {
+"": "",
+"Dur": 10,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "CYBRK"
+},
+"21": {
+"": "",
+"Dur": 10,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 22,
+"Paramters": "",
+"Sprite": "CYBRL"
+},
+"22": {
+"": "",
+"Dur": 10,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 23,
+"Paramters": "",
+"Sprite": "CYBRM"
+},
+"23": {
+"": "",
+"Dur": 10,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 24,
+"Paramters": "",
+"Sprite": "CYBRN"
+},
+"24": {
+"": "",
+"Dur": 10,
+"Frame": "O",
+"Function": "deadState",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "CYBRO"
+},
+"25": {
+"": "",
+"Dur": 10,
+"Frame": "P",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "CYBRP"
+},
+"3": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "CYBRA"
+},
+"4": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "CYBRB"
+},
+"5": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "CYBRB"
+},
+"6": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "CYBRC"
+},
+"7": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "CYBRC"
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "CYBRD"
+},
+"9": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "CYBRD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"],
+"sheetWidth": 2134.0,
+"splitSize": {
+0: 95,
+1: 65,
+2: 65,
+3: 64,
+4: 72,
+5: 86,
+6: 97,
+7: 0
+}
+}
+}

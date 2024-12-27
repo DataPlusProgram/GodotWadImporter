@@ -1,0 +1,148 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://v6a4le1fsoe"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_y5okl"]
+
+[resource]
+script = ExtResource("1_y5okl")
+data = {
+"0": {
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Paramters": "",
+"Sprite": "SHT2A",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"Dur": 3,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"Paramters": "",
+"Sprite": "SHT2A",
+"flashFrame": "I",
+"flashSprite": "SHT2I0"
+},
+"10": {
+"Dur": 5,
+"Frame": "A",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"Paramters": "",
+"Sprite": "SHT2A",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"Dur": 7,
+"Frame": "A",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"Paramters": "",
+"Sprite": "SHT2A",
+"flashFrame": "J",
+"flashSprite": "SHT2J0"
+},
+"3": {
+"Dur": 7,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"Paramters": "",
+"Sprite": "SHT2B",
+"flashFrame": "",
+"flashSprite": ""
+},
+"4": {
+"Dur": 7,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 5,
+"Paramters": "checkAmmo",
+"Sprite": "SHT2C",
+"flashFrame": "",
+"flashSprite": ""
+},
+"5": {
+"Dur": 7,
+"Frame": "D",
+"Function": "playExtraSound1",
+"Lit": "",
+"Next": 6,
+"Paramters": "",
+"Sprite": "SHT2D",
+"flashFrame": "",
+"flashSprite": ""
+},
+"6": {
+"Dur": 7,
+"Frame": "E",
+"Function": "",
+"Lit": "",
+"Next": 7,
+"Paramters": "",
+"Sprite": "SHT2E",
+"flashFrame": "",
+"flashSprite": ""
+},
+"7": {
+"Dur": 7,
+"Frame": "F",
+"Function": "playReload",
+"Lit": "",
+"Next": 8,
+"Paramters": "",
+"Sprite": "SHT2F",
+"flashFrame": "",
+"flashSprite": ""
+},
+"8": {
+"Dur": 6,
+"Frame": "G",
+"Function": "",
+"Lit": "",
+"Next": 9,
+"Paramters": "",
+"Sprite": "SHT2G",
+"flashFrame": "",
+"flashSprite": ""
+},
+"9": {
+"Dur": 6,
+"Frame": "H",
+"Function": "playExtraSound2",
+"Lit": "",
+"Next": 10,
+"Paramters": "",
+"Sprite": "SHT2H",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "flashSprite", "flashFrame", "Paramters"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+"sheetWidth": 2345.0,
+"splitSize": {
+0: 64,
+1: 0,
+2: 0,
+3: 98,
+4: 182,
+5: 115,
+6: 64,
+7: 64,
+8: 0
+}
+}
+}

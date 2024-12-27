@@ -1,30 +1,78 @@
-tool
-extends MeshInstance
+@tool
+extends MeshInstance3D
 
 #export(SpriteFrames) var frames : SpriteFrames = null
 var frames : Resource
 var isReady : bool = false
-var latestFrame
-var latestAnim = "front"
-var modulate = 1
-var pModulate = 1
-var curFrame = 0
-var pFrame = 0
-onready var visibility = get_node_or_null("../VisibilityNotifier")
+#var modulate : float= 1
+#var pModulate : float= 1.0
+var curFrame : String = "A"
+var pFrame : String = curFrame
+var pMeshSize : Vector2 =  Vector2.ZERO
+var pPosY : float = 0
+var pPosX : float = 0
+var matToDim : Dictionary = {}
+var previousMat : Material = null
+var levelHandlesDisable = true
+var mapNode : Node = null
+var sectorInfo : Array[Dictionary]
+@export var customAABB : Vector2 = Vector2(0,0)
+@export var sprToOffset : Array
 
-export var frameList : Dictionary
-export(String) var curAnimation  = "front"
-export(Vector3) var scaleFactor = Vector3.ONE 
-export(Vector3) var offset = Vector3.ZERO 
+@onready var visibility = get_node_or_null("../VisibleOnScreenNotifier3D")
+@onready var isEditor : bool = Engine.is_editor_hint()
+@export var frameList : Dictionary
+@export var curAnimation: String  = "A"
+@export var scaleFactor: Vector3 = Vector3.ONE
+@export var screenSpace: bool = false
+
+
+
+var isEnabled : bool = true
+
+
 func _ready():
-	var pModulate = modulate
+	
+	custom_aabb.size.x = customAABB.x + 5
+	
+	custom_aabb.size.y = customAABB.y + 5
+	
+	#var pModulate = modulate
 	isReady = true
+	setMat("A")
 	mesh = mesh.duplicate(true)
-
+	
+	if frameList.is_empty():
+		return
+	
+	if "map" in get_parent():
+		mapNode = get_parent().map
+	
+	if levelHandlesDisable:
+		add_to_group("mapCanDisable")
+	
+	
+	#for animName : StringName in frameList.keys():
+		#for mat : Material in frameList[animName]:
+			#if mat == null:
+				#return
+			#if mat.get_class() == &"ShaderMaterial":
+				#matToDim[mat.get_rid().get_id()] = mat.get_shader_parameter("texture_albedo")
+			#else:
+				#mat.albedo_texture.get_size()
+				
+				
+	#if  frameList[curAnimation].size() == 0:
+		#visible = false
+		#return
+	#var t : Material  = frameList[curAnimation][0]
+	#setScalingAndSize(t)
+	#set_surface_override_material(0,t)
 
 
 
 func get_frame(animName,frame):
+	return
 	if !frameList.has(animName):
 		return
 		
@@ -33,8 +81,8 @@ func get_frame(animName,frame):
 	if f == null:
 		return null
 	
-	if f.get_class() == "ShaderMaterial":
-		return f.get_shader_param("texture_albedo")
+	if f.get_class() == &"ShaderMaterial":
+		return f.get_shader_parameter("texture_albedo")
 	
 	
 	
@@ -44,130 +92,162 @@ func get_frame(animName,frame):
 func has_animation(animName) -> bool:
 	return frameList.has(animName)
 	
-func add_animation(animName) -> void:
+func add_animation_library(animName) -> void:
 	if !frameList.has(animName):
 		frameList[animName] = []
 			
-func add_frame(anim : String,frame : Material,position:int):
-	frameList[anim].insert(position,frame)
+func add_frame(anim : String,spriteRow : Material):
+	var dirs : Array[String] = ["S","SW","W","NW","N","NE","East","SE"]
+	for i in dirs:
+		var texture : Texture2D = spriteRow.get_shader_parameter(i)
+		if texture == null:
+			continue
+			
+		if texture.get_height() > customAABB.y:
+			customAABB.y = texture.get_height() * scaleFactor.y
+		
+		if texture.get_width() > customAABB.x:
+			customAABB.x = texture.get_width() * scaleFactor.x
+	
+	custom_aabb.size.x = customAABB.x
+	custom_aabb.size.y = customAABB.y
+	
+	frameList[anim] = spriteRow
 
-func setMat(args : Array) -> void:
+func setMatStr(sprName : String):
+	pass
+func disable():
+	pass
+func enable():
+	pass
+func setMat(frame : String) -> void:
 	
-	curFrame = args[0]
 	
-	
-	if isPlayerTooFar() == true:
+	if !isReady:
 		return
 
+	#if "weaponName" in get_parent():
+	#	breakpoint
+
+	if frame.is_empty():
+		return
 	
-	if visibility != null:
-		if !visibility.is_on_screen():
-			latestFrame = args
-			visible =false
-			return
-		else:
-			visible =true
-			
+	
+	
+	
+	curFrame = frame
+	
 	
 	if visible == false:
 		return
 	
+	
+	
 
-#if tooFar:
-	#	return
 	
-	
-		
-	if frameList[curAnimation].size() <= args[0]:
-		print("missing frame:",args[0], "on ",curAnimation)
+	if !frameList.has(curFrame):
 		return
-	var t : Material  = frameList[curAnimation][args[0]]
+	
+	#
+	#if frameList.size() <= curFrame:
+		#print("missing frame:",curFrame, "on ",curAnimation)
+		#return
+		
+	var t : Material  = frameList[curFrame]
 	
 	if t == null:
 		return
-		
 	
-	
-	if get_surface_material(0) == t:
-		latestFrame = args
+	if previousMat == t:
 		return
 	
-	if t.get_class() == "ShaderMaterial":
-		if t.get_shader_param("texture_albedo") != null:
-			mesh.size = t.get_shader_param("texture_albedo").get_size() *Vector2(scaleFactor.x,scaleFactor.y)
-			translation.y = (t.get_shader_param("texture_albedo").get_size().y/2.0) *scaleFactor.y - 0.035
-			translation.x = -offset.x*scaleFactor.x# - 0.088
-			
-			
+	if isPlayerTooFar() == true:
+		return
 	
-	elif  t.albedo_texture != null:
-		mesh.size = t.albedo_texture.get_size()  *Vector2(scaleFactor.x,scaleFactor.y)
-		translation.y = (t.albedo_texture.get_size().y/2.0) *scaleFactor.y
-		
-		
 	
-	set_surface_material(0,t)
-	latestFrame = args
-	
+	previousMat = t
 
-
-func _on_VisibilityNotifier_camera_entered(camera):
+	set_surface_override_material(0,t)
 	
-	if latestFrame == null:
+func _on_VisibilityNotifier_camera_entered():
+	
+	if curFrame == null:
 		return
 		
-	setMat(latestFrame)
+	setMat(curFrame)
+
+var lowestPoint
+var topPoint 
+var albedo : Texture2D
+
+var pSectorLight = -1
 
 func _physics_process(delta):
 	
 	
-	if Engine.is_editor_hint():
+	if  isEditor:
 		return
 	
 	
 	
-	if modulate != pModulate or pFrame != curFrame:
-		var mat = get_surface_material(0)
-		
-		if mat != null:
-			if mat.get_class() == "ShaderMaterial":
-				mat.set_shader_param("albedo",Color(modulate,modulate,modulate))
-		
-			else:
-				mat.albedo_color = Color(modulate,modulate,modulate)
+	if visible and  isEnabled and mapNode != null:
+		var sectorInfo : Dictionary = WADG.getSectorInfoForPoint(mapNode,Vector2(global_position.x,global_position.z))
+		if sectorInfo != null:
+			var light : float = sectorInfo["light"]/256.0
+			
+			if pSectorLight != light:
+				var color = Color(light,light,light)
+				set("instance_shader_parameters/tint",color)
 	
-	pModulate = modulate
+	
+	#wpModulate = modulate
 	pFrame = curFrame
 	
-	if !frameList.has(curAnimation):
-		return
-	
-	
-	
-	if pFrame >= frameList[curAnimation].size():
-		return
+	#if !frameList.has(curAnimation):
+		#return
+	#
+	#
+	#if frameList.has(pFrame):
+		#return
 		
-	var t : Material  = frameList[curAnimation][pFrame]
+	#var t : Material  = frameList[curAnimation]
+	#
+	#if t == null:
+		#return
+
+
+
+func isPlayerTooFar() -> bool:
+	var skip : bool = true
 	
-	if t == null:
-		return
+	if !isReady:
+		return false
 	
-	if t.get_class() == "ShaderMaterial":
-		translation.y = (t.get_shader_param("texture_albedo").get_size().y/2.0) *scaleFactor.y - 0.035 - offset.y
 	
-
-
-
-func isPlayerTooFar():
-	var skip = true
+	var playersGroup = get_tree().get_nodes_in_group("player")
 	
-	if get_tree() == null:
-		return
+	if playersGroup.is_empty():
+		return false
 
-	for node in get_tree().get_nodes_in_group("player"):
-		var diff : Vector3 = node.global_translation - global_translation
+	for node : Node in playersGroup:
+		var diff : Vector3 = node.global_position - global_position
 
-		if diff.length() <= 100:
+		if diff.length_squared() <= 10000:
 			skip = false
 			
 	return skip
+
+
+func serializeSave():
+	var ret : Dictionary = {}
+	ret["curAnimation"] = curAnimation
+	ret["curFrame"] = curFrame
+	
+	return ret
+	
+	
+func serializeLoad(data : Dictionary):
+	curAnimation = data["curAnimation"]
+	curFrame = data["curFrame"]
+	setMat(curFrame)
+	

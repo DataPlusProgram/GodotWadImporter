@@ -1,162 +1,176 @@
-tool
-extends KinematicBody
+@tool
+extends CharacterBody3D
 
 var curMap
 
+signal heightSetSignal
+signal thicknessSetSignal
+signal dieSignal
+signal weaponPickupSignal
+signal interact
+signal physicsProc
 
-signal heightSet
-signal die
-export var acc = 180
-export var airSpeed = 1
+#@export var airSpeed : float = 0.0
 
-export var mouseSensitivity = 0.05
-export var headBobAmount = 0.1
-export var headBobSpeed = 1000
+@export var mouseSensitivity = 0.05
+@export var headBobAmount = 0.1
+@export var headBobSpeed = 1000
 
 
-export var initialHp = 100
-export var maxHp = 100
-export var initialArmor = 0
-export var maxArmor = 100
-
-var pPos = translation
-
-onready var hp = 100
-onready var armor = initialArmor
+@export var initialHp = 100
+@export var maxHp = 100
+@export var initialArmor = 0
+@export var maxArmor = 100
+var iFameDict : Dictionary = {}
+var pPos = position
+ 
+@onready var hp = 100
+@onready var armor = initialArmor
 
 
 var dead = false
-export var gravity = 280 
-export var maxSpeed = 1600
-var maxAcc = 0.5*maxSpeed
-var dir = Vector2.ZERO
+@export var maxSpeed = 1600
+var dir : Vector3 = Vector3.ZERO
 var inputPressedThisTick = false
-export var keyMove = 0.03
-export var friction = 1
-export var thickness = 0.5 setget changeThickness
-export var height = 2.15 setget changeHeight
-export var eyeHeightRatio = 0.7321
+@export var keyMove = 0.03
+@export var thickness = 0.5: set = changeThickness
+@export var height = 2.15: set = changeHeight
+@export var eyeHeightRatio = 0.7321
 
 var gunManager
-export var jumpSpeed = 0.5
-export var hudIndex = 0
-
-var velocity = Vector3.ZERO
+var interactHoldTime = -1
+@export var hudIndex = 0
+@export var ammoLimits : gsheet = null
+var prev_position : Transform3D
+var next_position : Transform3D
+var forceResourcesUnique = true # this is used by ENTG
 var pSpawnsReady = false
 var weaponManager= null
 var weaponManagerInitialY = 0
-var initalGravity = gravity
-var gravityVelo = Vector3()
+
 var pOnGround = false
 var onGround = false
 var jumpSound = false
-var interactPressed
-var smoothY = false
+var interactPressed = false
 var pLightLevel = 0
 var eyeHeight
 var damageImunity = []
 var camOffsetY = 0
 var processInput = true
-var debugNode = null
-onready var colShape = $"CollisionShape"
+var bobAngle = 0
+var facingDir = -basis.z
+var invinciblbeTimeout = -1
+var invincible = false
+@onready var colShape = $"CollisionShape3D"
+
+var prev_time : int
+var next_time : int
+
 var camera
 
 var initialShapeDim = Vector2.ONE
 
-onready var lastStep = translation
-onready var lastMat = "-"
-onready var footstepSound = $"footstepSound"
-var bspNode = null
+@onready var sprite = get_node_or_null("visual/AnimatedSprite3D")
+@onready var lastStep = position
+@onready var lastMat = "-"
+@onready var footstepSound = $"footstepSound"
+@onready var remoteTransform : RemoteTransform3D = $visual/cameraAttach/remoteTransform
+@onready var hasRunAnim : bool = $AnimationPlayer.has_animation("run")
+@export var gameName : String
+@export var entityName : String
+@onready var colorOverlay = get_node_or_null("UI/ColorOverlay")
+
 var backupCam = null
-var footStepDict = {
+var ammoCapDict = {}
+@export var runTransitionSpeed : float = 14.9
+@onready var speedMeter = $UI/speedmeter
+@export var states : gsheet = preload("res://addons/godotWad/resources/playerState.tres")
+
+var footstepDict = {
 
 }
-
 var categoryToWeaponDict = {}
 var categoryIndex = []
 var cachedSounds = {}
 var modelLoaderNode
-var inventory = {
+@export var inventory = {
 	"fists":{"count":1,"persistant":true},
 	"pistol":{"count":1,"persistant":true},
-	"9mm":{"count":50,"persistant":true}
+	"9mm":{"count":40,"persistant":true,"max":200,"rejectWhenFull":true},
+	"energy":{"count":0,"persistant":true,"max":300,"rejectWhenFull":true},
+	"shell":{"count":0,"persistant":true,"max":50,"rejectWhenFull":true},
+	"rocket":{"count":0,"persistant":true,"max":50,"rejectWhenFull":true},
 	}
-onready var pInventory = inventory.duplicate()
+@onready var pInventory = inventory.duplicate()
+
+var uiKeys=[
+	["Red keycard","keyR"],
+	["Blue keycard","keyB"],
+	["Yellow keycard","keyY"],
+	["Blue skull key","skullB"],
+	["Yellow skull key","skullY"],
+	["Red skull key","skullR"]
+]
 
 func _ready():
-	var t = filename
-	
-	
-	
-	if colShape != null:
-		initialShapeDim = Vector2(colShape.shape.radius,colShape.shape.height)
-	
 	changeHeight(height)
-	
+	#changeHeight(1)
 	eyeHeight = height * eyeHeightRatio
 	
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return
 	
+	EGLO.bindConsole(get_tree())
+	var console = EGLO.fetchConsole(get_tree())
+	console.close.connect(enableInput)
+	console.open.connect(disableInput)
 	
-	camera = get_node_or_null("Camera")
-	gunManager = get_node_or_null("gunManager")
+	if ammoLimits != null:
+		ammoCapDict = ammoLimits.getAsDict()
+		
+		for i in ammoCapDict.keys():
+			if inventory.has(i):
+				inventory[i]["max"] =ammoCapDict[i]["amt"]
 	
-	if !get_tree().has_meta("globalCam"):
-		backupCam = load("res://addons/gameAssetImporter/scenes/orbCam/orbCam.tscn").instance()
-		backupCam.current = true
-		backupCam.collides = true
-		backupCam.dist = 0
-		backupCam.name = "backup"
-		
-		var camPar = get_parent()
-		
-		if get_parent() == null:
-			camPar = get_tree().get_root()
-
-		#camPar.add_child(backupCam)
-		camPar.call_deferred("add_child",backupCam)
-		camera = backupCam.get_node("h/v/ClippedCamera")
-		camera.add_exception(self)
-		
-		camera.get_node("../../../").rotationChildrenY = [self]
-		camera.get_node("../../../").rotationChildrenX = [$gunManager]
-		
-
-	weaponManager = $gunManager
+	weaponManager =$visual/gunManager
 	
-
-	weaponManagerInitialY = weaponManager.translation.y
+	camera = get_node_or_null("Camera3D")
+	if get_tree().get_first_node_in_group("gameMode")!= null:
+		#$UI.theme = get_tree().get_first_node_in_group("gameMode").theme
+		weaponManager.get_node("ui").theme =  get_tree().get_first_node_in_group("gameMode").theme
+	
+	#weaponManager.weaponPickupSignal.connect(test)
+	weaponManager.weaponPickupSignal.connect(emit_signal.bind("weaponPickupSignal"))
+	weaponManagerInitialY = weaponManager.position.y
 
 
 	if !InputMap.has_action("shoot"): InputMap.add_action("shoot")
 	if !InputMap.has_action("jump"): InputMap.add_action("jump")
 	if !InputMap.has_action("interact"): InputMap.add_action("interact")
-	if !InputMap.has_action("pause"):InputMap.add_action("pause")
+	if !InputMap.has_action("openMenu"):InputMap.add_action("openMenu")
 	if !InputMap.has_action("strafe"):InputMap.add_action("strafe")
 	if !InputMap.has_action("strafeLeft"):InputMap.add_action("strafeLeft")
 	if !InputMap.has_action("strafeRight"):InputMap.add_action("strafeRight")
 	if !InputMap.has_action("turnRight"):InputMap.add_action("turnRight")
 	if !InputMap.has_action("turnLeft"):InputMap.add_action("turnLeft")
-	if !InputMap.has_action("debug"):InputMap.add_action("debug")
 	if !InputMap.has_action("forward"):InputMap.add_action("forward")
 	if !InputMap.has_action("backward"):InputMap.add_action("backward")
 	
-
+	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-	set_meta("height",$"CollisionShape".shape.height)
+	set_meta("height",WADG.getShapeHeight($"CollisionShape3D"))
 
 
 
-	for level in get_tree().get_nodes_in_group("levels"):
+	for level in get_tree().get_nodes_in_group("level"):
 		curMap = level
 		if curMap.spawnsReady == false:
 			pSpawnsReady = false
 		
 		var possibleSpawns = level.getSpawns(0)
-		if possibleSpawns.empty():
-			return
+		if possibleSpawns.is_empty():
+			continue
 		var posAndRot = possibleSpawns[0]
 
 		if posAndRot == null:#no player spawn in map
@@ -166,11 +180,60 @@ func _ready():
 			var rot = posAndRot["rot"]
 			teleport(pos,rot)
 
-
-
+	grabCameraFocus()
+	
+	
 var teleportCooldown = 0
 
+func grabCameraFocus():
+	var cam = null
+	
+	if is_instance_valid(camera):
+		return
+	
+	if get_tree().get_nodes_in_group("globalCam").size()== 0:
+		cam = createCamera()
+		return
+	else:
+		
+		#for i in get_tree().get_nodes_in_group("globalCam"):
+		#	i.active = false
+			
+		cam = get_tree().get_nodes_in_group("globalCam")[0]
+		#cam.active = true
+		if !is_instance_valid(cam):
+			breakpoint
+		
+			
+	cameraSet(cam)
 
+
+func createCamera():
+	camera = load("res://addons/gameAssetImporter/scenes/orbCam/orbCam.tscn").instantiate()
+	camera.current = true
+	camera.collides = true
+	camera.dist = 0
+	camera.name = "backup"
+		
+	var camPar = get_parent()
+		
+	if get_parent() == null:
+		camPar = get_tree().get_root()
+
+	camPar.call_deferred("add_child",camera)
+	camera.ready.connect(cameraSet.bind(camera))
+	return camera
+
+func cameraSet(cam : Node):
+
+	camera =cam
+	
+	#rotation = Vector3.ZERO
+	camera.rotationChildrenY = [weaponManager]
+	camera.rotationChildrenYprocess = [weaponManager]
+	camera.rotationChildrenXprocess = [weaponManager]
+	camera.facingDirChildren = [self]
+	remoteTransform.remote_path = remoteTransform.get_path_to(cam)
 
 func teleport(pos,rot=null,cooldown = 0):
 	
@@ -179,34 +242,48 @@ func teleport(pos,rot=null,cooldown = 0):
 	if teleportCooldown > 0:
 		return
 	
-	
 	teleportCooldown = cooldown
-	translation = pos + Vector3(0,height/2.0,0)
-	if visible == true:
-		reset_physics_interpolation()
-	if rot != null:
-		rotation = rot
+	position = pos + Vector3(0,height/2.0,0)
+
 		
 	if camera != null:
-		if camera.get_node_or_null("../../../") != null:
-			var camBase =  camera.get_node_or_null("../../../")
-			if "rotH" in camBase and rot != null:
-				camBase.rotH = 0#rad2deg(rot.y) 
-				camBase.rotV = 0#rad2deg(rot.x)
-				camBase.initialRot = Vector2(rad2deg(rot.y), rad2deg(rot.x))
+		if "rotH" in camera and rot != null:
+			camera.rotH = 0#rad_to_deg(rot.y) 
+			camera.rotV = 0#rad_to_deg(rot.x)
+			camera.initialRot = Vector2(rad_to_deg(rot.y), rad_to_deg(rot.x))
 
+
+func _process(delta: float) -> void:
+	
+	if Engine.is_editor_hint():
+		return
+	
+	if processInput and ready and InputMap.has_action("shoot"):
+		if Input.is_action_pressed("forward"):  dir.z = -1 
+		if Input.is_action_pressed("backward"): dir.z = 1
+		if Input.is_action_pressed("ui_right") or Input.is_action_pressed("strafeRight"):dir.x = 1
+		if Input.is_action_pressed("ui_left") or Input.is_action_pressed("strafeLeft"):dir.x =  -1
+		
+		#if !pOnGround:
+		#	dir.x *= airSpeed
+		#	dir.z *= airSpeed
+		
+	var veloXY = Vector3(velocity.x,0,velocity.z).length()
+	var angleInc = (delta*veloXY)
+	bobAngle = bobAngle+angleInc
+	sprite.basis =  sprite.basis.looking_at(-facingDir)
+	
+	#$visual/AnimatedSprite3D.rotate_y()
 
 func _input(event):
 	
 	if processInput == false:
 		return
 	
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return
 	
 	var just_pressed = event.is_pressed() and !event.is_echo()
-
-	
 	
 	if Input.is_key_pressed(KEY_M) and just_pressed:
 		if is_instance_valid(curMap):
@@ -214,27 +291,12 @@ func _input(event):
 
 	if Input.is_key_pressed(KEY_ALT):
 		if Input.is_key_pressed(KEY_ENTER) and just_pressed:
-			OS.window_fullscreen = !OS.window_fullscreen
+			get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (!((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))) else Window.MODE_WINDOWED
 
-	if Input.is_key_pressed(KEY_CONTROL):
+	if Input.is_key_pressed(KEY_CTRL):
 		if Input.is_key_pressed(KEY_W) and just_pressed:
 			get_tree().quit()
-	
-	if Input.is_action_just_pressed("debug"):
-		if debugNode == null:
-			debugNode = load("res://addons/godotWad/scenes/entityDebugDialog.tscn").instance()
-			debugNode.connect("hide",self,"enableInput")
-			get_tree().get_root().add_child(debugNode)
-			debugNode.popup_centered_ratio()
-			disableInput()
-			return
-		
-		if debugNode.visible == true:
-			debugNode.visible = false
-			enableInput()
-		else:
-			disableInput()
-			debugNode.popup_centered_ratio()
+
 		
 	
 	if dead:
@@ -246,37 +308,54 @@ var deg = 0
 
 var angDelta = 1
 var curAngle = 180
+
+
+
+	
+
 func _physics_process(delta):
 	
-	
-	if camOffsetY < 0:
-		camOffsetY = min(0,camOffsetY+delta*8)
-	
-	if camOffsetY > 0:
-		camOffsetY = max(0,camOffsetY-delta*8)
-	
-	if Engine.editor_hint:
+	if !is_inside_tree():
 		return
 	
-	setSpriteDir()
-	#viewBob(delta)
+	camOffsetY = clamp(camOffsetY,-0.5*eyeHeight,0.9*height)
+	
+	if camOffsetY < 0:
+		camOffsetY = min(0,camOffsetY+delta*5)
+	
+	if camOffsetY > 0:
+		camOffsetY = max(0,camOffsetY-delta*5)
+	
+	
+	
+	if Engine.is_editor_hint():
+		return
+
+	
+	
+	#setSpriteDir()
+
+	if camera != null:
+		camera.fov = SETTINGS.getSetting(get_tree(),"fov")
+	
+	
 	
 	if camera != null:
-		camera.get_node("../../../").fov = SETTINGS.getSetting(get_tree(),"fov")
-	
-	if camera != null:
-		if camera.translation.z >= 1:
+		if camera.dist >= 1:
 			weaponManager.visible = false
-			$AnimatedSprite3D.visible = true
+			sprite.visible = true
 		else:
 			weaponManager.visible = true
-			$AnimatedSprite3D.visible = false
+			sprite.visible = false
 	
 	#camera.translation.z += 0.1
 	
 	var curHud = $UI/HUDS.get_child(hudIndex)
 	
-	
+	for i in iFameDict:
+		iFameDict[i] -= delta
+		if iFameDict[i] <= 0:
+			iFameDict.erase(i)
 	
 	
 	for i in $UI/HUDS.get_children():
@@ -288,25 +367,35 @@ func _physics_process(delta):
 	var veloXY = Vector3(velocity.x,0,velocity.z).length()
 	
 
+	#$movement.isOnGround()
 	teleportCooldown -= delta * 1000
-	$movement.isOnGround()
+	
+	if invinciblbeTimeout >0 :
+		invinciblbeTimeout -= delta
+		if invinciblbeTimeout <= 0:
+			invinciblbeTimeout = -1
+			invincible = false
 	
 	if curHud != null:
 		
-		var hpLabel = curHud.find_node("hp",true,false)
-		var armorLabel = curHud.find_node("armor",true,false)
-		var ammoLabel = curHud.find_node("ammo",true,false)
+		var hpLabel = curHud.find_child("hp",true,false)
+		var armorLabel = curHud.find_child("armor",true,false)
+		var ammoLabel = curHud.find_child("ammo",true,false)
 		
 		if hpLabel != null:
 			
+			var tHp = hp
+			if tHp > 0.0 and tHp < 1.0:
+				tHp = 1.0
+			
 			if hpLabel.has_method("setText"):
-				hpLabel.setText(String(int(hp)))
+				hpLabel.setText(str(int(tHp)))
 			else:
-				hpLabel.text = String(int(hp))
+				hpLabel.text = str(int(tHp))
 		
 
 		if armorLabel != null:
-			var armorSet = String(int(armor))
+			var armorSet = str(int(armor))
 			if armor <= 0:
 				armorSet = ""
 				
@@ -322,15 +411,19 @@ func _physics_process(delta):
 		
 		if weaponManager.curGun != null:
 			var t = weaponManager.curGun.ammoType
+			if weaponManager.curGun.magSize < 0:
+				ammoLabel.visible = false
+			else:
+				ammoLabel.visible = true
 			if inventory.has(t):
 				if ammoLabel!= null:
 					if ammoLabel.has_method("setText"):
 						if t == "none":
 							ammoLabel.setText("")
 						else:
-							ammoLabel.setText(String(inventory[t]["count"]))
+							ammoLabel.setText(str(inventory[t]["count"]))
 					else:
-						ammoLabel.text = String(inventory[t]["count"])
+						ammoLabel.text = str(inventory[t]["count"])
 			else:
 				if ammoLabel.has_method("setText"):
 					ammoLabel.setText("")
@@ -341,7 +434,8 @@ func _physics_process(delta):
 					ammoLabel.setText("")
 			else:
 				ammoLabel.text = ""
-
+		
+		
 		updateKeyUI()
 	
 	if is_instance_valid(curMap):
@@ -349,7 +443,7 @@ func _physics_process(delta):
 			var spawns = curMap.getSpawns(0)
 			if spawns == null:
 				return
-			if !spawns.empty():
+			if !spawns.is_empty():
 				
 				var posAndRot = curMap.getSpawns(0)[0]
 				if posAndRot != null:
@@ -358,37 +452,33 @@ func _physics_process(delta):
 					pSpawnsReady = true
 					teleport(pos,rot)
 		
-		var x = curMap.get_meta("sectorPolyArr")
-		var bbs = curMap.get_meta("polyBB")
-		var a = OS.get_system_time_msecs()
-		
-		
-		var polyInfo = curMap.get_meta("polyIdxToInfo")
-		var posXZ = Vector2(global_translation.x,global_translation.z)
-
-		
+		var a = Time.get_ticks_msec()
+		var posXZ = Vector2(global_position.x,global_position.z)
 		var p = WADG.getSectorInfoForPoint(curMap,posXZ)
 		
 		if p != null:
 			if p.has("light"):
-				if $gunManager.curGun != null:
+				if weaponManager.curGun != null:
 				#for i in $gunManager.get_children():
-					var i = $gunManager.curGun
-					if i.get_node_or_null("AnimatedSprite3D") != null:
-						if "modulate" in i.get_node_or_null("AnimatedSprite3D"):
-							var l = 0
+					var weaponSprite =weaponManager.curGun.get_node_or_null("AnimatedSprite3D")
+					if  weaponSprite != null:
+						if "modulate" in weaponSprite:
+							var l : float = 0.0
 								
 							if p["light"] != 0:
 								l = 255.0/p["light"]
-								
-							i.get_node("AnimatedSprite3D").modulate = p["light"]/255.0
+
+							weaponSprite.modulate = p["light"]/255.0
+							
+		
+		
 		
 
 	if !is_instance_valid(curMap):
-		for level in get_tree().get_nodes_in_group("levels"):
+		for level in get_tree().get_nodes_in_group("level"):
 			curMap = level
 			var posAndRot = level.getSpawns(0)
-			if posAndRot.empty():
+			if posAndRot.is_empty():
 				return
 			
 			posAndRot = posAndRot[0]
@@ -402,7 +492,7 @@ func _physics_process(delta):
 						inventory.erase(i)
 						
 
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return
 
 
@@ -416,80 +506,111 @@ func _physics_process(delta):
 		if curHud !=null:
 			spr = weaponManager.getUIsprite()
 			#var weaponIconTexture = getChilded(curHud,"weaponIcon")
-			var weaponIconTexture = find_node("weaponIcon",true,false)
+			var weaponIconTexture = find_child("weaponIcon",true,false)
 			
 			if weaponIconTexture != null:
 				weaponIconTexture.texture = spr
 
 		
+	#interactHoldTime = max(0,interactHoldTime-delta)
 
-
-	if Input.is_action_pressed("interact"):
+	if Input.is_action_just_pressed("interact"):
 		interactPressed = true
-	else:
+	else: #interactHoldTime <= 0:
 		interactPressed = false
 
-	dir = Vector3.ZERO
-#	if Input.is_action_pressed("ui_up"): dir -= transform.basis.z
-#	if Input.is_action_pressed("ui_down"): dir += transform.basis.z
-#	if Input.is_action_pressed("ui_right"): dir += transform.basis.x
-#	if Input.is_action_pressed("ui_left"): dir -= transform.basis.x
 	
-	
-	if onGround and processInput:
-		if Input.is_action_pressed("ui_up") or Input.is_action_pressed("forward"):  dir -= Vector3(0,0,1)
-		if Input.is_action_pressed("ui_down") or Input.is_action_pressed("backward"): dir += Vector3(0,0,1)
-		if Input.is_action_pressed("ui_right") or Input.is_action_pressed("strafeRight"):dir += Vector3(1,0,0)
-		if Input.is_action_pressed("ui_left") or Input.is_action_pressed("strafeLeft"):dir -= Vector3(1,0,0)
 		
-		if Input.get_action_strength("forward") != 0: dir.z *= Input.get_action_strength("forward")
-		if Input.get_action_strength("backward") != 0: dir.z *= Input.get_action_strength("backward")
-		if Input.get_action_strength("strafeRight") != 0: dir.x *= Input.get_action_strength("strafeRight")
-		if Input.get_action_strength("strafeLeft") != 0: dir.x *= Input.get_action_strength("strafeLeft")
+		#if Input.get_action_strength("forward") != 0: dir.z -= 1 * Input.get_action_strength("forward")
+		#if Input.get_action_strength("backward") != 0: dir.z += 1 * Input.get_action_strength("backward")
+		#if Input.get_action_strength("strafeRight") != 0: dir.x += 1 * Input.get_action_strength("strafeRight")
+		#if Input.get_action_strength("strafeLeft") != 0: dir.x -= 1 * Input.get_action_strength("strafeLeft")
+		
+		
+		
+
 	
 	if dir != Vector3.ZERO:
 		inputPressedThisTick = true
 	else:
 		inputPressedThisTick = false
+	
+	if processInput:
+		if Input.is_action_just_pressed("jump"): 
+			if onGround:
+				$jumpPlayer.play()
+				dir.y = 1
+				if $AnimationPlayer.has_animation("jump"):
+					$AnimationPlayer.play("jump")
+	
+	
+	var beforePos = Vector3(global_position.x,0, global_position.z)
+	
+	#var jumpVelo = 800
+	#var forwardSpeed = 1.5625
+	#var sideSpeed: float = 1.5625
+	#var friction: float = 0.90625
+	if camera != null:
+		var movementBasisX  = camera.get_node("h/v").global_transform.basis.x
+		var movementBasisZ  = camera.get_node("h").global_transform.basis.z
+	
+		#velocity += movementBasisZ*forwardSpeed*dir.z
+
 		
-	if Input.is_action_pressed("jump"): 
-		if onGround:
-			dir.y += 10
+		#if dir.x ==-2 or dir.x == 2: 
+		#	velocity +=  movementBasisX*forwardSpeed*dir.x*0.5
+		#else:
+		#	velocity += movementBasisX*sideSpeed*dir.x
+	
+	#velocity.y += dir.y * jumpVelo *delta
 	
 	
-	
+		velocity += $movement.dirToAcc(movementBasisZ,movementBasisX,dir,delta)
+	var ppos = global_transform
 	$movement.move(delta)
-	
-	
-	if !$AnimationPlayer.is_playing() or $AnimationPlayer.current_animation =="walk" or $AnimationPlayer.current_animation == "idle":
-		if velocity.length() > 0.1:
-			!$AnimationPlayer.play("walk")
-		else:
-			 $AnimationPlayer.play("idle")
-	footsteps()
+	#emit_signal("physicsProc",delta,ppos)
+	$visual.tick(delta,ppos)
 	
 	
 	if camera != null:
-		weaponManager.rotation.x = camera.global_rotation.x
+		camera.pingTransforms()
 	
-	
-	if camera.translation.z == 0:
-		weaponManager.translation.y = eyeHeight + camOffsetY
-	else:
-		weaponManager.translation.y = (height * 1.1) + camOffsetY
-	
-	
-	ppos = translation
-	camera()
+	if speedMeter != null:
+		speedMeter.text = str((Vector3(global_position.x,0, global_position.z)-beforePos).length())
+
+	veloXY = Vector3(velocity.x,0,velocity.z).length()
 
 
-func enterLadder():
-	print("player enter ladder")
-	gravity = -initalGravity
+	var curAniStr : String =  $AnimationPlayer.current_animation
+	if !$AnimationPlayer.is_playing() or curAniStr =="walk" or curAniStr == "idle" or curAniStr == "run" or (curAniStr == "jump" and onGround):
+		if veloXY > 0.1:
+			if veloXY > runTransitionSpeed  and hasRunAnim:
+				$AnimationPlayer.play("run",-1)
+			else:
+				$AnimationPlayer.play("walk",-1)
+		else:
+			var to = $AnimationPlayer.get_animation_list()
+			$AnimationPlayer.play("idle")
+	footsteps()
+	
+	
+	
+	veloXY = Vector3(velocity.x,0,velocity.z).length()
+	var angleInc = (delta*veloXY)
+	#if veloXY > 0.05:
+	
+	
 
-func exitLadder():
-	print("player exit ladder")
-	gravity = initalGravity
+	var ang = rad_to_deg(bobAngle)
+	
+	prev_time = Time.get_ticks_msec()
+	next_time = prev_time + (delta  * 1000)
+	
+	
+	dir = Vector3.ZERO
+	ppos = position
+	
+	
 
 func die():
 	
@@ -508,8 +629,9 @@ func die():
 		pass
 	
 	$AnimationPlayer.play("die")
+	$AudioStreamPlayer3D.playDeath()
 	disableInput()
-	emit_signal("die")
+	emit_signal("dieSignal")
 	return
 
 func footsteps():
@@ -528,13 +650,14 @@ func footsteps():
 
 
 
-	if footStepDict.has(matType):
-		if translation.distance_to(lastStep) < 2 and lastMat == matType:
+	if footstepDict.has(matType):
+		if position.distance_to(lastStep) < 2 and lastMat == matType:
 			lastMat = matType
+			
 			return
 
 		lastMat = matType
-		lastStep = translation
+		lastStep = position
 
 		playMatStepSound(matType)
 
@@ -546,7 +669,7 @@ func getFootMaterial():
 		return null
 
 	if collider.get_parent() != null:
-		if collider.get_parent().get_class()!= "MeshInstance":
+		if collider.get_parent().get_class()!= "MeshInstance3D":
 			return
 
 
@@ -569,7 +692,7 @@ func getMatFromPos(meshInstance,mesh,pos):
 					continue
 
 				var tri = getVertsOfFaceGlobal(surfData,faceIdx,meshInstance)
-				if Geometry.ray_intersects_triangle(global_transform.origin,global_transform.origin.direction_to(pos),tri[0],tri[1],tri[2]):
+				if Geometry3D.ray_intersects_triangle(global_transform.origin,global_transform.origin.direction_to(pos),tri[0],tri[1],tri[2]):
 					return surfData.get_material()
 
 
@@ -595,165 +718,215 @@ func playMatStepSound(mat):
 	pass
 
 
-func friction(delta):
-	var speed = velocity.length()
-	if speed != 0:
-		var drop = speed * friction * delta
-		velocity.x *= max(speed-drop,0)/speed
-		velocity.z *= max(speed-drop,0)/speed
-
-func velo(dir,delta):
-	var proj = velocity.dot(dir)
-	var accelVel = acc * delta
-
-	if (proj + accelVel )> maxSpeed:
-		accelVel = maxSpeed - proj
-
-	velocity += dir * accelVel
-
-
-
 func changeHeight(h):
+	
 	
 	height= max(0.2,h)
 	eyeHeight = height * eyeHeightRatio
-	if get_node_or_null("Camera") != null:
-		$Camera.translation.y = h*0.732143#*(41.0/56.0)
+	if get_node_or_null("Camera3D") != null:
+		$Camera3D.position.y = h*0.732143
 	
-	
-	
-	
-	
-	if get_node_or_null("MeshInstance") != null:
-		$MeshInstance.translation.y = h/2
-		$MeshInstance.mesh.height = h
+	if get_node_or_null("MeshInstance3D") != null:
+		$MeshInstance3D.position.y = h/2
+		$MeshInstance3D.mesh.height = h
 
-	if get_node_or_null("CollisionShape") == null:
+	if get_node_or_null("CollisionShape3D") == null:
 		return
 		
-	WADG.setCollisionShapeHeight($CollisionShape,h)
+	WADG.setCollisionShapeHeight($CollisionShape3D,h)
 
-	$CollisionShape.translation.y = h/2
+	$CollisionShape3D.position.y = h/2.0
 		
-	emit_signal("heightSet")
+	emit_signal("heightSetSignal")
 
 func changeThickness(t):
 	
 	thickness = t
 	
-	if get_node_or_null("CollisionShape") == null:
+	if get_node_or_null("CollisionShape3D") == null:
 		return
 	
-	WADG.setShapeThickness($CollisionShape,t)
+	WADG.setShapeThickness($CollisionShape3D,t)
 	
 	if get_node_or_null("movement") == null:
 		return
-	
-	$movement/footCast.shape.radius = $CollisionShape.shape.radius
-	$movement/ShapeCastL.shape.radius  = $CollisionShape.shape.radius
-	$movement/ShapeCastH.shape.radius  = $CollisionShape.shape.radius
+		
+	WADG.setShapeThickness($movement/footCast,t)
+	WADG.setShapeThickness($movement/ShapeCastH,t)
+
+
+	emit_signal("thicknessSetSignal")
 
 	
 	
-
-	
-func saveToDisk():
-	
-
-	var pack = PackedScene.new()
-	pack.pack($"Camera/gunManager")
-	ResourceSaver.save("dbg/gunManager.tscn",pack)
-
-
-func recursiveOwn(node,newOwner):
-	for i in node.get_children():
-		recursiveOwn(i,newOwner)
 
 var ppos = Vector3.ZERO
 var pLL = 0
 
+func giveLimimted(value,giveAmount,naturalLimit,limitOverride):
+	if limitOverride != -1:
+		if value >= limitOverride:#don't pick up
+			return [value,false]
+				
+		if value < limitOverride and (value+giveAmount) > limitOverride:#if we weren't over the limit and now we are then cap value at limimt
+			value = limitOverride
+			return [value,true]
+		else:
+			value += giveAmount
+			return [value,true]
+	else:
+		
+		if value >= naturalLimit:#don't pick up
+			return [value,false]
+					
+			if value < naturalLimit and (value+giveAmount) > naturalLimit:#if we weren't over the limit and now we are then cap value at limit
+				value = naturalLimit
+				return[value,true]
+			else:
+				value += giveAmount
+				return [value,true]
+		else:
+			value += giveAmount
+			return [value,true]
 
 
 func pickup(dict) -> bool:
+	
 	if dict.has("giveName"):
 
 		var gName = dict["giveName"]
-		var gAmount = dict["giveAmount"]
-
+		var gAmount = 0
+		
+		
+		if dict.has("giveAmount"):
+			gAmount = dict["giveAmount"]
+	
 		if gName == ("hp"):
-			if dict.has("limit"):
-				if hp  >= dict["limit"]:
-					return false
-			
-			hp += gAmount
-			if hp > maxHp:
-				hp = maxHp
+			var limitOverride = -1
 			
 			if dict.has("limit"):
-				if hp > dict["limit"]:
-					hp =  dict["limit"]
-			$UI/ColorOverlay/AnimationPlayer.play("itemPickup")
+				limitOverride = dict["limit"]
+				
+			var ret = giveLimimted(hp,gAmount,maxHp,limitOverride)
+			hp = ret[0]
+			
+			if ret[1] == false:
+				return false
+			
+			if colorOverlay:
+				colorOverlay.get_node("AnimationPlayer").play("itemPickup")
 
 
 		elif gName == "armor":
+			var limitOverride = -1
 			
 			if dict.has("limit"):
-				if armor  >= dict["limit"]:
-					return false
+				limitOverride = dict["limit"]
+				
+			var ret = giveLimimted(armor,gAmount,maxArmor,limitOverride)
+			armor = ret[0]
 			
-			armor += gAmount
-			if armor > maxArmor:
-				armor = maxArmor
+			if ret[1] == false:
+				return false
+			
+			if colorOverlay:
+				colorOverlay.get_node("AnimationPlayer").play("itemPickup")
 				
-			if dict.has("limit"):
-				if armor > dict["limit"]:
-					armor =  dict["limit"]
-				
-			$UI/ColorOverlay/AnimationPlayer.play("itemPickup")
-
+		elif gName == "secret":
+			if !inventory.has(dict["path"]):
+				inventory[dict["path"]] = {"persistant":false}
+				popupText("Secret Discovered")
+				if curMap != null:
+					curMap.secretsFound += 1
+		
+		elif gName == "invincible":
+			invincible = gAmount
+			invinciblbeTimeout = dict["limit"]
+			
+			if colorOverlay:
+				colorOverlay.get_node("AnimationPlayer").play("itemPickup")
+			
 		else:
 			if !inventory.has(gName):
 				inventory[gName] = {"count":0}
+			
+			var invItem = inventory[gName]
 
-			inventory[gName]["count"] += gAmount
+
+			if inventory[gName].has("max"):
+				
+				if invItem["count"] >=invItem["max"]:
+					if invItem.has("rejectWhenFull"):
+						if invItem["rejectWhenFull"] == true:
+							return false
+							
+				if invItem["count"] + gAmount > invItem["max"]: 
+					invItem["count"] = invItem["max"]
+				else:
+					invItem["count"] += gAmount
+			else:
+				invItem["count"] += gAmount
+						
+				
+			
 			inventory[gName]["persistant"] = dict["persistant"]
 			
 			var curHud= $UI/HUDS.get_child(hudIndex)
 			
 			
-			if gName == "Red keycard" and curHud != null:
-				var spr = dict["sprite"].duplicate()
-				var uiIcon = getChilded(curHud,"keyR")
-				if uiIcon != null:
-					uiIcon.texture = spr
-			
-			if gName == "Blue keycard" and curHud != null:
-				var spr = dict["sprite"].duplicate()
-				var uiIcon = getChilded(curHud,"keyB")
-				if uiIcon != null:
-					uiIcon.texture = spr
-			
-			if gName == "Yellow keycard" and curHud != null:
-				var spr = dict["sprite"].duplicate()
-				var uiIcon = getChilded(curHud,"keyY")
-				if uiIcon != null:
-					uiIcon.texture = spr
-				
-			
-			$UI/ColorOverlay/AnimationPlayer.play("itemPickup")
+		
+			for i in uiKeys:
+				if gName == i[0] and curHud != null:
+					var spr = dict["sprite"].duplicate()
+					var uiIcon = getChilded(curHud,i[1])
+					
+					if uiIcon != null:
+						uiIcon.texture = spr
 
+				
+			if dict.has("uiTexture"):
+				if dict["uiTexture"][0] != null:
+					inventory[gName]["uiTarget"] = dict["uiTexture"][0]
+					inventory[gName]["textureName"] = dict["uiTexture"][1]
+					
+				inventory[gName]["gameName"] = dict["uiTexture"][2]
+				inventory[gName]["entityName"] = dict["uiTexture"][3]
+
+			
+			if colorOverlay:
+				$UI/ColorOverlay/AnimationPlayer.play("itemPickup")
+	
 	return true
 
-func setWeaponSpriteLightLevel(lightLevel):
-	for i in gunManager.weapons.get_chlidren():
-		if i.get_node_or_null("AnimatedSprite"):
-			i.get_node("AnimatedSprite").modulate = Color(lightLevel,lightLevel,lightLevel,1)
+
+func updateUIIcons():
+	return
+	for i in inventory.keys():
+		breakpoint
+
 
 
 var invulTime = {}
 var heatTime = {} 
-func takeDamage(damage : Dictionary):
 
+func popupText(txt : String,dur : float = 1.0):
+	$UI/PopupTxts/Label.text = txt
+	$UI/PopupTxts.visible = true
+	$UI/PopupTxts.modulate = Color.WHITE
+	await get_tree().create_timer(dur).timeout
+	$UI/PopupTxts/fadeAmim.play("fadeOut")
+
+func takeDamage(damage : Dictionary):
+	
+	var source = null
+	if damage.has("source"): source = damage["source"]
+	
+	
+	if invincible:
+		return
+	
+	if damage.is_empty():
+		return
 	if dead:
 		return
 	
@@ -766,13 +939,23 @@ func takeDamage(damage : Dictionary):
 		if Engine.get_physics_frames() % damage["everyNframe"] != 0:
 			return
 	
-	
+	if source != null:
+		if damage.has("iFrameMS"):
+			if iFameDict.has(source):
+				return
+			
+			#if iFameDict[source] <= 0:
+			iFameDict[source] = damage["iFrameMS"]
+			
+			
+				
+		
 	
 	if damage.has("iMS") and damage.has("specific"):
 		if !invulTime.has("specific"):
-			invulTime["specific"] = [OS.get_system_time_msecs(),damage["iMS"]]
+			invulTime["specific"] = [Time.get_ticks_msec(),damage["iMS"]]
 		else:
-			var diff = OS.get_system_time_msecs() - invulTime["specific"][0]
+			var diff = Time.get_ticks_msec() - invulTime["specific"][0]
 			if diff < damage["iMS"]:
 				return
 			else:
@@ -782,7 +965,9 @@ func takeDamage(damage : Dictionary):
 	#if !damage.has("specific"):
 	#	heatTime[damage["specific"]] = Phyics.get_frame
 	$AnimationPlayer.play("hurt")
-	$UI/ColorOverlay/AnimationPlayer.play("pain")
+	$AudioStreamPlayer3D.playHurth()
+	if colorOverlay:
+		$UI/ColorOverlay/AnimationPlayer.play("pain")
 	
 
 	var amt = damage["amt"]
@@ -809,26 +994,25 @@ func _on_KinematicBody_child_entered_tree(node):
 	pass # Replace with function body.
 
 func normalToDegree(normal : Vector3):
-	return rad2deg(normal.angle_to(Vector3.UP))
+	return rad_to_deg(normal.angle_to(Vector3.UP))
 
 func disableInput():
 	
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	processInput = false
-	
 	if camera!= null:
-		if "par" in camera.get_node("../../../"):
-			camera.get_node("../../../").processInput = false
+		if "par" in camera:
+			camera.processInput = false
 
 	
 func enableInput():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	processInput = true
 	
 	if camera!= null:
-		if "par" in camera.get_node("../../../"):
-			camera.get_node("../../../").processInput = true
+		if "par" in camera:
+			camera.processInput = true
 
 
 func getChilded(node,nameStr):
@@ -848,13 +1032,11 @@ func updateKeyUI():
 		return
 	
 
-	var uiIcon = find_node("keyR",true,false)
-	var arr = [["keyR","Red keycard"],["keyB","Blue keycard"],["keyY","Yellow keycard"]]
+	var uiIcon = find_child("keyR",true,false)
+
 	
-	
-	for i in arr:
-		#var icon = getChilded(curHud,i[0])
-		var icon = curHud.find_node(i[0],true,false)
+	for i in uiKeys:
+		var icon = curHud.find_child(i[1],true,false)
 		
 		if icon == null:
 			return
@@ -863,7 +1045,7 @@ func updateKeyUI():
 		
 		var found = false
 		for item in inventory:
-			if item == i[1]:
+			if item == i[0]:
 				found = true
 			
 		if found == false:
@@ -872,32 +1054,25 @@ func updateKeyUI():
 
 func setSpriteDir() -> void:
 	
-	
-	
-	#if !$VisibilityNotifier.is_on_screen() and !Engine.editor_hint:
-	#	return
-	
-	if get_node_or_null("AnimatedSprite3D") == null:
+
+	if sprite == null:
 		return
 
 	
 	if camera == null:
 		return
-	
 
-	
-	
 	var cameraForward = -camera.global_transform.basis.z
 
-	var forward : Vector3 = -global_transform.basis.z
-	var left : Vector3 = global_transform.basis.x
+	var forward : Vector3 = -camera.global_transform.basis.z
+	var left : Vector3 = camera.global_transform.basis.x
 	
 	var forwardDot : float = forward.dot(cameraForward)
 	
 	
 
 	
-	var anim : String = $AnimatedSprite3D.curAnimation
+	var anim : String = sprite.curAnimation
 	var newAnim  = anim
 	
 	
@@ -922,34 +1097,111 @@ func setSpriteDir() -> void:
 			elif forwardDot < 0:
 				newAnim = "frontRight"
 			else:
-				newAnim = "frontRight"
+				newAnim = "backRight"
 	
 	if anim != newAnim:
-		$AnimatedSprite3D.curAnimation = newAnim
+		sprite.curAnimation = newAnim
 
-func camera():
-	if camera == null:
-		return
-	
-	if camera.translation.z == 0:
-		camera.get_node("../../../").transform.origin = transform.origin + Vector3(0,eyeHeight + camOffsetY,0)
-	else:
-		camera.get_node("../../../").transform.origin = transform.origin + Vector3(0,(height*1.1)+camOffsetY,0)
+
 
 func viewBob(delta):
 	
 	
 	if inputPressedThisTick:
 		curAngle += angDelta * Vector3(velocity.x,0,velocity.z).length()*0.006
-	elif weaponManager.weapons.translation.y < -0.001:
+	elif weaponManager.weapons.position.y < -0.001:
 		curAngle += angDelta *60*0.006
 		
-	var angle_radians = deg2rad(curAngle)
+	var angle_radians = deg_to_rad(curAngle)
 	var mapped_value = (sin(curAngle) + 1) / 2
 	
-	weaponManager.weapons.translation.y = -0.02* mapped_value
+	weaponManager.weapons.position.y = -0.02* mapped_value
 			
-			
-		#weaponManager.weapons.translation.y = lerp(weaponManager.weapons.translation.y,0,delta)
+
+
+
+func serializeSave():
+	var ret : Dictionary = {}
 
 	
+	ret["posX"] = position.x
+	ret["posY"] = position.y
+	ret["posZ"] = position.z
+	
+	ret["rotX"] = rotation.x
+	ret["rotY"] = rotation.y
+	ret["rotZ"] = rotation.z
+	ret["hp"] = hp
+	ret["inventory"] = inventory
+	
+	ret["veloX"] = velocity.x
+	ret["veloY"] = velocity.y
+	ret["veloZ"] = velocity.z
+	
+	ret["gameName"] = gameName
+	ret["entityName"] = entityName
+	ret["height"] = height
+	
+	ret["camPitch"] = camera.pitch.rotation_degrees.x
+	ret["camYaw"]  = camera.yaw.rotation_degrees.y 
+	ret["armor"] = armor
+	ret["desiredParent"] = get_parent().get_path()
+	ret["camEnabled"] = camera.processInput
+	
+	
+	
+	return ret
+	
+
+func serializeLoad(data):
+	
+	velocity.x = data["veloX"]
+	velocity.y = data["veloY"]
+	velocity.z = data["veloZ"]
+	
+	colShape.position = Vector3.ZERO
+	pSpawnsReady = true
+	height = data["height"]
+	armor = data["armor"]
+
+	teleportCooldown = 1000
+	hp = data["hp"]
+	inventory = data["inventory"]
+	
+	for i in data["inventory"]:
+		if i == "entityKey":
+			breakpoint
+	
+	grabCameraFocus()
+
+	
+	camera.rotH = 0
+	camera.rotV = 0
+	camera.initialRot.x = data["camYaw"]
+	camera.initialRot.y = data["camPitch"]
+	camera.processInput = data["camEnabled"]
+	
+	
+	for i in data["inventory"].values():
+		if i.has("uiTarget"):
+			if i["uiTarget"] != null:
+				setUItexture(i["uiTarget"],i["gameName"],i["entityName"],i["textureName"])
+	
+	updateUIIcons()
+	
+	#weaponManager.rotation.y = rotation.y
+	
+func hideUI():
+	$UI.visible = false
+
+func showUI():
+	$UI.visible = true
+	
+func setUItexture(uiTarget,gameName,entName,textureName):
+	var curHud = $UI/HUDS.get_child(hudIndex)
+	var uiIcon = getChilded(curHud,uiTarget)
+		
+	var t = ENTG.fetchTexture(get_tree(),textureName,gameName)
+	
+	if uiIcon != null:
+		uiIcon.texture = t

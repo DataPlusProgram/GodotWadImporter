@@ -1,15 +1,15 @@
-tool
+@tool
 extends EditorProperty
 class_name FlagProperty
 
 
 func _ready():
-	var scene = load("res://addons/godotWad/scenes/flagsEditorProperty/flagEditorSecene.tscn").instance()
+	var scene = load("res://addons/godotWad/scenes/flagsEditorProperty/flagEditorSecene.tscn").instantiate()
 	var values = get_edited_object()[get_edited_property()]
 	
 	
 	scene.setValues(values)
-	scene.connect("valueChange",self,"valueChange")
+	scene.connect("valueChange", Callable(self, "valueChange"))
 	add_child(scene)
 
 

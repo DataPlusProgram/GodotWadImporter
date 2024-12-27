@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://d0p1hm1hxo3nc"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/movement.gd" id="1_iftyj"]
+
+[sub_resource type="CylinderShape3D" id="33"]
+margin = 0.0
+height = 0.1
+radius = 0.499063
+
+[sub_resource type="CylinderShape3D" id="35"]
+margin = 0.0
+height = 2.15
+radius = 0.499063
+
+[node name="movement" type="Node3D"]
+script = ExtResource("1_iftyj")
+sideSpeed = 1.25
+gravity = 28.571
+
+[node name="footCast" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+enabled = false
+shape = SubResource("33")
+target_position = Vector3(0, -2.25, 0)
+max_results = 5
+debug_shape_custom_color = Color(1, 1, 1, 1)
+
+[node name="ShapeCastH" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3, 0)
+enabled = false
+shape = SubResource("35")
+max_results = 5
+debug_shape_custom_color = Color(0, 0.0627451, 1, 1)
+
+[node name="footRay" type="RayCast3D" parent="."]
+top_level = true
+target_position = Vector3(0, -0.005, 0)

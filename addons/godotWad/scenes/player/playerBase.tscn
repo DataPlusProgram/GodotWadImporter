@@ -1,179 +1,224 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=3 uid="uid://dm4psfgy7p5y8"]
 
-[ext_resource path="res://addons/godotWad/scenes/player/player.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/src/interactionSector.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/scenes/player/Crosshair.tscn" type="PackedScene" id=3]
-[ext_resource path="res://addons/godotWad/scenes/player/debug/CanvasLayer.tscn" type="PackedScene" id=4]
-[ext_resource path="res://addons/godotWad/scenes/player/gunManager.gd" type="Script" id=5]
-[ext_resource path="res://addons/godotWad/scenes/player/movement.gd" type="Script" id=6]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/player.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/visual.gd" id="2_n4kaj"]
+[ext_resource type="Resource" uid="uid://cfjb3dfk8io58" path="res://addons/godotWad/resources/ammoCaps.tres" id="2_p44px"]
+[ext_resource type="PackedScene" uid="uid://yqhtv8mrlleh" path="res://addons/godotWad/scenes/player/scenes/creosshair/Crosshair.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://k3yruj1jf1rh" path="res://addons/gameAssetImporter/scenes/perfOverlay/perfInfo.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://c1jshd4cbsids" path="res://addons/godotWad/scenes/player/scenes/weaponManager/weaponManager.tscn" id="4_hpyjv"]
+[ext_resource type="PackedScene" uid="uid://d0p1hm1hxo3nc" path="res://addons/godotWad/scenes/player/movement.tscn" id="6_y2c3e"]
 
-[sub_resource type="CylinderShape" id=31]
-margin = 0.01
-height = 55.0
-radius = 17.4
-
-[sub_resource type="CylinderMesh" id=8]
-top_radius = 16.0
-bottom_radius = 16.0
-height = 55.0
-
-[sub_resource type="SpatialMaterial" id=32]
-flags_transparent = true
-albedo_color = Color( 1, 0, 0, 0.415686 )
-
-[sub_resource type="CylinderShape" id=33]
-margin = 0.01
-height = 27.5
-radius = 17.4
-
-[sub_resource type="CylinderShape" id=34]
-margin = 0.01
-height = 0.1
-radius = 17.4
-
-[sub_resource type="CylinderShape" id=35]
-margin = 0.01
-height = 0.1
-radius = 17.4
-
-[node name="playerBase" type="KinematicBody" groups=["player"]]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -180, 0 )
-script = ExtResource( 1 )
-__meta__ = {
-"height": 2.1
+[sub_resource type="Animation" id="Animation_jwxq8"]
+resource_name = "default"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
 }
+
+[sub_resource type="Animation" id="Animation_gxyao"]
+resource_name = "fadeOut"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.9),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_loak2"]
+_data = {
+"default": SubResource("Animation_jwxq8"),
+"fadeOut": SubResource("Animation_gxyao")
+}
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jedgj"]
+size = Vector3(31.94, 55, 31.94)
+
+[node name="playerBase" type="CharacterBody3D" groups=["player"]]
+collision_layer = 3
+collision_priority = 2.0
+wall_min_slide_angle = 0.0
+floor_stop_on_slope = false
+floor_block_on_wall = false
+floor_max_angle = 0.0
+floor_snap_length = 0.0
+script = ExtResource("1")
 mouseSensitivity = 0.06
 headBobSpeed = 500
 initialHp = 100000
 maxHp = 100000
 maxSpeed = 2000
-friction = 9
-thickness = 0.48
+thickness = 15.97
+height = 55.0
+ammoLimits = ExtResource("2_p44px")
 
-[node name="debug" parent="." instance=ExtResource( 4 )]
+[node name="visual" type="Node3D" parent="."]
+script = ExtResource("2_n4kaj")
+
+[node name="gunManager" parent="visual" instance=ExtResource("4_hpyjv")]
+
+[node name="cameraAttach" type="Marker3D" parent="visual"]
+
+[node name="remoteTransform" type="RemoteTransform3D" parent="visual/cameraAttach"]
+update_rotation = false
+
+[node name="debug" parent="." instance=ExtResource("4")]
 
 [node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="Crosshair" parent="UI" instance=ExtResource( 3 )]
+[node name="Crosshair" parent="UI" instance=ExtResource("3")]
+layout_mode = 1
+color = Color(0.752941, 0, 0.176471, 1)
 
 [node name="HUDS" type="Control" parent="UI"]
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 
 [node name="HUD1" type="Control" parent="UI/HUDS"]
-anchor_left = 0.961
-anchor_top = 0.933
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -0.0640259
-margin_top = 0.200012
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="hp" type="Label" parent="UI/HUDS/HUD1"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -51.0
-margin_top = -53.0
-margin_right = -3.0
-margin_bottom = -39.0
-text = "jiojiojio"
+offset_left = -51.0
+offset_top = -53.0
+offset_right = -3.0
+offset_bottom = -39.0
+text = "100"
 
 [node name="armor" type="Label" parent="UI/HUDS/HUD1"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -51.0
-margin_top = -37.0
-margin_right = -11.0
-margin_bottom = -23.0
-text = "jio"
+offset_left = -51.0
+offset_top = -37.0
+offset_right = -11.0
+offset_bottom = -23.0
 
 [node name="ammo" type="Label" parent="UI/HUDS/HUD1"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -51.0
-margin_top = -20.0
-margin_right = -1.0
-margin_bottom = -6.0
+offset_left = -51.0
+offset_top = -20.0
+offset_right = -1.0
+offset_bottom = -6.0
 text = ";kokpjio"
 
-[node name="gunManager" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.14822, 0 )
-script = ExtResource( 5 )
+[node name="speedmeter" type="RichTextLabel" parent="UI"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "0000"
+scroll_active = false
 
-[node name="weapons" type="Spatial" parent="gunManager"]
+[node name="PopupTxts" type="VBoxContainer" parent="UI"]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.270062
+anchor_right = 0.5
+anchor_bottom = 0.270062
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
 
-[node name="shootCast" type="RayCast" parent="gunManager"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.48 )
-enabled = true
-cast_to = Vector3( 0, 0, -1000 )
+[node name="Label" type="Label" parent="UI/PopupTxts"]
+layout_mode = 2
+text = "ojoioj"
+
+[node name="fadeAmim" type="AnimationPlayer" parent="UI/PopupTxts"]
+libraries = {
+"": SubResource("AnimationLibrary_loak2")
+}
 
 [node name="ItemList" type="ItemList" parent="."]
 visible = false
+anchors_preset = -1
 anchor_left = 0.305
 anchor_top = 0.288
 anchor_right = 0.691
 anchor_bottom = 0.76
-margin_left = -0.320007
-margin_top = 0.199997
-margin_right = 0.415955
-margin_bottom = -18.0
+offset_left = -0.320007
+offset_top = 0.199997
+offset_right = 0.415955
+offset_bottom = -18.0
 max_columns = 2
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.075, 0 )
-shape = SubResource( 31 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 27.5, 0)
+top_level = true
+shape = SubResource("BoxShape3D_jedgj")
 
-[node name="lightCast" type="RayCast" parent="."]
-enabled = true
-cast_to = Vector3( 0, -200, 0 )
+[node name="lightCast" type="RayCast3D" parent="."]
+visible = false
+target_position = Vector3(0, -200, 0)
 collision_mask = 32768
 
 [node name="footstepSound" type="AudioStreamPlayer3D" parent="."]
-unit_db = 10.0
-
-[node name="MeshInstance" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00187574, 1.075, 0.000322774 )
-mesh = SubResource( 8 )
-material/0 = SubResource( 32 )
+volume_db = 10.0
 
 [node name="TextureRect" type="TextureRect" parent="." groups=["fullscreenTexture"]]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="movement" type="Spatial" parent="."]
-script = ExtResource( 6 )
-sideSpeed = 1.25
-gravity = 28.571
-slopeAngle = 50
-snapDownnAmt = 4
+[node name="movement" parent="." instance=ExtResource("6_y2c3e")]
+sideSpeed = 1.563
+jumpVelo = 800
+groundEmergeFix = true
 
-[node name="footCast" type="ShapeCast" parent="movement"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.075, 0 )
-visible = false
-shape = SubResource( 33 )
-target_position = Vector3( 0, -2.15, 0 )
-max_results = 4
-debug_shape_custom_color = Color( 0.0431373, 0.0352941, 0.0352941, 1 )
+[node name="jumpPlayer" type="AudioStreamPlayer3D" parent="."]
 
-[node name="ShapeCastL" type="ShapeCast" parent="movement"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0 )
-visible = false
-shape = SubResource( 34 )
-debug_shape_custom_color = Color( 0.337255, 1, 0.0352941, 1 )
-
-[node name="ShapeCastH" type="ShapeCast" parent="movement"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3, 0 )
-visible = false
-shape = SubResource( 35 )
-debug_shape_custom_color = Color( 0, 0.0627451, 1, 1 )
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

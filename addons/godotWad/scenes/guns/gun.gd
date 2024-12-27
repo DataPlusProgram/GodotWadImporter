@@ -1,61 +1,61 @@
-tool
-extends Spatial
+@tool
+extends Node3D
 
 var meshNode = null
-var cast : RayCast
+var cast : RayCast3D
 var shooter
 
-export(String) var weaponName = ""
+@export var weaponName: String = ""
 
-export(int) var category = 1
-export(int) var categorySubIndex = 0
-export(String) var ammoType = "9mm"
+@export var category: int = 1
+@export var categorySubIndex: int = 0
+@export var ammoType: String = "9mm"
 
-export(Array,String) var idleAnims = []
-export(Array,String) var fireAnims = []
-export(Array,String) var reloadAnims = []
-export(String) var bringupAnim = "bringUp"
-export(String) var bringdownAnim = "bringDown"
+@export var idleAnims = [] # (Array,String)
+@export var fireAnims = [] # (Array,String)
+@export var reloadAnims = [] # (Array,String)
+@export var bringupAnim: String = "bringUp"
+@export var bringdownAnim: String = "bringDown"
+@export var pickupSound: AudioStream = null
 #export(String, FILE, "*.tscn,*.scn") var projectile = ""
-export var projectile = ""
-export(Texture) var bulletImpactTexture = load("res://addons/godotWad/sprites/bulletImpact.png")
-export(Texture) var worldSprite = null
-export(Dictionary) var reloadSounds = {
+@export var projectile = ""
+@export var bulletImpactTexture: Texture2D = load("res://addons/godotWad/sprites/bulletImpact.png")
+@export var worldSprite: Texture2D = null
+@export var reloadSounds: Dictionary = {
 	0:""
 	}
 
-export var fullyAutomatic = true
-export var shootDurationMS = 270
-export var magSize = 17
-export var damage = 8
-export var pickupAmmo = 10
-export var timeTillIdleAnim = 1000
-export var initialSpread = Vector2(0,0)
-export var maxSpread = Vector2(20,20)
-export var spreadPerShot = Vector2(5,0)
-export var bulletPerShot = 1
-export var ammoConsumedPerShot = 1
-export var reloadDurMs = 1000
-export var maxDb = 3.0
-export(float) var absRange = 1000.0
-export(int) var firstShotAccuracy = 1
-export(int) var firstShotCooldownMS = 100
-export(Curve) var curve
-export(AnimatedTexture) var wallHitSprite = null
-export var scaleFactor = Vector3.ONE
-onready var shootDurSec = shootDurationMS/1000.0
+@export var fullyAutomatic = true
+@export var shootDurationMS = 270
+@export var magSize = 17
+@export var damage = 8
+@export var pickupAmmo = 10
+@export var timeTillIdleAnim = 1000
+@export var initialSpread = Vector2(0,0)
+@export var maxSpread = Vector2(20,20)
+@export var spreadPerShot = Vector2(5,0)
+@export var bulletPerShot = 1
+@export var ammoConsumedPerShot = 1
+@export var reloadDurMs = 1000
+@export var maxDb = 3.0
+@export var absRange: float = 1000.0
+@export var firstShotAccuracy: int = 1
+@export var firstShotCooldownMS: int = 100
+@export var curve: Curve
+@export var wallHitSprite: AnimatedTexture = null
+@export var scaleFactor = Vector3.ONE
+@onready var shootDurSec = shootDurationMS/1000.0
 
-onready var curAmmoInMag = magSize
+@onready var curAmmoInMag = magSize
 var curSpread
 
 var anims : AnimationPlayer = null
 var disabled = false
-var ready = false
 var shootSoundIdx = 0
 var directory = ""
-
+var entityName = ""
+var gameName = ""
 var isReady = false
-
 var shootStartTime = INF
 var lastShootEndTime = 0
 var reloadStartTime = 0
@@ -68,10 +68,10 @@ var pState = null
 var state = IDLE
 var stateChanged = true
 
-onready var curfirstShotAccuracy = firstShotAccuracy
-onready var curFirstShotCooldown =  0
+@onready var curfirstShotAccuracy = firstShotAccuracy
+@onready var curFirstShotCooldown =  0
 
-func _get_configuration_warning():
+func _get_configuration_warnings():
 	
 	if !has_node("AnimationPlayer"):
 		return "Child AnimationPlayer Node required"
@@ -106,25 +106,23 @@ var audioCountdown = null
 
 var audioSplitPoint
 var shootDurationS
-onready var initialY = translation.y
+@onready var initialY = position.y
 var initialEnd
 func _ready():
-	
-	
 	
 	
 	if Engine.is_editor_hint():
 		return
 	
-	var t = Engine.iterations_per_second
-	var tickDur = 1.0/Engine.iterations_per_second
+	var t = Engine.physics_ticks_per_second
+	var tickDur = 1.0/Engine.physics_ticks_per_second
 	shootDurationS =  shootDurationMS / 1000.0
 	ticksPerShot = shootDurationS/tickDur
-	ticksPerShot = stepify(ticksPerShot,1)
+	ticksPerShot = snapped(ticksPerShot,1)
 	
 	
 	
-	audioSplitPoint = (ticksPerShot+2)*(1.0/Engine.iterations_per_second)
+	audioSplitPoint = (ticksPerShot+2)*(1.0/Engine.physics_ticks_per_second)
 	
 
 	
@@ -155,8 +153,9 @@ func _ready():
 
 func _physics_process(delta):
 	
-	if Engine.editor_hint: return
 	
+	
+	if Engine.is_editor_hint(): return
 	
 	if shooter != null:
 		if "processInput" in shooter:
@@ -166,12 +165,12 @@ func _physics_process(delta):
 	
 	#translation.y =  initialY - (3.8321985e-05 * pow(x,2) - 0.000699710*x - 0.14274416) - 0.00
 		
-	if ready == false:
+	if isReady == false:
 		if has_node("AnimationPlayer"):
 			
 			anims = get_node("AnimationPlayer")
 			
-			ready = true
+			isReady = true
 			
 		else:
 			return
@@ -223,11 +222,11 @@ func hit(collider,point = null):
 		else:
 			collider.takeDamage({"amt":damage,"source":shooter,"position":point})
 	else:
-		var diff = cast.get_collision_point()-global_translation
+		var diff = cast.get_collision_point()-global_position
 		var diffLen = diff.length()
 		
 		if wallHitSprite != null:
-			spawnPuff(global_translation+(diff.normalized()*diffLen*.99))
+			spawnPuff(global_position+(diff.normalized()*diffLen*.99))
 		createDecal(cast.get_collision_point(),collider,cast.get_collision_normal())
 	
 
@@ -250,7 +249,7 @@ func shootState(delta,fromCommit = false):
 				return
 				
 		audioCountdown = delta
-		shootStartTime = OS.get_system_time_msecs()
+		shootStartTime = Time.get_ticks_msec()
 		shootBullets()
 		
 		curShootTick = 1
@@ -261,8 +260,8 @@ func shootState(delta,fromCommit = false):
 			curAmmoInMag = inventory[ammoType]["count"]
 		anims.stop(true)
 		
-		if !fireAnims.empty():
-			if !idleAnims.empty():
+		if !fireAnims.is_empty():
+			if !idleAnims.is_empty():
 				anims.play(fireAnims[0]) 
 		
 		if shooter != null:
@@ -317,7 +316,7 @@ func idleState():
 		return
 	
 	if stateChanged:
-		if !idleAnims.empty():
+		if !idleAnims.is_empty():
 			anims.play(idleAnims[0])
 
 
@@ -342,13 +341,13 @@ func idleState():
 
 
 func reloadState():
-	var thisTime =  OS.get_system_time_msecs()
+	var thisTime =  Time.get_ticks_msec()
 	
 	if reloadStartTime == -1:
 		reloadSoundQueue = reloadSounds.duplicate()#we have mutliple sound clips in case of diffent sound for mag going in and out
 		curReloadTarget = -1
-		reloadStartTime = OS.get_system_time_msecs()
-		if !reloadAnims.empty():
+		reloadStartTime = Time.get_ticks_msec()
+		if !reloadAnims.is_empty():
 			if anims.has_animation(reloadAnims[0]):
 				anims.play(reloadAnims[0])
 		
@@ -362,7 +361,7 @@ func reloadState():
 
 		
 		
-	if state == RELOADING and  OS.get_system_time_msecs()-reloadStartTime >= reloadDurMs:
+	if state == RELOADING and  Time.get_ticks_msec()-reloadStartTime >= reloadDurMs:
 		anims.stop()
 		state = IDLE
 		#curAmmoInMag = magSize
@@ -380,31 +379,38 @@ func shootBullets():
 				i.canHear.append(shooter)
 		
 	
-	if get_node_or_null("Area") != null:
-		var area = $Area
+	if get_node_or_null("Area3D") != null:
+		var area = $Area3D
+		var hit = false
 		for body in area.get_overlapping_bodies():
-			hit(body,body.global_translation)
+			hit(body,body.global_position)
 			
-			if body != shooter:
-				if "hp" in body:
-					$AudioStreamPlayer3D.playImpact()
+			$AudioStreamPlayer3D.playImpact()
+			
+			#if body != shooter:
+				#if "hp" in body:
+				#	$AudioStreamPlayer3D.playImpact()
+				# hit = true
+					
+			
+		
 	
 	for i in bulletPerShot:
 
 		var shootVector = Vector3(0,0,1)
 		
 		if curfirstShotAccuracy <= 0:#no more accurate shots left
-			var spreX = rand_range(0,curSpread.x/2.0)
+			var spreX = randf_range(0,curSpread.x/2.0)
 			
 			#var spreX = rng.randfn((curSpread.x/2.0)/2.0)
 			
 			spreX = min(curSpread.x,spreX)
-			var radiusX = tan(deg2rad(spreX))
+			var radiusX = tan(deg_to_rad(spreX))
 			
-			var angle = rand_range(0,2*PI)
+			var angle = randf_range(0,2*PI)
 			
-			var spreY = rand_range(0,curSpread.y/2.0)
-			var radiusY = tan(deg2rad(spreY))
+			var spreY = randf_range(0,curSpread.y/2.0)
+			var radiusY = tan(deg_to_rad(spreY))
 			
 			#var c = curve.interpolate(rand_range(0,1))
 			var c = 1
@@ -416,12 +422,13 @@ func shootBullets():
 
 		
 		shootVector *= -absRange
-		cast.cast_to = shootVector
+		cast.target_position = shootVector
+
 		var p = null
 		
 		
 		if projectile == "":#shoot bullet
-			if get_node_or_null("Area") == null:
+			if get_node_or_null("Area3D") == null:
 				cast.force_raycast_update()
 				var collider = cast.get_collider()
 				
@@ -443,7 +450,7 @@ func shootBullets():
 			p.shooter = shooter
 			p.visible = true
 			var par = self
-			while par.get_class() != "KinematicBody":
+			while par.get_class() != "CharacterBody3D":
 				par = par.get_parent()
 			p.add_collision_exception_with(par)
 			p.transform = $"../".global_transform
@@ -466,15 +473,15 @@ func createDecal(pos,obj,normal):
 	obj.add_child(spr)
 	
 	spr.global_transform.origin = pos
-	spr.translation+= normal*0.001
+	spr.position+= normal*0.001
 	
-	var tangent
+	var orthogonal
 	
-	if    normal == Vector3.UP   : tangent =  Vector3.RIGHT
-	elif  normal == Vector3.DOWN : tangent =  Vector3.RIGHT
-	else: tangent = Vector3.DOWN
+	if    normal == Vector3.UP   : orthogonal =  Vector3.RIGHT
+	elif  normal == Vector3.DOWN : orthogonal =  Vector3.RIGHT
+	else: orthogonal = Vector3.DOWN
 	
-	spr.look_at(pos + normal, tangent)
+	spr.look_at(pos + normal, orthogonal)
 	
 	if spr.has_method("reset_physics_interpolation"):
 		spr.reset_physics_interpolation()
@@ -500,7 +507,7 @@ func sound():
 		
 		data.resize(s) 
 		stream.loop_end = s
-		stream.loop_mode = AudioStreamSample.LOOP_FORWARD
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 
 func updateState():
@@ -513,17 +520,16 @@ func updateState():
 
 
 func spawnPuff(pos : Vector3 = Vector3.ZERO):
-	wallHitSprite.fps = 10
-	wallHitSprite.oneshot = true
+	wallHitSprite.one_shot = true
 	var spr = Sprite3D.new()
-	spr.billboard = SpatialMaterial.BILLBOARD_FIXED_Y
+	spr.billboard = StandardMaterial3D.BILLBOARD_FIXED_Y
 	spr.texture = wallHitSprite.duplicate()
-	spr.translation = pos#-global_translation
+	spr.position = pos#-global_position
 	spr.pixel_size = scaleFactor.x 
 	var timer = Timer.new()
 	timer.one_shot = true
 	timer.wait_time = 0.4
-	timer.connect("timeout",spr,"queue_free")
+	timer.connect("timeout", Callable(spr, "queue_free"))
 	timer.autostart = true
 	spr.add_child(timer)
 

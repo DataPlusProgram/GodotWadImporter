@@ -1,42 +1,42 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://bkejiildygt63"]
 
-[ext_resource path="res://addons/godotWad/scenes/projectiles/projectile2d.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/scenes/projectiles/projectileGenerator.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/scenes/projectiles/projectilesounds.gd" type="Script" id=3]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/projectiles/projectile2d.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/projectiles/projectileGenerator.gd" id="2"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/projectiles/projectilesounds.gd" id="3"]
 
-[sub_resource type="SphereShape" id=1]
+[sub_resource type="SphereShape3D" id="1"]
 radius = 0.157316
 
-[sub_resource type="SphereShape" id=3]
-radius = 0.151787
+[sub_resource type="SphereShape3D" id="3"]
+radius = 0.31947
 
-[node name="projectileBase" type="KinematicBody"]
+[node name="projectileBase" type="CharacterBody3D"]
 collision_layer = 0
-collision_mask = 0
-script = ExtResource( 1 )
-velo = 6
+collision_mask = 3
+script = ExtResource("1")
+velo = 11.0
+splashRadius = 4
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 1 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("1")
 
 [node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
 pixel_size = 500.0
 billboard = 2
-__meta__ = {
-"_editor_description_": "j"
-}
 
-[node name="Area" type="Area" parent="."]
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 3
+collision_mask = 3
 
-[node name="CollisionShape" type="CollisionShape" parent="Area"]
-shape = SubResource( 3 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("3")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
 [node name="Generator" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 spawnSound = "DSRLAUNC"
 sizeIncrease = 0
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")

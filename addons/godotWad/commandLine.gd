@@ -2,98 +2,71 @@ extends Node
 
 
 
-func print_hello(name = ''):
-	Console.write_line('Hello ' + name + '!')
 	
+func test():
+	return "this is test"
+
+#func spawn(entStr,gameStr = "Doom"):
+	#entStr = entStr.to_lower()
+	#var ent = ENTG.spawn(get_tree(),entStr,Vector3.ZERO,Vector3.ZERO,gameStr)
+	#
+	#if ent == null:
+		#print('Failed to spawn ' + entStr)
 
 
-func spawn(entStr,gameStr = "Doom"):
-	entStr = entStr.to_lower()
-	var ent = ENTG.spawn(get_tree(),entStr,Vector3.ZERO,Vector3.ZERO,gameStr)
+
+func idfa():
 	
-	if ent == null:
-		Console.write_line('Failed to spawn ' + entStr)
-
-
-func spawnHere(entStr,gameStr = ""):
-	entStr = entStr.to_lower()
-	var players = get_tree().get_nodes_in_group("player")
+	var allWeapons = ["shotgun","super shotgun","chaingun","plasma gun","rocket launcher","chainsaw","BFG"]
 	
-	for i in players:
-		if i.get_node_or_null("Camera/gunManager/shootCast") != null:
-			var cast : RayCast = i.get_node_or_null("Camera/gunManager/shootCast")
-			var point = cast.get_collision_point()
+	for player in get_tree().get_nodes_in_group("player"):
+		
+		
+		for weaponStr in allWeapons:
+			var node = ENTG.fetchEntity(weaponStr,get_tree(),"Doom",false)
 			
-			var ent = ENTG.spawn(get_tree(),entStr,point,Vector3.ZERO,gameStr)
-			if ent == null:
-				Console.write_line('Failed to spawn ' + entStr)
-			return
-	
-	Console.write_line('Failed to spawn ' + entStr)
-
-
-func getEntityList(entStr):
-	entStr = entStr.to_lower()
-	var dict = ENTG.getEntityDict(get_tree(),entStr)
-	for entStr in dict.keys():
-		Console.write_line(entStr)
-
-func closeConsole():
-	Console.toggle_console()
-	
-func clearConsole():
-	Console.clear()
-
-func _ready():
-	return
-	Console.connect("toggled",self,"consoleVis")
-	
-	Console.add_command('sayHello', self, 'print_hello')\
-		.set_description('Prints "Hello %name%!"')\
-		.add_argument('name', TYPE_STRING)\
-		.register()
-	
-	Console.add_command('spawn', self, 'spawn')\
-		.set_description('Spawns entity"')\
-		.add_argument('entStr', TYPE_STRING)\
-		.add_argument('gameStr', TYPE_STRING)\
-		.register()
-		
-	
-	Console.add_command('spawnHere', self, 'spawnHere')\
-		.set_description('Spawns entity where player is looking"')\
-		.add_argument('entStr', TYPE_STRING)\
-		.add_argument('gameName', TYPE_STRING)\
-		.register()
-	
-	Console.add_command('getEntityList', self, 'getEntityList')\
-		.set_description('Gets entity list"')\
-		.add_argument('gameName', TYPE_STRING)\
-		.register()
-	
-	Console.add_command('close', self, 'closeConsole')\
-		.set_description('Closes the console')\
-		.register()
-	
-	Console.add_command('c', self, 'closeConsole')\
-		.set_description('Closes the console')\
-		.register()
-	
-	Console.add_command('cls', self, 'clearConsole')\
-		.set_description('Clears the console')\
-		.register()
-	
-	pass # Replace with function body.
-
-
-func consoleVis(vis):
-	if vis == true:
-		for i in get_tree().get_nodes_in_group("player"):
-			i.disableInput()
-	else:
-		for i in get_tree().get_nodes_in_group("player"):
-			i.enableInput()
-		
-		
+			if node == null:
+				return null
+			
+			node.visible = true
+			player.weaponManager.pickup(node,true,true)
+			player.hp = 200
 		
 
+func iddqd():
+	for player in get_tree().get_nodes_in_group("player"):
+		player.hp = 99999
+
+func idmus(index:int):
+	var node : Node = get_tree().get_nodes_in_group("gameMode")[0]
+	
+	if !"loader" in node:
+		return
+	
+	var loader = node.loader
+	var mapToMusic = loader.mapToMusic
+	
+	
+	var targetSong = null
+	var curMapName = loader.mapName
+	var count = 0
+	for i in mapToMusic.keys():
+		if i[0] == curMapName[0]:
+			count+= 1
+			
+		if count == index:
+			targetSong = mapToMusic[i]
+	
+	
+	if targetSong == null:
+		return "song not found"
+		
+	var data = loader.resourceManager.fetchMidiOrMus(targetSong)
+	
+	if data != null:
+		var midiPlayer = ENTG.fetchMidiPlayer(get_tree())
+		ENTG.setMidiPlayerData(midiPlayer,data)
+		midiPlayer.play()
+		#loader.mapNode.rawMidiData = data
+	#breakpoint
+	

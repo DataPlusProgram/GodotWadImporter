@@ -1,0 +1,236 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://v8hrgowhbdfh"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_sxd8d"]
+
+[resource]
+script = ExtResource("1_sxd8d")
+data = {
+"1": {
+"": "",
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "idle",
+"Sprite": "PLAYA"
+},
+"10": {
+"": "",
+"Dur": 10,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "PLAYK"
+},
+"11": {
+"": "",
+"Dur": 10,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "PLAYL"
+},
+"12": {
+"": "",
+"Dur": 10,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "PLAYM"
+},
+"13": {
+"": "",
+"Dur": -1,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "PLAYN"
+},
+"14": {
+"": "gib",
+"Dur": 5,
+"Frame": "O",
+"Function": "",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "PLAYO"
+},
+"15": {
+"": "",
+"Dur": 5,
+"Frame": "P",
+"Function": "",
+"Lit": false,
+"Next": 16,
+"Paramters": "",
+"Sprite": "PLAYP"
+},
+"16": {
+"": "",
+"Dur": 5,
+"Frame": "Q",
+"Function": "",
+"Lit": false,
+"Next": 17,
+"Paramters": "",
+"Sprite": "PLAYQ"
+},
+"17": {
+"": "",
+"Dur": 5,
+"Frame": "R",
+"Function": "",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "PLAYR"
+},
+"18": {
+"": "",
+"Dur": 5,
+"Frame": "S",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "PLAYS"
+},
+"19": {
+"": "",
+"Dur": 5,
+"Frame": "T",
+"Function": "",
+"Lit": false,
+"Next": 20,
+"Paramters": "",
+"Sprite": "PLAYT"
+},
+"2": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Paramters": "chase",
+"Sprite": "PLAYB"
+},
+"20": {
+"": "",
+"Dur": 5,
+"Frame": "U",
+"Function": "",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "PLAYU"
+},
+"21": {
+"": "",
+"Dur": -1,
+"Frame": "V",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "PLAYV"
+},
+"3": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "PLAYC"
+},
+"4": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "PLAYD"
+},
+"5": {
+"": "",
+"Dur": 12,
+"Frame": "E",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "shoot",
+"Sprite": "PLAYE"
+},
+"6": {
+"": "",
+"Dur": 4,
+"Frame": "G",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "pain",
+"Sprite": "PLAYG"
+},
+"7": {
+"": "dead",
+"Dur": 4,
+"Frame": "H",
+"Function": "",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "PLAYH"
+},
+"8": {
+"": "",
+"Dur": 10,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "PLAYI"
+},
+"9": {
+"": "",
+"Dur": 10,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 10,
+"Paramters": "",
+"Sprite": "PLAYJ"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"],
+"sheetWidth": 1803.0,
+"splitSize": {
+0: 96,
+1: 64,
+2: 0,
+3: 64,
+4: 65,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

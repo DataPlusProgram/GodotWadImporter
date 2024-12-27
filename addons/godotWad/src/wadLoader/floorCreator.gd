@@ -1,4 +1,4 @@
-tool
+@tool
 extends Node
 var vertsl= []
 var parent = null
@@ -27,7 +27,7 @@ var polyIdxToInfo = []
 var polyGrid = {}
 var mapName = ""
 func instance(mapDict,geomNode,specialNode):
-	var startTime = OS.get_system_time_msecs()
+	var startTime = Time.get_ticks_msec()
 	floorNavMeshArr = []
 	lines = []
 	verts = []
@@ -37,11 +37,11 @@ func instance(mapDict,geomNode,specialNode):
 	polyIdxToInfo = []
 	polyGrid = {}
 
-	sidedefs = mapDict["SIDEDEFS"]
-	var sectors = mapDict["SECTORS"]
-	var sides = mapDict["SIDEDEFS"]
-	verts = mapDict["VERTEXES"]
-	lines = mapDict["LINEDEFS"]
+	sidedefs = mapDict["sideDefsParsed"]
+	var sectors = mapDict["sectorsParsed"]
+	#var sides = mapDict["SIDEDEFS"]
+	verts = mapDict["vertexesParsed"]
+	lines = mapDict["lineDefsParsed"]
 	mapName = mapDict["name"]
 	vertsl = verts
 	mapDict = mapDict
@@ -70,18 +70,19 @@ func instance(mapDict,geomNode,specialNode):
 
 
 	if get_parent().generateNav != get_parent().NAV.OFF:
-		var nav = Navigation.new()
+		#var nav = Navigation.new()
+		var nav = Node3D.new()
 		nav.cell_size = scaleFactor.x/0.031
 		nav.cell_height = scaleFactor.y/0.038
 		nav.name = "Navigation"
 
-		var navMesh = NavigationMeshInstance.new()
+		var navMesh = NavigationRegion3D.new()
 		navMesh.name = "NavMesh"
 
 		nav.add_child(navMesh)
 		geomNode.get_parent().add_child(nav)
 
-	var secToLines = createSectorToLineArray(sectors,lines,sides)["sectorLines"]
+	var secToLines = createSectorToLineArray(sectors,lines,sidedefs)["sectorLines"]
 	var guessPoly = null
 
 
@@ -108,17 +109,17 @@ func instance(mapDict,geomNode,specialNode):
 	
 	for sectorIndex in sectors.size():
 		
-		var secNode = Spatial.new()
+		var secNode = Node3D.new()
 		var currentSector = sectors[sectorIndex]
 		var tag = currentSector["tagNum"]
 		
-		secNode.name = "sector " + String(sectorIndex)
+		secNode.name = "sector " + str(sectorIndex)
 		secNode.set_meta("floorHeight",currentSector["floorHeight"])
 		secNode.set_meta("ceilingHeight",currentSector["ceilingHeight"])
 		secNode.set_meta("oSides",[])
-		secNode.set_meta("tag",String(tag))
+		secNode.set_meta("tag",str(tag))
 		secNode.set_meta("sectorIdx",sectorIndex)
-		secNode.add_to_group("sector_tag_" + String(tag))
+		secNode.add_to_group("sector_tag_" + str(tag))
 
 		geomNode.add_child(secNode)
 	
@@ -127,7 +128,7 @@ func instance(mapDict,geomNode,specialNode):
 	for sectorIndex in sectorToLoops.size():
 		var currentSector = sectors[sectorIndex]
 		var secLines = secToLines[sectorIndex]
-		var secNode = geomNode.get_node("sector " + String(sectorIndex))
+		var secNode = geomNode.get_node("sector " + str(sectorIndex))
 		
 
 		if secLines == null:#somne maps have an error wehere the sector dosen't exist
@@ -139,7 +140,7 @@ func instance(mapDict,geomNode,specialNode):
 
 		var loops = sectorToLoops[sectorIndex]#createSectorClosedLoop4(secLines)
 
-		if loops.empty():
+		if loops.is_empty():
 			continue
 
 
@@ -167,7 +168,7 @@ func instance(mapDict,geomNode,specialNode):
 		
 
 		if get_parent().generateFloorMap:
-			secNodeL.name = String(sectorIndex)
+			secNodeL.name = str(sectorIndex)
 			floorMap.add_child(secNodeL)
 			secNodeL.set_owner(floorMap)
 
@@ -182,7 +183,7 @@ func instance(mapDict,geomNode,specialNode):
 		var holes = []
 
 		for i in loops:
-			if(!Geometry.is_polygon_clockwise(i)):
+			if(!Geometry2D.is_polygon_clockwise(i)):
 				poly = i
 			else:
 				holes.append(i)
@@ -198,7 +199,7 @@ func instance(mapDict,geomNode,specialNode):
 
 				workingSet = i[0]
 				var children = getNodeChildren(i,tree,currentSector)
-				children.sort_custom(self,"shapeXaxisCompare")
+				children.sort_custom(Callable(self, "shapeXaxisCompare"))
 
 
 				for j in children:
@@ -213,7 +214,7 @@ func instance(mapDict,geomNode,specialNode):
 					for s in j.size():
 						j[s]  /= Vector2(scaleFactor.x,scaleFactor.z)
 
-					workingSet = createCanal(workingSet,j,String(sectorIndex))
+					workingSet = createCanal(workingSet,j,str(sectorIndex))
 
 					for s in workingSet.size():
 						workingSet[s] *= Vector2(scaleFactor.x,scaleFactor.z)
@@ -255,23 +256,23 @@ func instance(mapDict,geomNode,specialNode):
 	get_parent().mapNode.set_meta("polyBB",polyBB)
 	get_parent().mapNode.set_meta("polyGrid",polyGrid)
 	
-	WADG.setTimeLog(get_tree(),"floorCreation",startTime)
+	SETTINGS.setTimeLog(get_tree(),"floorCreation",startTime)
 
 
 var secToLinesIdx
 
 
 func createFC(tris,currentSector,meshName,sectorNode,dir):
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	meshInstance.name = meshName
-	var ret = makeMesh(tris,currentSector,currentSector[meshName+"Texture"],dir)
+	var ret = makeMesh(tris,currentSector,currentSector[meshName+"Texture2D"],dir)
 	
 	meshInstance.mesh = ret["mesh"]
 	meshInstance.create_trimesh_collision()
 
 	
-	meshInstance.translation = ret["translation"] + Vector3(0,currentSector[meshName+"Height"],0)
-	meshInstance.name = meshName + " " + currentSector[meshName+"Texture"]
+	meshInstance.position = ret["position"] + Vector3(0,currentSector[meshName+"Height"],0)
+	meshInstance.name = meshName + " " + currentSector[meshName+"Texture2D"]
 	meshInstance.set_meta(meshName,"true")
 	meshInstance.set_meta("sector",currentSector["index"])
 	meshInstance.add_to_group(sectorNode.name)
@@ -286,20 +287,20 @@ func createFC(tris,currentSector,meshName,sectorNode,dir):
 		print(c.get_class())
 		if c.name.find("_col") != -1:
 			c.set_meta("floor","true")
-			c.set_collision_layer_bit(1,1)
-			c.set_collision_layer_bit(2,1)
+			c.set_collision_layer_value(1,1)
+			c.set_collision_layer_value(2,1)
 	
-	return {"meshInstance":meshInstance,"center":ret["translation"]}
+	return {"meshInstance":meshInstance,"center":ret["position"]}
 
 func navStuff(geomNode):
 
-	var staticMesh = MeshInstance.new()
+	var staticMesh = MeshInstance3D.new()
 
 
 
 	var shape = allFloorMesh.create_trimesh_shape()
-	var colShapeNode = CollisionShape.new()
-	var col = StaticBody.new()
+	var colShapeNode = CollisionShape3D.new()
+	var col = StaticBody3D.new()
 
 
 	colShapeNode.shape = shape
@@ -322,7 +323,7 @@ func navStuff(geomNode):
 
 func createNav(geomNode,mesh):
 	var navigation  = geomNode.get_node("../Navigation")
-	var navMeshInstance = NavigationMeshInstance.new()
+	var navMeshInstance = NavigationRegion3D.new()
 	var meshD = mesh.duplicate()
 
 	navMeshInstance.add_child(meshD)
@@ -413,7 +414,7 @@ func createCanal(shape1,shape2,dbg = false):
 
 	var newS1EndPoint = scaleLine([shape2MaxX+ fiddleVector,shape1closestVert],1.000001) #- Vector2(0,0.01)
 	if increasingY == 1:
-		 newS1EndPoint = scaleLine([shape2MaxX+ fiddleVector,shape1closestVert],1.000001) #+ Vector2(0,0.01)
+		newS1EndPoint = scaleLine([shape2MaxX+ fiddleVector,shape1closestVert],1.000001) #+ Vector2(0,0.01)
 	if isVertex:#if we are a vertice we need to look one point foward than we usually do
 
 		var nextPointAfterEnd = (shape1nextIndex+1)%shape1.size()
@@ -447,11 +448,11 @@ func createCanal(shape1,shape2,dbg = false):
 
 func createCanal5(shape,holes,debug = false):
 	
-	if !Geometry.is_polygon_clockwise(shape): shape.invert()
+	if !Geometry2D.is_polygon_clockwise(shape): shape.invert()
 	
 	var j = 0
 	for i in holes:
-		if Geometry.is_polygon_clockwise(i): i.invert()
+		if Geometry2D.is_polygon_clockwise(i): i.invert()
 
 		shape =polyUtil.rev(shape,i)
 
@@ -557,7 +558,7 @@ func addPointToPoly(poly,point):
 		var segA = poly[i]
 		var segB = poly[(i+1)%poly.size()]
 
-		var closest = Geometry.get_closest_point_to_segment_2d(point,segA,segB)
+		var closest = Geometry2D.get_closest_point_to_segment(point,segA,segB)
 		var dist = point.distance_squared_to(closest)
 
 		if dist < minDist:
@@ -589,7 +590,7 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 	var vertArray= triangulate(verts)#if the sector is complete this should return a non-empty array
 	
 	if vertArray == []:
-		vertArray = Geometry.convex_hull_2d(verts)
+		vertArray = Geometry2D.convex_hull(verts)
 		vertArray = triangulate(vertArray)
 
 	if vertArray == []:
@@ -656,24 +657,24 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 				
 		var ret = createFloorMesh(finalArr,floorHeight,1,dim,mini,currentSector["floorTexture"],floorTexture,currentSector,true)
 
-		var floorMesh : MeshInstance= ret["mesh"]
+		var floorMesh : MeshInstance3D= ret["mesh"]
 		var center = ret["center"]
 
-		floorMesh.translation = (center + Vector3(0,floorHeight,0))
+		floorMesh.position = (center + Vector3(0,floorHeight,0))
 
 
 
 		funcHandleFakeFloor(floorMesh,sectorNode,currentSector)
-		var a = OS.get_system_time_msecs()
+		var a = Time.get_ticks_msec()
 		floorMesh.create_trimesh_collision()
-		colArr.append(OS.get_system_time_msecs()-a)
+		colArr.append(Time.get_ticks_msec()-a)
 
 
 
 		if floorMesh.has_node("_col"):
 			floorMesh.get_node("_col").set_meta("floor","true")
-			floorMesh.get_child(0).set_collision_layer_bit(1,1)
-			floorMesh.get_child(0).set_collision_layer_bit(2,1)
+			floorMesh.get_child(0).set_collision_layer_value(1,1)
+			floorMesh.get_child(0).set_collision_layer_value(2,1)
 
 		if currentSector["floorTexture"] == "F_SKY1":
 			floorMesh.get_child(0).collision_layer = 0
@@ -693,17 +694,14 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 
 			var lightLevel = currentSector["lightLevel"]
 			var script = load("res://addons/godotWad/src/sectorType.gd")
+			script.useInstanceShaderParam = get_parent().resourceManager.useInstanceShaderParam
 			var node = Node.new()
 			
 			
-			var dmgInfo = WADG.getDamageInfoFromSectorType(type)
-			floorMesh.set_meta("damage",dmgInfo)
-#			if type == 4: floorMesh.set_meta("damage",{"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"})
-#			if type == 5: floorMesh.set_meta("damage",{"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"})
-#			if type == 7: floorMesh.set_meta("damage",{"amt":2,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"})
-#			if type == 11: floorMesh.set_meta("damage",{"amt":10,"tickRateMS":500,"onDeath":"nextLevel","graceMS":100,"everyNframe":55,"specific":"nukage"})
-#			if type == 16: floorMesh.set_meta("damage",{"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"})
+			var dmgInfo = WADG.getDamageInfoFromSectorType2(parent.sectorSpecials[type])
 			
+			floorMesh.set_meta("damage",dmgInfo)
+
 
 			node.name = "sectorType-" + sectorNode.name
 			node.set_script(script)
@@ -711,8 +709,8 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 
 			var lePath = "../../Geometry/" + sectorNode.name + "/" + floorMesh.name
 
-			node.darkValue = currentSector["darkestNeighValue"]
-			node.brightValue = currentSector["lightLevel"]
+			node.darkestNeighbour = currentSector["darkestNeighValue"]
+			node.initialValue = currentSector["lightLevel"]
 			node.meshPath = lePath
 			node.type = type
 
@@ -728,14 +726,14 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 
 		var ret = createFloorMesh(finalArr,ceilHeight,-1,dim,mini,currentSector["ceilingTexture"],ceilTexture,currentSector)
 
-		var ceilMesh : MeshInstance = ret["mesh"]
+		var ceilMesh : MeshInstance3D = ret["mesh"]
 		var center = ret["center"]
-		var a = OS.get_system_time_msecs()
+		var a = Time.get_ticks_msec()
 		
 		ceilMesh.create_trimesh_collision()
 		#ceilMesh.create_convex_collision()
 		#ceilMesh.create_multiple_convex_collisions()
-		colArr.append(OS.get_system_time_msecs()-a)
+		colArr.append(Time.get_ticks_msec()-a)
 
 
 		if currentSector["ceilingTexture"] == "F_SKY1":
@@ -744,14 +742,14 @@ func renderLoop(currentSector,sectorNode,verts,offset = Vector3(0,0,0),specialNo
 		
 		if ceilMesh.has_node("_col"):
 			ceilMesh.get_node("_col").set_meta("ceil","true")
-			ceilMesh.get_node("_col").set_collision_layer_bit(2,1)
+			ceilMesh.get_node("_col").set_collision_layer_value(2,1)
 		ceilMesh.set_meta("ceil","true")
 		ceilMesh.name = "ceiling " + currentSector["floorTexture"]
 
 		if currentSector["ceilingTexture"] == "F_SKY1":
 			ceilHeight = currentSector["highestNeighCeilInc"]-1*scaleFactor.y
 
-		ceilMesh.translation = (center + Vector3(0,ceilHeight,0))
+		ceilMesh.position = (center + Vector3(0,ceilHeight,0))
 
 		sectorNode.add_child(ceilMesh)
 
@@ -798,7 +796,7 @@ func makeMesh(arr,sector,textureName,dir):
 		surf.add_vertex((v-center))
 
 	surf.commit(tempMesh)
-	return {"mesh":tempMesh,"translation":center}
+	return {"mesh":tempMesh,"position":center}
 
 func createFloorMesh(arr,height,dir,dim,mini,textureName,texture,sector,toAllMesh = false):
 	var surf = SurfaceTool.new()
@@ -815,7 +813,7 @@ func createFloorMesh(arr,height,dir,dim,mini,textureName,texture,sector,toAllMes
 	sector["center"] = center
 	var mat
 
-	var matKey= textureName +"," + String(sector["lightLevel"])+ "," + String(Vector2(0,0))
+	var matKey= textureName +"," + str(sector["lightLevel"])+ "," + str(Vector2(0,0))
 
 
 
@@ -856,15 +854,15 @@ func createFloorMesh(arr,height,dir,dim,mini,textureName,texture,sector,toAllMes
 		surfAbs.commit(allFloorMesh)
 
 	if get_parent().unwrapLightmap:
-		var a = OS.get_system_time_msecs()
-		tmpMesh.lightmap_unwrap(Transform.IDENTITY,1)
-		luArr.append(OS.get_system_time_msecs()-a)
+		var a = Time.get_ticks_msec()
+		tmpMesh.lightmap_unwrap(Transform3D.IDENTITY,1)
+		luArr.append(Time.get_ticks_msec()-a)
 
-	var meshNode = MeshInstance.new()
+	var meshNode = MeshInstance3D.new()
 	meshNode.mesh = tmpMesh
 
 
-	meshNode.cast_shadow = MeshInstance.SHADOW_CASTING_SETTING_DOUBLE_SIDED
+	meshNode.cast_shadow = MeshInstance3D.SHADOW_CASTING_SETTING_DOUBLE_SIDED
 	meshNode.use_in_baked_light = true
 
 
@@ -875,8 +873,8 @@ func createFloorMesh(arr,height,dir,dim,mini,textureName,texture,sector,toAllMes
 
 
 func triangulate(arr):
-	var triangualted = Geometry.triangulate_polygon(arr)
-	#var triangualted = Geometry.triangulate_delaunay_2d(arr)
+	var triangualted = Geometry2D.triangulate_polygon(arr)
+	#var triangualted = Geometry2D.triangulate_delaunay_2d(arr)
 	#triangualted.invert()
 	var vertArrTri = []
 	for i in triangualted:
@@ -886,7 +884,7 @@ func triangulate(arr):
 
 
 func triangualteDelaunay(arr):
-	var triangualted = Geometry.triangulate_polygon(arr)
+	var triangualted = Geometry2D.triangulate_polygon(arr)
 
 func createSectorClosedLoop(sectorLines):#gets all closed loops in sector
 	var soup = sectorLines.duplicate(true)
@@ -967,7 +965,7 @@ func addNextToLoop(cur,lineList,runningLoop):
 
 		runningLoop.append(bestCandidate)
 
-		var key0 = String(String(bestCandidate[0]) + "," + String(bestCandidate[1]))
+		var key0 = str(str(bestCandidate[0]) + "," + str(bestCandidate[1]))
 		var curOside = lines[secToLinesIdx[key0]].backSideDef
 		lineList.erase(bestCandidate)
 
@@ -1033,7 +1031,7 @@ func createSectorToLineArray(sectors,lines,sides):
 		if typeof(sectorLines[sectorId]) != TYPE_ARRAY: sectorLines[sectorId] = []
 
 		sectorLines[sectorId].append([line["startVert"],line["endVert"]])
-		var key = String(line["startVert"]) + "," +  String(line["endVert"])
+		var key = str(line["startVert"]) + "," +  str(line["endVert"])
 		sectorLineIdx[key] = line["index"]
 
 		if backSideIndex != -1 :
@@ -1046,7 +1044,7 @@ func createSectorToLineArray(sectors,lines,sides):
 
 
 			sectorLines[backSectorId].append([line["endVert"],line["startVert"]])
-			key = String(line["endVert"]) + "," +  String(line["startVert"])
+			key = str(line["endVert"]) + "," +  str(line["startVert"])
 			sectorLineIdx[key] = line["index"]
 			#sectorLineIdx[sectorId].append([line["index"]])
 
@@ -1064,8 +1062,8 @@ func createTree(loops):
 		for j in range(i+1,arr.size()):
 			var p1 = tree[i][0]
 			var p2 = tree[j][0]
-			var isP1withinP2 = (Geometry.clip_polygons_2d(p1,p2)) == []
-			var isP2withinP1 = (Geometry.clip_polygons_2d(p2,p1)) == []
+			var isP1withinP2 = (Geometry2D.clip_polygons(p1,p2)) == []
+			var isP2withinP1 = (Geometry2D.clip_polygons(p2,p1)) == []
 
 			if isP1withinP2:
 				tree[i][1] = j
@@ -1101,11 +1099,11 @@ func treeRecursive(root,current,poly):
 			root.add_child(createPoly2DFromVerts(poly,polyName))#if root has no children add self and return
 			return
 
-		elif Geometry.clip_polygons_2d(poly,current.polygon)== []:#poly is contained by current:
+		elif Geometry2D.clip_polygons(poly,current.polygon)== []:#poly is contained by current:
 			current.add_child(createPoly2DFromVerts(poly,polyName))
 			return
 
-		elif Geometry.clip_polygons_2d(current.polygon,poly) == []:#this poly contains the current
+		elif Geometry2D.clip_polygons(current.polygon,poly) == []:#this poly contains the current
 			var polyNode = createPoly2DFromVerts(poly,polyName)
 			swapParent(current.get_parent(),polyNode)
 			current.get_parent().add_child(polyNode)
@@ -1118,17 +1116,17 @@ func treeRecursive(root,current,poly):
 	for c in current.get_children():
 		var cPolygon = c.polygon
 
-		if Geometry.clip_polygons_2d(poly,cPolygon) == []:#poly is contained by c:
+		if Geometry2D.clip_polygons(poly,cPolygon) == []:#poly is contained by c:
 			var inv = poly.duplicate()
 			inv.invert()
-			inv = PoolVector2Array(inv)
+			inv = PackedVector2Array(inv)
 			if inv == cPolygon:#case where polygon is adentical but vert orders reversed (a.k.a its a hole)
 				current.add_child(createPoly2DFromVerts(poly,polyName))
 				return
 			else:
 				treeRecursive(root,c,poly)
 				return
-		elif Geometry.clip_polygons_2d(cPolygon,poly) == []:#this poly actually contains c
+		elif Geometry2D.clip_polygons(cPolygon,poly) == []:#this poly actually contains c
 			var polyNode = createPoly2DFromVerts(poly,polyName)
 			swapParent(c,polyNode)
 			current.add_child(polyNode)
@@ -1143,7 +1141,7 @@ var polyCount = 0
 
 func treeRecursive2(root,current,poly,loopsLineIdx):
 
-	var polyName = "polygon" + String(polyCount)
+	var polyName = "polygon" + str(polyCount)
 	polyCount += 1
 
 
@@ -1165,11 +1163,11 @@ func treeRecursive2(root,current,poly,loopsLineIdx):
 			root.add_child(polyNode)#if root has no children add self and return
 			return
 
-		elif Geometry.clip_polygons_2d(poly,current.polygon)== []:#poly is contained by current:
+		elif Geometry2D.clip_polygons(poly,current.polygon)== []:#poly is contained by current:
 			current.add_child(polyNode)
 			return
 
-		elif Geometry.clip_polygons_2d(current.polygon,poly) == []:#this poly contains the current
+		elif Geometry2D.clip_polygons(current.polygon,poly) == []:#this poly contains the current
 			swapParent(current.get_parent(),polyNode)
 			current.get_parent().add_child(polyNode)
 			return
@@ -1181,10 +1179,10 @@ func treeRecursive2(root,current,poly,loopsLineIdx):
 	for c in current.get_children():
 		var cPolygon = c.polygon
 
-		if Geometry.clip_polygons_2d(poly,cPolygon) == []:#poly is contained by c:
+		if Geometry2D.clip_polygons(poly,cPolygon) == []:#poly is contained by c:
 			var inv = poly.duplicate()
 			inv.invert()
-			inv = PoolVector2Array(inv)
+			inv = PackedVector2Array(inv)
 
 
 
@@ -1195,7 +1193,7 @@ func treeRecursive2(root,current,poly,loopsLineIdx):
 			else:
 				treeRecursive2(root,c,poly,loopsLineIdx)
 				return
-		elif Geometry.clip_polygons_2d(cPolygon,poly) == []:#this poly actually contains c
+		elif Geometry2D.clip_polygons(cPolygon,poly) == []:#this poly actually contains c
 			var polyNode = createPoly2DFromVerts(poly,polyName)
 
 			if isHole(poly,loopsLineIdx) and current != root:
@@ -1291,7 +1289,7 @@ func treeTriangulation(root,dbg = false):
 
 	for k in arr:
 		#var p = createPoly2DFromVerts(k,"r")
-		var indices = Geometry.triangulate_polygon(k)
+		var indices = Geometry2D.triangulate_polygon(k)
 		for i in indices:
 			tris.append(Vector3(k[i].x,0,k[i].y))
 
@@ -1299,7 +1297,7 @@ func treeTriangulation(root,dbg = false):
 
 
 	for k in fillerArr:
-		var indices = Geometry.triangulate_polygon(k)
+		var indices = Geometry2D.triangulate_polygon(k)
 		for i in indices:
 			tris.append(Vector3(k[i].x,0,k[i].y))
 
@@ -1313,7 +1311,7 @@ func treeTriangulation(root,dbg = false):
 	
 
 func isHole(verts,loopsLineIdx):
-	var key = String(loopsLineIdx[0][0])+ "," +String(loopsLineIdx[0][1])
+	var key = str(loopsLineIdx[0][0])+ "," +str(loopsLineIdx[0][1])
 	var lineIdx = secToLinesIdx[key]
 	var line = lines[lineIdx]
 	if line["backSideDef"] == -1 or line["frontSideDef"] == -1:
@@ -1327,7 +1325,7 @@ func isHole(verts,loopsLineIdx):
 			return true
 
 	return false
-	#return Geometry.is_polygon_clockwise(verts)
+	#return Geometry2D.is_polygon_clockwise(verts)
 
 
 func onlyHoles(node):
@@ -1354,7 +1352,7 @@ func getClosetXpoint(point,poly):
 	for i in poly.size():
 		var line1 = [poly[i],poly[(i+1)%poly.size()]]
 		var line2 = [point,Vector2(maxX.x+10*scaleFactor.x,point.y)]
-		var closestPoint = Geometry.segment_intersects_segment_2d(line1[0],line1[1],line2[0],line2[1])
+		var closestPoint = Geometry2D.segment_intersects_segment(line1[0],line1[1],line2[0],line2[1])
 		if closestPoint != null:
 			if point.distance_squared_to(closestPoint) < closestDist:
 				closestDist =  point.distance_squared_to(closestPoint)
@@ -1385,7 +1383,7 @@ func guessConvexHull(arr):
 			tmp.append(vertsl[i[0]])
 		if tmp.find(vertsl[i[1]])  == -1:
 			tmp.append(vertsl[i[1]])
-	var hull = Geometry.convex_hull_2d(tmp)
+	var hull = Geometry2D.convex_hull(tmp)
 
 
 	return hull
@@ -1439,11 +1437,11 @@ func removeUnnecessaryVerts(arr):
 		i+=1
 
 func stepifyVector(v,step):
-	v = Vector2(stepify(v.x,step),stepify(v.y,step))
+	v = Vector2(snapped(v.x,step),snapped(v.y,step))
 	return v
 
 func stepifyVector3(v,step):
-	v = Vector3(stepify(v.x,step),stepify(v.y,step),stepify(v.z,step))
+	v = Vector3(snapped(v.x,step),snapped(v.y,step),snapped(v.z,step))
 	return v
 
 
@@ -1452,7 +1450,7 @@ func savefloorMap():
 	get_parent().add_child(floorMap)
 	var pack = PackedScene.new()
 	pack.pack(floorMap)
-	ResourceSaver.save("res://dbg/"+"floorMap"+".tscn",pack)
+	ResourceSaver.save(pack,"res://dbg/"+"floorMap"+".tscn")
 
 
 
@@ -1523,11 +1521,11 @@ func addPolyTofloorMap(arr,sectorNodeL : Node,sectorNode,texture=null):
 
 
 func makePolyShape(pointsAsVerts):
-	var vector2pool = PoolVector2Array(pointsAsVerts)
+	var vector2pool = PackedVector2Array(pointsAsVerts)
 	#var polyShape = ConvexPolygonShape2D.new()
 	#polyShape.points = vector2pool
 
-	var segs :  PoolVector2Array= []
+	var segs :  PackedVector2Array= []
 
 
 	for v in vector2pool.size():
@@ -1556,7 +1554,7 @@ func easeOverlapping(arr):
 	for i in arr:
 		if arr.count(i) >1:
 			var a = arr.find(i)
-			var b = arr.find_last(i)
+			var b = arr.rfind(i)
 
 			var aLine = [(a-1)%size,a,(a+1)%size]
 			var bLine = [(b-1)%size,b,(b+1)%size]
@@ -1604,7 +1602,7 @@ func funcHandleFakeFloor(mesh,sectorNode,secInfo):
 
 
 	for i in nieghSides:
-		var line = mapInfo["SIDEDEFS"][i]
+		var line = mapInfo["sideDefsParsed"][i]
 		if line["upperName"] != "-" and line["upperName"] != "AASTINKY":
 			return
 		if line["lowerName"] != "-" and line["lowerName"] != "AASTINKY":
@@ -1614,22 +1612,22 @@ func funcHandleFakeFloor(mesh,sectorNode,secInfo):
 
 
 
-	var mesh2 : MeshInstance = mesh.duplicate()
+	var mesh2 : MeshInstance3D = mesh.duplicate()
 
 
 	var neighIdx = secInfo["nieghbourSectors"][0]
-	var neighInfo = mapInfo["SECTORS"][neighIdx]
+	var neighInfo = mapInfo["sectorsParsed"][neighIdx]
 	var neighTexture= neighInfo["floorTexture"]
-	var matKey= neighTexture +"," + String(neighInfo["lightLevel"])+ "," + String(Vector2(0,0))
+	var matKey= neighTexture +"," + str(neighInfo["lightLevel"])+ "," + str(Vector2(0,0))
 
 	var neighFloorTextureRes = $"../ResourceManager".fetchFlat(neighInfo["floorTexture"],!get_parent().dontUseShader)
 	var neighFloorMat = $"../ResourceManager".fetchMaterial(neighTexture,neighFloorTextureRes,neighInfo["lightLevel"],Vector2(0,0),0,false)
 
-	mesh2.set_surface_material(0,neighFloorMat)
+	mesh2.set_surface_override_material(0,neighFloorMat)
 
 
 
-	mesh2.translation.y = secInfo["nextHighestFloor"]
+	mesh2.position.y = secInfo["nextHighestFloor"]
 	sectorNode.add_child(mesh2)
 
 
@@ -1695,13 +1693,13 @@ func mergeTest(sectors,sectorLoops : Array):
 	var mapDict = get_parent().maps[get_parent().mapName]
 	var sectorToInteraction = mapDict["sectorToInteraction"]
 	
-	var newLinedefs = mapDict["LINEDEFS"]
-	var newSidedefs = mapDict["SIDEDEFS"]
+	var newLinedefs = mapDict["lineDefsParsed"]
+	var newSidedefs = mapDict["sideDefsParsed"]
 	var newSectors = sectors
 	
 	for sectorIndex in sectors.size():
 		
-		if sectorLoops[sectorIndex].empty():
+		if sectorLoops[sectorIndex].is_empty():
 			return
 		
 		if sectorToInteraction.has(sectorToInteraction):

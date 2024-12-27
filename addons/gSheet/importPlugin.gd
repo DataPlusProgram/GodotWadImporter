@@ -1,36 +1,36 @@
-tool
+@tool
 extends EditorImportPlugin
 
 enum PRESETS { DEFAULT }
 
-func get_importer_name():
+func _get_importer_name():
 	return "csvToGsheet"
 
-func get_visible_name():#this is the name that appears  in the "Import As:" dropdown
+func _get_visible_name():#this is the name that appears  in the "Import As:" dropdown
 	return "gsheet"
 
-
-func get_recognized_extensions():
-	return ["csv9"]
+func _get_recognized_extensions():
+	return ["csv"]
 	
-func get_save_extension():
+func _get_save_extension():
 	return "tres"
 
-func get_resource_type():
+func _get_resource_type():
 	return "Resource"
 
-func get_preset_count():
+func _get_preset_count():
 	return 1
 
-func get_preset_name(preset):
+
+func _get_preset_name(preset):
 	#if preset == PRESETS.DEFAULT:
 	#	return
 	return "Default"
 
-func get_import_options(preset):
+func _get_import_options(preset,index):
 	#if preset == PRESETS.DEFAULT:
 	#	return [{}]
-	 return [{"name": "my_option", "default_value": false}]
+	return [{"name": "my_option", "default_value": false}]
 
 func import(source_file, save_path, options, r_platform_variants, r_gen_files):
 	print("im importing as: ",save_path + ".tres")

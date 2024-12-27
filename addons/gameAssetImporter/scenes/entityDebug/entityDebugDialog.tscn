@@ -1,0 +1,59 @@
+[gd_scene load_steps=2 format=3 uid="uid://bhxvt0aae30m6"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/entityDebug/entityDebugDialog.gd" id="1_egi4x"]
+
+[node name="entityDebugDialog" type="Window"]
+position = Vector2i(0, 36)
+size = Vector2i(645, 350)
+script = ExtResource("1_egi4x")
+
+[node name="TabBar" type="TabContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+current_tab = 0
+
+[node name="treeMeta" type="VSplitContainer" parent="TabBar"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="hSplit" type="HBoxContainer" parent="TabBar/treeMeta"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="listLeft" type="ItemList" parent="TabBar/treeMeta/hSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+item_count = 2
+item_0/text = "baseControl"
+item_1/text = "settings"
+
+[node name="listMiddle" type="ItemList" parent="TabBar/treeMeta/hSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="listRight" type="ItemList" parent="TabBar/treeMeta/hSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemList4" type="ItemList" parent="TabBar/treeMeta/hSplit"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSplitContainer" type="HSplitContainer" parent="TabBar"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[connection signal="about_to_popup" from="." to="." method="_on_entityDebugDialog_about_to_show"]
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="tab_selected" from="TabBar" to="." method="_on_Tabs_tab_selected"]
+[connection signal="item_selected" from="TabBar/treeMeta/hSplit/listLeft" to="." method="_on_listTop_item_selected"]
+[connection signal="item_selected" from="TabBar/treeMeta/hSplit/listMiddle" to="." method="_on_listMiddle_item_selected"]
+[connection signal="item_selected" from="TabBar/treeMeta/hSplit/listRight" to="." method="_on_list_right_item_selected"]
+[connection signal="item_selected" from="TabBar/treeMeta/hSplit/ItemList4" to="." method="_on_item_list_4_item_selected"]

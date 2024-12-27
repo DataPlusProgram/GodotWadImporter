@@ -1,0 +1,336 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://d13tsca3mbikm"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_gu500"]
+
+[resource]
+script = ExtResource("1_gu500")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "SPIDA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "SPIDB"
+},
+"10": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "playStomp",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "SPIDE"
+},
+"11": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "chase",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "SPIDE"
+},
+"12": {
+"": "",
+"Dur": 3,
+"Frame": "F",
+"Function": "chase",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "SPIDF"
+},
+"13": {
+"": "",
+"Dur": 3,
+"Frame": "F",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SPIDF"
+},
+"14": {
+"": "",
+"Dur": 20,
+"Frame": "A",
+"Function": "face",
+"Lit": true,
+"Next": 15,
+"Paramters": "",
+"Sprite": "SPIDA"
+},
+"15": {
+"": "",
+"Dur": 4,
+"Frame": "G",
+"Function": "attack",
+"Lit": true,
+"Next": 16,
+"Paramters": "",
+"Sprite": "SPIDG"
+},
+"16": {
+"": "",
+"Dur": 4,
+"Frame": "H",
+"Function": "attack",
+"Lit": true,
+"Next": 17,
+"Paramters": "",
+"Sprite": "SPIDH"
+},
+"17": {
+"": "",
+"Dur": 1,
+"Frame": "H",
+"Function": "checkFire",
+"Lit": true,
+"Next": 15,
+"Paramters": "",
+"Sprite": "SPIDH"
+},
+"18": {
+"": "",
+"Dur": 3,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "SPIDI"
+},
+"19": {
+"": "",
+"Dur": 20,
+"Frame": "I",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SPIDI"
+},
+"2": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "playStomp",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "SPIDA"
+},
+"20": {
+"": "",
+"Dur": 10,
+"Frame": "J",
+"Function": "playDie",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "SPIDJ"
+},
+"21": {
+"": "",
+"Dur": 10,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 22,
+"Paramters": "",
+"Sprite": "SPIDK"
+},
+"22": {
+"": "",
+"Dur": 10,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 23,
+"Paramters": "",
+"Sprite": "SPIDL"
+},
+"23": {
+"": "",
+"Dur": 10,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 24,
+"Paramters": "",
+"Sprite": "SPIDM"
+},
+"24": {
+"": "",
+"Dur": 10,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "SPIDN"
+},
+"25": {
+"": "",
+"Dur": 10,
+"Frame": "O",
+"Function": "",
+"Lit": false,
+"Next": 26,
+"Paramters": "",
+"Sprite": "SPIDO"
+},
+"26": {
+"": "",
+"Dur": 10,
+"Frame": "P",
+"Function": "",
+"Lit": false,
+"Next": 27,
+"Paramters": "",
+"Sprite": "SPIDP"
+},
+"27": {
+"": "",
+"Dur": 10,
+"Frame": "W",
+"Function": "",
+"Lit": false,
+"Next": 28,
+"Paramters": "",
+"Sprite": "SPIDQ"
+},
+"28": {
+"": "",
+"Dur": 10,
+"Frame": "R",
+"Function": "",
+"Lit": false,
+"Next": 29,
+"Paramters": "",
+"Sprite": "SPIDR"
+},
+"29": {
+"": "",
+"Dur": 30,
+"Frame": "S",
+"Function": "",
+"Lit": false,
+"Next": 30,
+"Paramters": "",
+"Sprite": "SPIDS"
+},
+"3": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "SPIDA"
+},
+"30": {
+"": "",
+"Dur": -1,
+"Frame": "S",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "SPIDS"
+},
+"4": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "SPIDB"
+},
+"5": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "SPIDB"
+},
+"6": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "playStomp",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "SPIDC"
+},
+"7": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "SPIDC"
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "SPIDD"
+},
+"9": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 10,
+"Paramters": "",
+"Sprite": "SPIDD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"],
+"sheetWidth": 1994.0,
+"splitSize": {
+0: 96,
+1: 65,
+2: 0,
+3: 64,
+4: 66,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://dewqcu6kfplk7"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_0pcst"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_8eokk"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_mk72n"]
+
+[node name="BFG" instance=ExtResource("1_0pcst")]
+weaponName = "BFG"
+category = 7
+ammoType = "energy"
+projectile = "BFG_bomb"
+magSize = 0
+pickupAmmo = 40
+maxSpread = Vector2(0, 0)
+spreadPerShot = Vector2(0, 0)
+ammoConsumedPerShot = 40
+stateResPath = "res://addons/godotWad/resources/BFGstates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_8eokk")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_mk72n")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["BFGGA0", "BFGGB0"])
+spriteListMuzzleFlash = Array[String](["BFGFA0", "BFGFB0"])
+worldSprite = "BFUGA0"
+fireSounds = Array[String]([])
+entityDepends = PackedStringArray("BFG_bomb")
+extraSound1 = "DSBFG"

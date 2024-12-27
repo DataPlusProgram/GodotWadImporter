@@ -1,5 +1,10 @@
-tool
+@tool
 extends Node
+
+
+var flatTextureEntries : Dictionary = {}
+var pallete : PackedColorArray= []
+
 
 
 func _ready():
@@ -12,7 +17,14 @@ func _ready():
 			else: animatedKey[j] = [switchTextures[i][1],switchTextures[i][0]] 
 			
 			
-	
+
+enum LUMP{
+	name,
+	file,
+	offset,
+	size,
+}
+
 
 var animatedTextures = {
 	"NUKAGE" : ["NUKAGE1","NUKAGE2","NUKAGE3"],
@@ -28,7 +40,8 @@ var animatedTextures = {
 	"SLADRIP" : ["SLADRIP1","SLADRIP2","SLADRIP3"],
 	"BFALL": ["BFALL1","BFALL2","BFALL3","BFALL4"],
 	"DBRAIN":["DBRAIN1","DBRAIN2","DBRAIN3","DBRAIN4"],
-	"BLUD" : ["BLUDA0","BLUDB0","BLUDC0"]
+	"BLUD" : ["BLUDA0","BLUDB0","BLUDC0"],
+	"FIREWALL":["FIREWALLA","FIREWALLB"]
 } 
 
 var switchTextures = {
@@ -38,6 +51,7 @@ var switchTextures = {
 	"SW1BRNGN" : ["SW1BRNGN","SW2BRNGN"],
 	"SW1COMP"  : ["SW1COMP","SW2COMP"],
 	"SW1STON1"  : ["SW1STON1","SW2STON1"],
+	"SW1STON2" : ["SW1STON2","SW2STON2"],
 	"SW1SLAD"  : ["SW1SLAD","SW2SLAD"],
 	"SW1PIPE" : ["SW1PIPE","SW2PIPE"],
 	"SW1EXIT" : ["SW1EXIT","SW2EXIT"],
@@ -48,17 +62,21 @@ var switchTextures = {
 	"SW1COMM":["SW1COMM","SW2COMM"],
 	"SW1TEK":["SW1TEK","SW2TEK"],
 	"SW1METAL":["SW1METAL","SW2METAL"],
-	"SW2BROWN":["SW2BROWN","SW1BROWN"],
+	"SW1BROWN":["SW1BROWN","SW2BROWN"],
 	"SW1GSTON":["SW1GSTON","SW2GSTON"],
 	"SW1CMT":["SW1CMT","SW2CMT"],
 	"SW1HOT":["SW1HOT","SW2HOT"],
 	"SW1SKIN":["SW1SKIN","SW2SKIN"],
 	"SW1GARG":["SW1GARG","SW2GARG"],
-	"SW1GRAY":["SW1GRAY","SW2GRAY"]
-	
+	"SW1GRAY":["SW1GRAY","SW2GRAY"],
+	"SW1BLUE":["SW1BLUE","SW2BLUE"],
+	"SW1PANEL":["SW1PANEL","SW2PANEL"],
+	"SW1SATYR":["SW1SATYR","SW2SATYR"],
+	"SW1MOD1":["SW1MOD1","SW2MOD1"],
+	"SW1ROCK":["SW1ROCK","SW2ROCK"]
 }
 
-var animatedKey = {}
+var animatedKey := {}
 
 var skyboxTextures ={
 	"SKY1" : ["E1M1","E1M2","E1M3","E1M4","E1M5","E1M6","E1M7","E1M8","E1M9","MAP01","MAP02","MAP03","MAP04","MAP05","MAP06","MAP07","MAP08","MAP09","MAP10"],
@@ -68,93 +86,135 @@ var skyboxTextures ={
 }
 
 
-var patchCache = {}
-var patchOffsetCache = {}
-var missingTextures = {}
+var patchCache : Dictionary = {}
+var patchOffsetCache : Dictionary= {}
+var missingTextures : Dictionary= {}
 
-onready var resourceManager = $"../ResourceManager"
+@onready var mutex : Mutex = Mutex.new()
+@onready var resourceManager = $"../ResourceManager"
+@onready var lumpParser = $"../LumpParser"
+@onready var parent : WAD_Map = get_parent()
 
-func createPatchedTexture(data,rIndexed = false):
+func createPatchedTexture(data,rIndexed = false) -> ImageTexture:
 	
-	var textureEntries =  get_parent().patchTextureEntries
-	var pallete = get_parent().palletes[0]
-	var colorMap = get_parent().colorMaps[0]
-	var patchNames = get_parent().patchNames
-	var image = Image.new()
-	image.create(data["width"],data["height"],false,Image.FORMAT_RGBA8)
-	image.lock()
+	if typeof(data) == TYPE_STRING:
+		if data.find(".pk3") != -1 or data.find(".zip") != -1:
+			var img : Image = resourceManager.loadPngFromZip(data)
+			return ImageTexture.create_from_image(img)
 	
-	var i = 0
-	for patch in data["patches"]:
+	var textureEntries : Dictionary=  parent.patchTextureEntries
+	
+	var patchNames : Dictionary = parent.patchNames
+	var image : Image = Image.create(data["width"],data["height"],false,Image.FORMAT_RGBA8)
+	
+	var i : int = 0
+	for patch : Dictionary in data["patches"]:
 		if !patchNames.has(patch["pnamIndex"]):
 			print("patch not found")
-			return
-		var patchName = patchNames[patch["pnamIndex"]].to_upper()
-		var patchImage = createDoomGraphic(patchName,rIndexed)
+			return null
+		var patchName : StringName= patchNames[patch["pnamIndex"]].to_upper()
+		var patchImage : Image = createDoomGraphic(patchName,rIndexed)
 		
 		
 		if patchImage == null:
 			return null
 		
-		var sourceRect = Rect2(Vector2.ZERO,patchImage.get_size())
+		var sourceRect : Rect2 = Rect2(Vector2.ZERO,patchImage.get_size())
 		image.blend_rect(patchImage,sourceRect,Vector2(patch["originX"],patch["originY"]))
 		i+=1
 		
-	image.unlock()
-	var texture = ImageTexture.new()
-	texture.create_from_image(image)
+	var texture : ImageTexture= ImageTexture.create_from_image(image)
 	
-	
-	if get_parent().textureFiltering == false: texture.flags -= Texture.FLAG_FILTER
-	if get_parent().mipMaps == get_parent().MIP.OFF: texture.flags -= Texture.FLAG_MIPMAPS
-	if get_parent().mipMaps == get_parent().MIP.EXCLUDE_FOR_TRANSPARENT and image.detect_alpha(): texture.flags -= Texture.FLAG_MIPMAPS
-	
+	#var t = texture.has_alpha()
 	
 	return texture
 
-func createCubemap(left,right,top,bottom,front,back):
-	var cubemap = CubeMap.new()
+func createCubemap(left : Image,right : Image,top : Image,bottom : Image,front: Image,back : Image):
+	var cubemap = Cubemap.new()
 	
-	cubemap.set_side(0,left)
-	cubemap.set_side(1,right)
-	cubemap.set_side(2,bottom)
-	cubemap.set_side(3,top)
-	cubemap.set_side(4,front)
-	cubemap.set_side(5,back)
+	if parent.mipMaps == parent.MIP.ON:
+		for i in [left,right,top,bottom,front,back]:
+			i.generate_mipmaps()
 	
-	if get_parent().textureFilterSkyBox == false:
-		cubemap.flags -= cubemap.FLAG_FILTER
+	var count = 0
+
+	
+	cubemap.create_from_images([left,right,top,bottom,front,back])
+
 	return cubemap
 	
 
-func createDoomGraphic(patchName : String,rIndexed : bool =true) -> Image:
+func createRawGraphic(patch,size):
+	var image = Image.new()
+	image = Image.create(size.x,size.y,false,Image.FORMAT_RGBA8)
+
+	
+	var file : FileAccess =parent.fileLookup[patch[LUMP.file]]
+	var offset : int =patch[LUMP.offset]
+	var colorMap : Image  =parent.colorMaps[0]
+	
+	file.seek(offset)
+	
+	for x in range(0,size.y):
+		for y in range(0,size.x):
+			var pix = colorMap.get_pixel(file.get_8(),0)
+			image.set_pixel(y,x,pix)
+			
+			
+	return image
+
+func createDoomGraphic(patchName : StringName,rIndexed : bool =false,raw = false) -> Image:
+	
 	
 	if !patchCache.has(patchName):
-		var image = Image.new()
-		var colorMap : Image  = get_parent().colorMaps[0].get_data()
-		var flatTextureEntries : Dictionary = get_parent().flatTextureEntries
+		
+	
+		
+		var image : Image = Image.new()
+		
+		
+		if flatTextureEntries.is_empty():
+			flatTextureEntries = parent.flatTextureEntries
+		
 		
 		if !flatTextureEntries.has(patchName):
 			return image
 		
 		
-		var patch : Dictionary = $"../LumpParser".parsePatch(flatTextureEntries[patchName])
 		
-		if patch.empty():
+		
+		if raw:
+			return createRawGraphic(flatTextureEntries[patchName],Vector2(320,200))
+		
+
+		mutex.lock()
+		var patch : Dictionary= lumpParser.parsePatch(flatTextureEntries[patchName])
+		mutex.unlock()
+		
+		if patch.has("pngImage"):#in case of it being a png
+			patchCache[patchName] = patch["pngImage"]
+			patchOffsetCache[patchName] = Vector2(patch["left_offset"],patch["top_offset"])
+			return patch["pngImage"]
+		
+		if patch.is_empty():
 			return null
 		
-		var offset : int = flatTextureEntries[patchName]["offset"]
-		var columnOffsets : Array = patch["columnOffsets"]
+		
+		
+		var offset : int = flatTextureEntries[patchName][LUMP.offset]
+		var columnOffsets : PackedInt32Array = patch["columnOffsets"]
 		var width : int = patch["width"]
 		var height : int = patch["height"]
-		var file : Node = flatTextureEntries[patchName]["file"]
+		var file : FileAccess = parent.fileLookup[flatTextureEntries[patchName][LUMP.file]]
+		image = Image.create(width,height,false,Image.FORMAT_RGBA8)
+		var colorMap : Image  = parent.colorMaps[0]
 		
-		image.create(width,height,false,Image.FORMAT_RGBA8)
-		image.lock()
-		for x in range(0,width):
+		mutex.lock()
+		for x : int in range(0,width):
 			
 			file.seek(offset + columnOffsets[x])
 			if file.eof_reached():
+				mutex.unlock()
 				return null
 			var rowStart : int = 0
 				
@@ -162,30 +222,40 @@ func createDoomGraphic(patchName : String,rIndexed : bool =true) -> Image:
 				rowStart = file.get_8()
 				if rowStart == 255:
 					break
+					
+				if file.eof_reached():
+					return image
 				var pixCount : int = file.get_8()
-				var dummy : int = file.get_8()
+
+				file.get_8()
 				
 				
-				for i in pixCount:
-					var pixel : int = file.get_8()
-					colorMap.lock()
-					var color : Color = colorMap.get_pixel(pixel,0)
-					colorMap.unlock()
-					
-					
-						
-					if rIndexed:
-						color = Color(0,0,0,1)
-						color.r = pixel/255.0
-					
+				var pixData := file.get_buffer(pixCount)
+				
+				for i : int in pixData.size():
+					var color : Color = colorMap.get_pixel(pixData[i],0)
 					image.set_pixel(x,i+rowStart,color)
+					
+				#for i : int in pixCount:
+					#var pixel : int = file.get_8()
+					#var color : Color = colorMap.get_pixel(pixel,0)
+#
+					#if rIndexed:
+						#color = Color(0,0,0,1)
+						#color.r = pixel/255.0
+					#
+					#image.set_pixel(x,i+rowStart,color)
 				file.get_8()#dummy 
 		
-		image.unlock()
+		if parent.mipMaps ==parent.MIP.ON:
+			image.generate_mipmaps()
+		
+		
+		
 		patchCache[patchName] = image
 		patchOffsetCache[patchName] = Vector2(patch["left_offset"],patch["top_offset"])
-		
 	
+	mutex.unlock()
 	return patchCache[patchName]
 
 func getDoomGraphicOffests(patchName : String):
@@ -195,53 +265,52 @@ func getDoomGraphicOffests(patchName : String):
 		return(Vector2(0,0))
 
 
-func parseFlat(info,rIndexed = true, dim = Vector2(64,64)):
-	var pallete = get_parent().palletes[0]
+func parseFlat(info:Array,rIndexed : bool= true, dim : Vector2= Vector2(64,64)) -> ImageTexture:
 	
-	info["file"].seek(info["offset"])
+	if pallete.is_empty():
+		pallete =parent.palletes[0]
 	
-	var magic =  info["file"].get_32()
+	var file : FileAccess = parent.fileLookup[info[LUMP.file]]
+	
+	file.seek(info[LUMP.offset])
+	
+	
+	var buffer :  PackedByteArray = file.get_buffer(info[LUMP.size])
+	
+	var magic : int = buffer.decode_s32(0)
 	if magic == 1196314761:#image is PNG
-		info["file"].seek(info["offset"])
-		
-		var image = Image.new()
-		var texture = ImageTexture.new()
-		var buffer = info["file"].get_buffer(info["size"])
-		
-		
+
+		var image : Image = Image.new()
+		var texture : ImageTexture= ImageTexture.new()
 		image.load_png_from_buffer(buffer)
 		texture.create_from_image(image)
 		return texture
+		
 	elif magic == -520103681:
 		
-		info["file"].seek(info["offset"])
-		
-		var image = Image.new()
-		var texture = ImageTexture.new()
-		var buffer = info["file"].get_buffer(info["size"])
+		var image : Image= Image.new()
+		var texture : ImageTexture= ImageTexture.new()
 		
 		
-		image.load_jpg_from_buffer(buffer)
+		image.load_jpg_from_buffer(file.get_buffer(info[LUMP.size]))
+		image.load_jpg_from_buffer(file.get_buffer(info[LUMP.size]))
 		texture.create_from_image(image)
 		return texture
 		
 	
-	info["file"].seek(info["offset"])
-	var dat = info["file"].get_buffer(dim.x*dim.y)
-	var datConverted = [] 
-	
-	if info["name"] == "ICON":
-		breakpoint
+	var dat : PackedByteArray = buffer
+	var image : Image= Image.create(dim.x,dim.y,false,Image.FORMAT_RGB8)#it should be okay to ommit transparency for flats
+	#var hasAlpha : bool = false
 		
-	else:
-		"corrupt magic number"
-	var image = Image.new()
-	image.create(dim.x,dim.y,false,Image.FORMAT_RGBA8)
-	image.lock()
-	var index = 0
-	for x in dim.x:
-		for y in dim.y:
-			var color = pallete[dat[index]]
+	
+	
+	var index : int = 0
+	for x : int in dim.x:
+		for  y : int in dim.y:
+			if dat.size() <= index:
+				print("flat create error")
+				break
+			var color : Color = pallete[dat[index]]
 			
 			if rIndexed:
 				color = Color(0,0,0,1)
@@ -249,22 +318,15 @@ func parseFlat(info,rIndexed = true, dim = Vector2(64,64)):
 			
 			image.set_pixel(y,x,color)
 			index+=1
-	image.unlock()
-	
-	var texture = ImageTexture.new()
-	
-	texture.create_from_image(image)
-	
-	if get_parent().textureFiltering == false: texture.flags -= Texture.FLAG_FILTER
-	if get_parent().mipMaps == get_parent().MIP.OFF:texture.flags -= Texture.FLAG_MIPMAPS
-	if get_parent().mipMaps == get_parent().MIP.EXCLUDE_FOR_TRANSPARENT and image.detect_alpha(): texture.flags -= Texture.FLAG_MIPMAPS
+
+	var texture : ImageTexture= ImageTexture.create_from_image(image)
+	#var t = texture.has_alpha() 
 
 	return texture
-	
 
 func getSkyboxTextureForMap(mapName):
-	for tex in $"../ImageBuilder".skyboxTextures.keys():
-		if $"../ImageBuilder".skyboxTextures[tex].has(mapName):
+	for tex in skyboxTextures.keys():
+		if skyboxTextures[tex].has(mapName):
 			return tex
 	
 	return "SKY1"
@@ -273,37 +335,33 @@ func getSkyboxTextureForMap(mapName):
 
 
 func createTopImage(srcImage:Image):
-	var imageTop = Image.new()
 	
-	srcImage.lock()
+	var imageTop = Image.create(128,128,true,srcImage.get_format())
 	var bottomRightPixel = srcImage.get_pixel(0,0)
-	srcImage.unlock()
+
 	
 	bottomRightPixel = getAveragePixelColor(srcImage)
 	
 	imageTop.create(128,128,true,srcImage.get_format())
 	
 	
-	imageTop.lock()
 	for x in 128:
 		for y in 128:
 			imageTop.set_pixel(x,y,bottomRightPixel)
-	imageTop.unlock()
 	
 	
 	
 	return imageTop
 
 func getAveragePixelColor(srcImage):
-	srcImage.lock()
 	var pixArr = []
 	
 	for x in srcImage.get_width():
 		pixArr.append(srcImage.get_pixel(x,0))
 		
-	srcImage.unlock()
 	
-	var avgPixel = Color.white
+	
+	var avgPixel = Color.WHITE
 	for i in pixArr:
 		avgPixel += i
 	
@@ -311,20 +369,33 @@ func getAveragePixelColor(srcImage):
 	return avgPixel
 
 func createBottomImage(srcImage:Image):
-	var imageTop = Image.new()
+	var imageTop = Image.create(128,128,true,srcImage.get_format())
 	
-	srcImage.lock()
+	
 	var bottomRightPixel = srcImage.get_pixel(0,127)
 	bottomRightPixel.a = 255
-	srcImage.unlock()
+
+
 	
-	imageTop.create(128,128,true,srcImage.get_format())
 	
-	
-	imageTop.lock()
 	for x in 128:
 		for y in 128:
 			imageTop.set_pixel(x,y,bottomRightPixel)
-	imageTop.unlock()
-	
+
 	return imageTop
+
+
+func create256colorMap(data,pallete):
+
+	var idx = 0
+	var image : Image = Image.create(256,256,false,Image.FORMAT_RGBA8)
+	for y in 256:
+		for x in 256:
+			print(idx)
+			var index = data[idx]
+			image.set_pixel(x,y,pallete[index])
+			idx += 1
+
+		var texture = ImageTexture.create_from_image(image)
+	
+	

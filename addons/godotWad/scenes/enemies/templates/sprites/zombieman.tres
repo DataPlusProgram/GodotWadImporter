@@ -1,0 +1,236 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://drm8y12bhyqc6"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_5lhj4"]
+
+[resource]
+script = ExtResource("1_5lhj4")
+data = {
+"A": {
+"e": "",
+"n": "TROOA5",
+"ne": "",
+"nw": "TROOA4A6",
+"s": "TROOA1",
+"se": "",
+"sw": "TROOA2A8",
+"w": "TROOA3A7"
+},
+"B": {
+"e": "",
+"n": "TROOB5",
+"ne": "",
+"nw": "TROOB4B6",
+"s": "TROOB1",
+"se": "",
+"sw": "TROOB2B8",
+"w": "TROOB3B7"
+},
+"C": {
+"e": "",
+"n": "TROOC5",
+"ne": "",
+"nw": "TROOC4C6",
+"s": "TROOC1",
+"se": "",
+"sw": "TROOC2C8",
+"w": "TROOC3C7"
+},
+"D": {
+"e": "",
+"n": "TROOD5",
+"ne": "",
+"nw": "TROOD4D6",
+"s": "TROOD1",
+"se": "",
+"sw": "TROOD2D8",
+"w": "TROOD3D7"
+},
+"E": {
+"e": "",
+"n": "TROOE5",
+"ne": "",
+"nw": "TROOE4E6",
+"s": "TROOE1",
+"se": "",
+"sw": "TROOE2E8",
+"w": "TROOE3E7"
+},
+"F": {
+"e": "",
+"n": "TROOF5",
+"ne": "",
+"nw": "TROOF4F6",
+"s": "TROOF1",
+"se": "",
+"sw": "TROOF2F8",
+"w": "TROOF3F7"
+},
+"G": {
+"e": "",
+"n": "TROOG5",
+"ne": "",
+"nw": "TROOG4G6",
+"s": "TROOG1",
+"se": "",
+"sw": "TROOG2G8",
+"w": "TROOG3G7"
+},
+"H": {
+"e": "",
+"n": "TROOH5",
+"ne": "",
+"nw": "TROOH4H6",
+"s": "TROOH1",
+"se": "",
+"sw": "TROOH2H8",
+"w": "TROOH3H7"
+},
+"I": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOI0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"J": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOJ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"K": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOK0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"L": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOL0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"M": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOM0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"N": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROON0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"O": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOO0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"P": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOP0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"Q": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOQ0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"R": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOR0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"S": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOS0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"T": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOT0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"U": {
+"e": "",
+"n": "",
+"ne": "",
+"nw": "",
+"s": "TROOU0",
+"se": "",
+"sw": "",
+"w": ""
+},
+"meta": {
+"colNames": ["s", "sw", "w", "nw", "n", "ne", "e", "se"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U"],
+"sheetWidth": 927.0,
+"splitSize": {
+0: 0,
+1: 0,
+2: 0,
+3: 0,
+4: 0,
+5: 0,
+6: 0,
+7: 0
+}
+}
+}

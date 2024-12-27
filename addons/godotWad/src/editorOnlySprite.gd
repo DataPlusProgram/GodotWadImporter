@@ -1,13 +1,13 @@
-tool
+@tool
 extends Sprite3D
 
-export var spritePath = ""
+@export var spritePath = ""
 
 func _ready():
 	
 	#texture = load(spritePath)
 	
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		visible = true
 	else:
 		visible = false

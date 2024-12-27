@@ -1,25 +1,34 @@
-tool
+@tool
 extends Node
 var scaleFactor
 
-func createGameMode(path,meta):
-	var thePath = meta["path"]
-	var ret = ENTG.generatorInstance(thePath,$"../ResourceManager")
-	var wadL = ret.get_node("WadLoader")
-	var w = get_parent().wads
+func createGameMode(path,meta,curConfig,curGameName):
+	
+
+	var a = Time.get_ticks_msec()
+	var gameModePath : String = meta["path"]
+	var ret = ENTG.generatorInstance(gameModePath,$"../ResourceManager")
+	
+	var wadL : WAD_Map = ret.get_node("WadLoader")
 	wadL.wads = get_parent().wads
 	
-	if Engine.editor_hint:
+	if meta.has("loader"):
+		var origLoader = meta["loader"]
+		for property in origLoader.get_property_list():
+			if property.has("usage") and property.usage & PROPERTY_USAGE_EDITOR:
+				wadL.set(property["name"],origLoader.get(property["name"]))
+	
+	if Engine.is_editor_hint():
 		for i in wadL.get_children():
 			i.get_parent().remove_child(i)
 	
-	var maps = get_parent().maps
 
-	if maps.has("E1M1"):
-		ret.firstMap = "E1M1"
 	ret.name = ret.name.replace("_template","")
+	ret.configName = curConfig
 	
-	
+	if Engine.is_editor_hint():
+		WADG.saveNodeAsScene(ret)
+
 	return ret
 
 func smallClear():
@@ -35,7 +44,7 @@ func createGameModeResourcesOnDisk(modeName,meta,editorInterface):
 	
 	
 	$"../ThingParser".mergeDepends(getSpriteListOfMode(meta["path"]),depends)
-	$"../ThingParser".mergeDepends($"../ThingParser".fetchAllDepends("Playerguy"),depends)
+	$"../ThingParser".mergeDepends($"../ThingParser".fetchAllEntityDepends("Playerguy"),depends)
 	
 	
 	
@@ -45,18 +54,17 @@ func createGameModeResourcesOnDisk(modeName,meta,editorInterface):
 	
 	var count = 0
 	for i in targetMaps:
-		print(i)
 		$"../ThingParser".mergeDepends($"../ThingParser".getMapDepends(i),depends)
 		count += 1
 			
 	
 	$"../ThingParser".fetchResourcesDisk(depends)
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		$"../ThingParser".startFileWaitThread(editorInterface)
 	
 
 
-func createGameModeDisk(gName,meta,tree,gameName):
+func createGameModeDisk(gName,meta,tree,configName,gameName):
 	var mapNames = get_parent().maps.keys()
 	var destPath = meta["destPath"]
 	
@@ -70,7 +78,7 @@ func createGameModeDisk(gName,meta,tree,gameName):
 		map.nextMapTscn = destPath + "/maps/" + WADG.incMap(map.name) + ".tscn"
 		
 		ProjectSettings.set_setting("memory/limits/message_queue/max_size_mb",64)
-		if !WADG.incMap(map.name,true).empty():
+		if !WADG.incMap(map.name,true).is_empty():
 			map.nextSecretMapTscn = destPath + "/maps/" + WADG.incMap(map.name,true) + ".tscn"
 		
 		ENTG.saveNodeAsScene(map,destPath + "/maps/")
@@ -82,11 +90,11 @@ func createGameModeDisk(gName,meta,tree,gameName):
 			
 		count += 1
 			
-	var modeNode = createGameMode("",meta)
+	var modeNode = createGameMode("",meta,configName,gameName)
 	modeNode.mapPath = destPath + "/maps/"
 	print("dest path:",destPath + "/modes/")
 	ENTG.saveNodeAsScene(modeNode,destPath + "/modes/")
-	var ret = ResourceLoader.load(destPath + "/modes/"+modeNode.name+".tscn","",true).instance()
+	var ret = ResourceLoader.load(destPath + "/modes/"+modeNode.name+".tscn","",0).instantiate()
 	ret.filename = destPath + "/modes/"+modeNode.name+".tscn"
 	
 	ENTG.fetchEntity("Playerguy",get_tree(),gameName,true)
@@ -126,20 +134,20 @@ func getSpriteListOfMode(scenePath):
 	if generator.has_method("getSpriteList"):
 		$"../ThingParser".mergeDepends(generator.getSpriteList(),ret)
 	
-	if "dependantChildren" in generator:
-		for i in generator.dependantChildren:
+	if "entityDepends" in generator:
+		for i in generator.entityDepends:
 			$"../ThingParser".mergeDepends(getSpriteListOfMode(i),ret)
 			
 	return ret
 
 func getGenerator(scenePath):
-	var packedScene =  ResourceLoader.load(scenePath,"",true)
+	var packedScene =  ResourceLoader.load(scenePath,"",0)
 	
 	if packedScene == null:
 		print("could not load scene:",scenePath)
 		return
 	
-	var scene = packedScene.instance()
+	var scene = packedScene.instantiate()
 	
 	if scene.get_node_or_null("Generator") == null:
 		print("scene:", "has no generator")

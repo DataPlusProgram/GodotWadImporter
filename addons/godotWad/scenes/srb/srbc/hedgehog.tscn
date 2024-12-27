@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://x8hpgd85j7rw"]
+
+[ext_resource type="PackedScene" uid="uid://dm4psfgy7p5y8" path="res://addons/godotWad/scenes/player/playerBase.tscn" id="1_lh8e3"]
+
+[node name="hedgehog" instance=ExtResource("1_lh8e3")]
+
+[node name="Crosshair" parent="UI" index="0"]
+visible = false
+
+[node name="movement" parent="." index="8"]
+airSpeed = 1.25
+airFriction = 0.906
+jumpVelo = 1600
+gravity = 14.286

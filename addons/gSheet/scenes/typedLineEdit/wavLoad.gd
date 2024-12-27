@@ -1,19 +1,18 @@
-tool
+@tool
 extends Node
 
-var file
+var file : FileAccess
 var fileDict = {}
 
 func _ready():
 	set_meta("hidden",true)
 	
 func getStreamFromWAV(path):
-	file = File.new()
-	var err = file.open(path,File.READ)
+	file = FileAccess.open(path,FileAccess.READ)
 	
-	if err != 0:
+	if file != null:
 		print("error opening file:",path)
-		return AudioStreamSample.new()
+		return AudioStreamWAV.new()
 		
 	fileDict["magic"] = file.get_buffer(4).get_string_from_ascii()
 	fileDict["chunkSize"] = file.get_32()
@@ -32,7 +31,7 @@ func getStreamFromWAV(path):
 	
 	while !file.eof_reached():
 		var pos = file.get_position()
-		if (pos + 4) >= file.get_len():	
+		if (pos + 4) >= file.get_length():	
 			break
 			
 		var chunkId = file.get_buffer(4).get_string_from_ascii()
@@ -46,7 +45,7 @@ func getStreamFromWAV(path):
 	stream.loop_end = stream.data.size()
 	
 	if cueArr.size()>0:
-		stream.loop_mode = AudioStreamSample.LOOP_FORWARD
+		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		stream.loop_begin = cueArr[0]
 		
 	if cueArr.size()>1:
@@ -71,15 +70,15 @@ func parseData():
 	fileDict["dataSize"] = file.get_32()
 	
 func createStream():
-	var stream = AudioStreamSample.new()
+	var stream = AudioStreamWAV.new()
 	stream.mix_rate = fileDict["sampleRate"]
 	if fileDict["numChannels"] > 1:
 		stream.stereo = true
 		
 	if fileDict["bitsPerSample"] == 8: 
-		stream.format = AudioStreamSample.FORMAT_8_BITS
+		stream.format = AudioStreamWAV.FORMAT_8_BITS
 	if fileDict["bitsPerSample"] == 16: 
-		stream.format = AudioStreamSample.FORMAT_16_BITS
+		stream.format = AudioStreamWAV.FORMAT_16_BITS
 	
 	var dataSize = fileDict["dataSize"]
 	var data = []
@@ -104,8 +103,7 @@ func createStream():
 				break
 	stream.data = data
 	
-	var audioOutFile = File.new()
-	audioOutFile.open("res://dbg/raw.dat", File.WRITE)
+	var audioOutFile = FileAccess.open("res://dbg/raw.dat", FileAccess.WRITE)
 	
 	for i in stream.data:
 		audioOutFile.store_real(i)

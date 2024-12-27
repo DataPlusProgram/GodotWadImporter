@@ -9,7 +9,7 @@ func _ready():
 
 
 func tick():
-	
+	return
 
 	
 	target = par.target
@@ -17,10 +17,10 @@ func tick():
 	if target == null:
 		return null
 	
-	var pos = target.translation
+	var pos = target.position
 	
 	if get_parent().map == null:
-		return target.translation-par.translation
+		return target.position-par.position
 	
 	if pPos.distance_to(pos) < 1:
 		path = removeClose()
@@ -41,16 +41,16 @@ func tick():
 	if nav == null:
 		return
 	
-	path = nav.get_simple_path(get_parent().translation, target.translation)
+	path = nav.get_simple_path(get_parent().position, target.position)
 	path = removeClose()
 	
-	if path.empty():
-		path.append(par.translation-target.translation)
+	if path.is_empty():
+		path.append(par.position-target.position)
 		#print(target.translation.distance_to(par.translation))
 	
 	#WADG.drawPath(nav,path)
 	
-	if path.empty():
+	if path.is_empty():
 		return null
 	
 	
@@ -60,11 +60,11 @@ func removeClose():
 	var newPath = []
 	
 	for i in path:
-		if i.distance_to(par.translation) > 1:
+		if i.distance_to(par.position) > 1:
 			newPath.append(i)
 			
 	return newPath
 
 
 func ingoreY(vec : Vector3) -> Vector3:
-	return Vector3(vec.x,target.translation.y,vec.z)
+	return Vector3(vec.x,target.position.y,vec.z)

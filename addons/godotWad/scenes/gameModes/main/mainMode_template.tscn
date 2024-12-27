@@ -1,17 +1,56 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=12 format=3 uid="uid://c6twtortk7i2r"]
 
-[ext_resource path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/scenes/gameModes/main/Generator.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/WAD_Loader.tscn" type="PackedScene" id=3]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/Generator.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dhl77huh1s1at" path="res://addons/godotWad/WAD_Loader.tscn" id="3"]
+[ext_resource type="Resource" uid="uid://b41turepijbnk" path="res://addons/godotWad/resources/intermissionScreensD1.tres" id="3_51f74"]
+[ext_resource type="Shader" path="res://addons/godotWad/shaders/melt.gdshader" id="4_jfqc5"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/meltRect.gd" id="5_j23hr"]
+[ext_resource type="PackedScene" uid="uid://t1mrjy0uapia" path="res://addons/godotWad/scenes/gameModes/templates/ScoreScreen/scoreScreen.tscn" id="6_uwuwi"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/templates/ScoreScreen/scoreScreen.gd" id="7_prkmo"]
+[ext_resource type="PackedScene" uid="uid://cf0kxe40frncs" path="res://addons/gameAssetImporter/scenes/soundManager/soundManager.tscn" id="8_4waaj"]
 
-[node name="mainMode_template" type="Spatial"]
-script = ExtResource( 1 )
+[sub_resource type="Environment" id="Environment_kce85"]
+background_color = Color(1, 1, 1, 1)
+background_energy_multiplier = 0.0
+ambient_light_energy = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y8edn"]
+shader = ExtResource("4_jfqc5")
+shader_parameter/timer = 0.0
+shader_parameter/y_offsets = null
+shader_parameter/melting = false
+
+[node name="mainMode_template2" type="Node3D" groups=["gameMode"]]
+script = ExtResource("1")
 
 [node name="Generator" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
+scoreScreenImg = ExtResource("3_51f74")
 
-[node name="WadLoader" parent="." instance=ExtResource( 3 )]
+[node name="WadLoader" parent="." instance=ExtResource("3")]
 
 [node name="endScreen" type="TextureRect" parent="."]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_kce85")
+
+[node name="meltRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_y8edn")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("5_j23hr")
+
+[node name="ScoreScreen" parent="." instance=ExtResource("6_uwuwi")]
+visible = false
+script = ExtResource("7_prkmo")
+
+[node name="SoundManager" parent="." instance=ExtResource("8_4waaj")]
+
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]

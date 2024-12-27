@@ -1,0 +1,88 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://c8i4jg4y3oe8s"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_a71eg"]
+
+[resource]
+script = ExtResource("1_a71eg")
+data = {
+"0": {
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Parameters": "",
+"PostFunction": "",
+"Sprite": "PISGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"Dur": 4,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"Parameters": "",
+"PostFunction": "",
+"Sprite": "PISGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"Dur": 6,
+"Frame": "B",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"Parameters": "",
+"PostFunction": "",
+"Sprite": "PISGB",
+"flashFrame": "A",
+"flashSprite": "PISFA"
+},
+"3": {
+"Dur": 4,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"Parameters": "",
+"PostFunction": "",
+"Sprite": "PISGC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"4": {
+"Dur": 5,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"Parameters": "",
+"PostFunction": "",
+"Sprite": "PISGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "PostFunction", "flashSprite", "flashFrame", "Parameters"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4"],
+"sheetWidth": 2730.0,
+"splitSize": {
+0: 64,
+1: 0,
+2: 0,
+3: 98,
+4: 184,
+5: 115,
+6: 108,
+7: 167,
+8: 124,
+9: 0
+}
+}
+}

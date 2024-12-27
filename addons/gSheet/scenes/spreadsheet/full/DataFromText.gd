@@ -1,12 +1,13 @@
-tool
+@tool
 extends ConfirmationDialog
-signal confirm
+signal confirmSignal
 
 func _ready():
-	connect("confirmed",self,"confirmed")
+	#connect("confirmed",self,"confirmed")
+	connect("confirmed",confirmedS)
 	
 
 
-func confirmed():
-	emit_signal("confirm",self,$TextEdit.text)
+func confirmedS():
+	emit_signal("confirmSignal",self,$TextEdit.text)
 	

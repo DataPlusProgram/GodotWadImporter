@@ -1,48 +1,53 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://5stinnv33vnt"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/arachnotronSprites.tres" type="Resource" id=1]
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=2]
+[ext_resource type="Resource" uid="uid://b4l84ldp8loi3" path="res://addons/godotWad/scenes/enemies/templates/sprites/arachnotronSprites.tres" id="1"]
+[ext_resource type="PackedScene" uid="uid://dhxyaai4rce5r" path="res://addons/godotWad/scenes/enemies/npc_template.tscn" id="2"]
 
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 1.271, 2.263 )
+[sub_resource type="QuadMesh" id="QuadMesh_ffw34"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 64, 32, 64 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(128, 64, 128)
 
-[node name="arachnotron" instance=ExtResource( 2 )]
+[node name="arachnotron" instance=ExtResource("2")]
 initialHP = 500.0
 npcName = "arachnotron"
 height = 64.0
 thickness = 64.0
+mass = 600.0
 projectile = "spider_plasma"
 meleeRange = -1.0
-projectileRange = 8.0
+stateDataPath = "res://addons/godotWad/resources/monsterStates/arachnotronState.tres"
+attackStateId = 15
+painStateId = 19
+deadStateId = 21
 continuousFire = true
 painChance = 0.5
 
 [node name="AnimatedSprite3D" parent="." index="0"]
-mesh = SubResource( 2 )
+mesh = SubResource("QuadMesh_ffw34")
 
-[node name="CollisionShape" parent="." index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0 )
-shape = SubResource( 1 )
+[node name="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0)
+shape = SubResource("1")
 
 [node name="cast" parent="." index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51.2, 0 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51.2, 0)
 
 [node name="Generator" parent="." index="7"]
-sprites = ExtResource( 1 )
+sprites = ExtResource("1")
 idle = "AB"
 chase = "AABBCCDDEEFF"
 melee = "GHH"
 hurt = "II"
 dying = "JKLMNOP"
-deathSounds = [ "DSBSPDTH" ]
-painSounds = [ "DSDMPAIN" ]
-attackSounds = [ "DSPLASMA " ]
-alertSounds = [ "DSBSPSIT" ]
+deathSounds = ["DSBSPDTH"]
+painSounds = ["DSDMPAIN"]
+attackSounds = ["DSPLASMA "]
+alertSounds = ["DSBSPSIT"]
+searchSounds = Array[StringName]([&"DSBSPACT"])
+stompSounds = Array[StringName]([&"DSBSPWLK"])
 
-[node name="VisibilityNotifier" parent="." index="9"]
-aabb = AABB( -1, 0, -1, 2, 64, 2 )
+[node name="VisibleOnScreenNotifier3D" parent="." index="8"]
+aabb = AABB(-1, 0, -1, 2, 64, 2)
 
 [editable path="AnimatedSprite3D"]

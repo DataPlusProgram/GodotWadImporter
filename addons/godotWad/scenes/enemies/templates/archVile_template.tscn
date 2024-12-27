@@ -1,38 +1,64 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://ba25lpbtmrs3m"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=1]
-[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/archVileSprites.tres" type="Resource" id=2]
+[ext_resource type="PackedScene" uid="uid://dhxyaai4rce5r" path="res://addons/godotWad/scenes/enemies/npc_template.tscn" id="1"]
+[ext_resource type="Resource" uid="uid://df2obpoo8qm5" path="res://addons/godotWad/scenes/enemies/templates/sprites/archVileSprites.tres" id="2"]
 
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 1.271, 2.263 )
+[sub_resource type="QuadMesh" id="QuadMesh_d22xc"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 20, 28, 20 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(40, 56, 40)
 
-[node name="Archvile" instance=ExtResource( 1 )]
+[sub_resource type="BoxShape3D" id="BoxShape3D_nckdc"]
+
+[node name="Archvile" instance=ExtResource("1")]
+initialHP = 700.0
+npcName = "archvile"
 height = 56.0
+mass = 500.0
+projectile = "archvile_fire"
+projectileRange = 896.0
+painTimeMS = 0.031
+stateDataPath = "res://addons/godotWad/resources/monsterStates/archvileState.tres"
+attackStateId = 14
+painStateId = 22
+deadStateId = 26
+reviverState = 36
+speed = 10.0
 painChance = 0.031
 
 [node name="AnimatedSprite3D" parent="." index="0"]
-mesh = SubResource( 2 )
+mesh = SubResource("QuadMesh_d22xc")
 
-[node name="CollisionShape" parent="." index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0 )
-shape = SubResource( 1 )
+[node name="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0)
+shape = SubResource("1")
 
 [node name="cast" parent="." index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0)
 
 [node name="Generator" parent="." index="7"]
-sprites = ExtResource( 2 )
+sprites = ExtResource("2")
 idle = "AB"
 chase = "AABBCCDDEEFF"
 attack = "GGHIJKLMNOP"
 hurt = "QQ"
 dying = "QRSTUVWXYZ"
 heal = "[\\]"
+deathSounds = ["DSVILDTH"]
+painSounds = ["DSVIPAIN"]
+attackSounds = ["DSVILATK"]
+alertSounds = ["DSVILSIT"]
+searchSounds = Array[StringName]([&"DSVILACT"])
+stompSounds = Array[StringName]([&"DSSLOP"])
 
-[node name="VisibilityNotifier" parent="." index="9"]
-aabb = AABB( -1, 0, -1, 2, 56, 2 )
+[node name="VisibleOnScreenNotifier3D" parent="." index="8"]
+aabb = AABB(-1, 0, -1, 2, 56, 2)
+
+[node name="rezCheckArea" type="Area3D" parent="." index="10"]
+collision_layer = 4097
+collision_mask = 4097
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="rezCheckArea" index="0"]
+shape = SubResource("BoxShape3D_nckdc")
 
 [editable path="AnimatedSprite3D"]

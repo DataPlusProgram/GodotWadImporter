@@ -1,34 +1,48 @@
-tool
+@tool
 extends Node
 
 signal fileWaitDone
-
-var materialCache = {}
-var soundCache = {}
-var textureCache = {}
-var spriteMaterialCache = {}
-var flatCache = {}
-var spriteCache = {}
-var spriteOffsetCache = {}
-var waitingForFiles = []
-var animtedTexturesWaiting  = []
+signal subFileWaitDone
+var materialCache : Dictionary = {}
+var soundCache : Dictionary = {}
+var textureCache : Dictionary= {}
+var spriteMaterialCache : Dictionary = {}
+var flatCache : Dictionary = {}
+var spriteCache : Dictionary = {}
+var spriteOffsetCache : Dictionary = {}
+var waitingForFiles : Array = []
+var filesToUpdate : Array = []
+var animtedTexturesWaiting : Array = []
 var font = null
-var cubeMapShader = preload("res://addons/godotWad/shaders/cubemap.shader")
-var cubeMapShaderOneSided = preload("res://addons/godotWad/shaders/cubemapOneSided.shader")
+var audioLumps : Dictionary = {}
 
-var skyMatOneSided = null
-var skyMatDoubleSided = null
-var lastSkyName = ""
-
-onready var imageBuilder = $"../ImageBuilder"
-onready var levelBuilder = $"../LevelBuilder"
+var cubeMapShader = preload("res://addons/godotWad/shaders/cubemap.gdshader")
+var cubeMapShaderOneSided = preload("res://addons/godotWad/shaders/cubemapOneSided.gdshader")
+var useInstancedParameters = false
+@onready var root = get_tree().get_root()
+@onready var isEditor = Engine.is_editor_hint()
+@onready var mutex : Mutex = Mutex.new()
+var pngImportTemplate : String = ""
+@onready var imageBuilder = $"../ImageBuilder"
+@onready var levelBuilder = $"../LevelBuilder"
+@onready var materialManager = $"../MaterialManager"
+@onready var musConverter = $"../musConverter"
+@onready var parent : WAD_Map= get_parent()
+func _physics_process(delta):
+	var t = 3
 
 func _ready():
-	
 	set_meta("hidden",true)
 
+enum LUMP{
+	name,
+	file,
+	offset,
+	size,
+}
+
 func clear():
-	materialCache = {}
+	$"../MaterialManager".materialCache = {}
 	soundCache = {}
 	textureCache = {}
 	flatCache = {}
@@ -37,152 +51,195 @@ func clear():
 	font = null
 	imageBuilder.patchCache = {}
 	imageBuilder.patchOffsetCache = {}
-	get_parent().flatTextureEntries = {}
-	get_parent().patchTextureEntries = {}
+	parent.flatTextureEntries = {}
+	parent.textureEntryFiles = {}
+	parent.patchTextureEntries = {}
 	
-func fetchPatchedTexture(textureName : String,saveAsFlat = false,rIndex = false) -> Texture:
+func fetchPatchedTexture(textureName : String,rIndex : int= false) -> Texture2D:
 	
-	
-	if !get_parent().toDisk:
-		return fetchPatchedTextureRuntime(textureName,saveAsFlat,rIndex)
+	if !parent.toDisk:
+		return fetchPatchedTextureRuntime(textureName,rIndex)
 	else:
 		return fetchPatchedTextureDisk(textureName,rIndex)
 	
-func fetchMaterial(textureName : String,texture : Texture,lightLevel : float,scroll : Vector2,alpha : float,lightInc : float = 0,skyDoubleSided:bool=false) -> Material:
 	
-	if texture == null:
-		return null
-	if !get_parent().toDisk:
-		return fetchMaterialRuntime(texture.get_instance_id(),texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
-	else:
-		return fetchMaterialDisk(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided)
-	
-	
+var fontCache = {}
 
-func fetchSpriteMaterial(spriteName : String,fovIndependent = false):
-	
-	
-	if get_parent().toDisk:
-		if spriteName.find("\\") != -1:
-			spriteName = spriteName.replace("\\","bs")
-		
-		var matPath : String = WADG.destPath +get_parent().gameName + "/materials/" + spriteName +".tres"
-		
-		if matPath.find("\\") != -1:
-			matPath = matPath.replace("\\","bs")
-		
-		
-		
-		if ResourceLoader.exists(matPath):
-			return ResourceLoader.load(matPath,"",true)
-		
-		var mat : Resource = createSpriteMat(spriteName,load(WADG.destPath+get_parent().gameName +"/sprites/"+spriteName+".png"),fovIndependent)
-		ResourceSaver.save(matPath,mat)
-		return ResourceLoader.load(matPath,"",true)
-		#return  load(matPath)
-	else:
-		if materialCache.has(spriteName):
-			return materialCache[spriteName]
-		
-		if !spriteCache.has(spriteName):
-			return null
-		var mat =  createSpriteMat(spriteName,spriteCache[spriteName],fovIndependent)
-		
-		materialCache[spriteName] = mat
-		
-		return materialCache[spriteName]
-		
-	
-	
 
-func createSpriteMat(spriteName: String,texture : Texture,fovIndependant : bool) -> Resource:
-	var mat
-	if !fovIndependant:
-		mat = load("res://addons/godotWad/scenes/quad3Dsprite.tres").duplicate()
-		mat.albedo_texture = texture
-	else:
-		mat = load("res://addons/godotWad/scenes/fovIndep.tres").duplicate()
-		mat.set_shader_param("texture_albedo",texture)
-	
-	
-	return mat
-	
+func fetchFontDepends(fontName):
+	var x = fontCache[fontName]
 
-func fetchBitmapFont(numberChars):
-	if !get_parent().toDisk:
-		get_parent().toDisk = false
-		if font == null:
-			font = createBitmapFont(numberChars)
-		return font
+func fetchBitmapFont(fontName : String):
+	
+	var grayscale = false
+	var fontnameTrue = fontName
+	if fontName.find("-grayscale") != -1:
+		fontnameTrue = fontName.split("-")[0]
+		grayscale = true
+	
+	var fontDict = parent.getFont(fontnameTrue)
+
+	if !parent.toDisk:
+		if fontCache.has(fontName):
+			return fontCache[fontName]
+		else:
+			fontCache[fontName] =  createBitmapFont(fontDict,grayscale)
+			return fontCache[fontName]
+	else:
+		var path = WADG.destPath+parent.gameName+"/fonts/" + fontName +".tres"
 		
 		
-	if get_parent().toDisk:
-		var fontPath = WADG.destPath+"/"+get_parent().gameName+"/fonts/bm.tres"
-		if !WADG.doesFileExist(fontPath):
-			font = createBitmapFont(numberChars)
-			ResourceSaver.save(fontPath,font)
+		if !ResourceLoader.exists(path):
+			
+			font = createBitmapFont(fontDict,grayscale)
+			ResourceSaver.save(font,path)
 		
-		return ResourceLoader.load(fontPath)
+		return ResourceLoader.load(path)
+			
+		
+
+func createBitmapFontTextures(fontName : StringName,greyscale = false):
+	var fontDict =parent.getFont(fontName)
+	
+	for i in fontDict:
+		fetchDoomGraphic(fontDict[i][0])
+
+func createBitmapFont(fontDict : Dictionary,greyscale = false):
+	var parsedFontDict = fontDict.duplicate()
+	
+	var size = 16.0
+	
+	var img : Image = createFontImage(parsedFontDict,greyscale)
+	var srcH = img.get_height()
+	var srcW = img.get_width()
+	var font : FontFile = FontFile.new()
+	var ratioH = size/srcH * 1.1
+	var ratioW = size/srcW
+	
+	font.set_texture_image(0,Vector2(size,0),0,img)
+	font.set_cache_ascent(0, size, 0.5 * ratioH * srcH)#this will be used for newline
+	font.set_cache_descent(0, size, parsedFontDict[parsedFontDict.keys()[0]].get_height()*2.5)#this will be used for newline
+	
+	var runningX = 0
+	
+	parsedFontDict[32] = null #space character
+
+	for i in parsedFontDict:
+		
+		var texture = parsedFontDict[i]
+		
+		var charW= 0
+		var charH = 0
+		
+
+		if parsedFontDict[i] != null:
+			charW = texture.get_width()
+			charH = texture.get_height()
+		else:
+			charW = parsedFontDict[parsedFontDict.keys()[0]].get_width()
+			charH = parsedFontDict[parsedFontDict.keys()[0]].get_height()
+		
+		var offset = Vector2i(0,0)
 		
 		
+		
+		if parsedFontDict[i] != null:
+			offset = fontDict[i][1]
+		
+
+		font.set_glyph_advance(0, size, i, Vector2(charW*ratioH, 0))#the true tickness/width of char
+		font.set_glyph_offset(0, Vector2i(size, 0), i, Vector2i(0, -3)+offset)#will shift the final up/down
+		font.set_glyph_size(0, Vector2i(size, 0), i, Vector2(charW, charH)*ratioH)#the visual size of the char
+		font.set_glyph_uv_rect(0,Vector2i(size, 0),i,Rect2(runningX,0,charW,charH))#defines the uv area
+
+		if parsedFontDict[i] == null:
+			null
+			#font.set_glyph_texture_idx(0,Vector2i(0,0),i,0)
+		else:
+			font.set_glyph_texture_idx(0,Vector2i(size,0),i,0)
+		
+		runningX +=  charW
 	
+	font.allow_system_fallback = true
 	
-func createBitmapFont(numberChars):
-	
-	var font : BitmapFont = BitmapFont.new()
-	
-	if numberChars.size() == 0:
-		return
-	for i in range (0,10):
-		var tex = fetchDoomGraphic(numberChars[i])
-		font.add_texture(tex)
-		font.add_char(48+i,i,Rect2(Vector2.ZERO,tex.get_size()))
-	
-	
-	var baseLineH =  fetchDoomGraphic(numberChars[0]).get_size().y
-	var tex : Texture = fetchDoomGraphic(numberChars[10])
-	var hH = tex.get_size().y /2.0
-	font.add_texture(tex)
-	font.add_char(45,10,Rect2(Vector2(0,0),tex.get_size()),Vector2(0,baseLineH/2.0-hH))
-	
-	tex = fetchDoomGraphic(numberChars[11])
-	font.add_texture(tex)
-	font.add_char(37,11,Rect2(Vector2(0,0),tex.get_size()))
-	
-	font.height = baseLineH
-	
-	var fontPath = WADG.destPath+get_parent().gameName+"/fonts/bm.tres"
 	return font
-	#ResourceSaver.save(fontPath,font)
 
-func fetchPatchedTextureRuntime(textureName : String,saveAsFlat : bool=false,rIndex : bool= false) -> Texture:
+func createFontImage(numberChars,greyscale) -> Image:
 	
-	if textureName == "-":
+	var totalW : int = 0
+	var totalY : int = 0
+	var maxY : int = 0
+	var fontImages : Array[Image] = []
+	
+	for i in numberChars:
+		numberChars[i] = fetchDoomGraphic(numberChars[i][0])
+		if greyscale:
+			var t  = numberChars[i]
+			numberChars[i] = ImageTexture.create_from_image(convertImageToGrayscale(numberChars[i].get_image()))
+	
+	for i in numberChars:
+		var txt = numberChars[i]
+		totalW += txt.get_width()
+		if txt.get_height() > maxY:
+			maxY = txt.get_height()
+		
+	
+	
+	var img : Image = Image.create(totalW,maxY,false,Image.FORMAT_RGBA8)
+	var runningWdith : int = 0
+	
+	for i : int in numberChars:
+		var txt = numberChars[i]
+		img.blit_rect(txt.get_image(),Rect2(0,0,txt.get_width(),txt.get_height()),Vector2(runningWdith,0))
+		runningWdith += txt.get_width()
+	
+	return img
+
+func convertImageToGrayscale(image: Image) -> Image:
+	if not image.is_empty():
+		# Loop through each pixel
+		for y in range(image.get_height()):
+			for x in range(image.get_width()):
+				# Get the pixel color at (x, y)
+				var color = image.get_pixel(x, y)
+				
+				# Convert color to HSV
+				var hsv = EGLO.rgbToHSV(color.r,color.g,color.b)
+				# Set saturation to 0 (grayscale)
+				hsv[1] = 0
+				
+				# Convert back to Color from HSV
+				var grayscale_color = Color.from_hsv(hsv[0]*255, hsv[1]*255, hsv[2]*255, color.a)
+				# Update the pixel color
+				image.set_pixel(x, y, grayscale_color)
+		
+	
+	# Return the modified image
+	return image
+
+
+	
+
+func fetchPatchedTextureRuntime(textureName : StringName,rIndex : bool= false) -> Texture2D:
+	
+	if textureName == &"-":
 		return null
 		
-	if textureName == "AASTINKY": 
+	if textureName == &"AASTINKY": 
 		return null
-		
+	
 	if textureCache.has(textureName):
 		return textureCache[textureName]
 	
+
+
+	var texture : Texture = null
+	var subStr : StringName= textureName.substr(0,textureName.length()-1)
 	
-	
-	rIndex = false
-	var patchTextureEntries =  get_parent().patchTextureEntries
-	
-	if !patchTextureEntries.has(textureName):
-		return null
-	 
-	var texture = null
-	
-	
-	var subStr = textureName.substr(0,textureName.length()-1)
-	var k = imageBuilder.animatedKey
 	if imageBuilder.animatedTextures.has(subStr):
 		var frames = imageBuilder.animatedTextures[subStr]
-		texture = createAnimatedPatchedTexture(frames,false,true)
-		texture.fps = 3
+		texture = createAnimatedPatchedTexture(frames)
+		texture.speed_scale = 3
 		
 		
 	elif imageBuilder.animatedKey.has(textureName):
@@ -191,12 +248,14 @@ func fetchPatchedTextureRuntime(textureName : String,saveAsFlat : bool=false,rIn
 		var index = frames.find(textureName)
 		if index != 0:
 			frames.invert()
-		texture = createAnimatedPatchedTexture(frames,false,true)
+		texture = createAnimatedPatchedTexture(frames)
 		texture.current_frame = index
-		texture.fps = 0
+		texture.speed_scale = 0
 		
 	else:
-		texture = imageBuilder.createPatchedTexture(patchTextureEntries[textureName],rIndex)
+		if parent.patchTextureEntries.has(textureName):
+			texture = imageBuilder.createPatchedTexture(parent.patchTextureEntries[textureName],rIndex)
+			
 	
 	
 	
@@ -218,10 +277,10 @@ func fetchTextureFromFile(path):
 		return textureCache[textureName]
 		
 		
-	var patchTextureEntries =  get_parent().patchTextureEntries
+	var patchTextureEntries =  parent.patchTextureEntries
 	
 	if !patchTextureEntries.has(textureName):
-		var pte = get_parent().flatTextureEntries
+		#var pte = parent.flatTextureEntries
 		var t = loadImageFileAsTexture(path)
 		textureCache[textureName] = t
 		return t
@@ -230,44 +289,44 @@ func fetchPatchedTextureDisk(textureName : String,rIndex : bool= false):
 	rIndex = false
 	
 	
-	if textureName == "-":
+	if textureName == &"-":
 		breakpoint
 	
-	var patchTextureEntries =  get_parent().patchTextureEntries
+	var patchTextureEntries =  parent.patchTextureEntries
 	var texture = null
 	var subStr = textureName.substr(0,textureName.length()-1)
 	
 	if imageBuilder.animatedKey.has(textureName):
-		if ResourceLoader.exists(WADG.destPath+get_parent().gameName+"/textures/animated/"+textureName+".tres"):
-			return load(WADG.destPath+get_parent().gameName+"/textures/animated/"+textureName+".tres")
+		if ResourceLoader.exists(WADG.destPath+parent.gameName+"/textures/animated/"+textureName+".tres"):
+			return load(WADG.destPath+parent.gameName+"/textures/animated/"+textureName+".tres")
 		
 		
 		var frames = imageBuilder.animatedKey[textureName]
-		texture = createAnimatedPatchedTexture(frames,false,true)
-		texture.fps = 0
-		ResourceSaver.save(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres",texture)
+		texture = createAnimatedPatchedTexture(frames)
+		texture.speed_scale = 0
+		ResourceSaver.save(texture,WADG.destPath+parent.gameName+"/textures/animated/"+subStr+".tres")
 		
 		
 	elif imageBuilder.animatedTextures.has(subStr):
-		if ResourceLoader.exists(WADG.destPath+get_parent().gameName+"/textures/animated/"+textureName+".tres"):
-			return load(WADG.destPath+get_parent().gameName+"/textures/animated/"+textureName+".tres")
+		if ResourceLoader.exists(WADG.destPath+parent.gameName+"/textures/animated/"+textureName+".tres"):
+			return load(WADG.destPath+parent.gameName+"/textures/animated/"+textureName+".tres")
 		
 		var frames = imageBuilder.animatedTextures[subStr]
-		texture = createAnimatedPatchedTexture(frames,false,true)
-		ResourceSaver.save(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres",texture)
+		texture = createAnimatedPatchedTexture(frames)
+		ResourceSaver.save(texture,WADG.destPath+parent.gameName+"/textures/animated/"+subStr+".tres")
 	
 	
 	
-	elif textureName in get_parent().patchTextureEntries:
-		if WADG.doesFileExist(WADG.destPath+get_parent().gameName+"/textures/"+textureName+".png"):
+	elif textureName in parent.patchTextureEntries:
+		if WADG.doesFileExist(WADG.destPath+parent.gameName+"/textures/"+textureName+".png"):
 			
-			texture = ResourceLoader.load(WADG.destPath+get_parent().gameName+"/textures/"+textureName+".png","",true)
+			texture = ResourceLoader.load(WADG.destPath+parent.gameName+"/textures/"+textureName+".png","",0)
 			return texture
 			
 		texture = imageBuilder.createPatchedTexture(patchTextureEntries[textureName],rIndex)
-		texture.get_data().save_png(WADG.destPath+get_parent().gameName+"/textures/"+textureName+".png")
+		texture.get_image().save_png(WADG.destPath+parent.gameName+"/textures/"+textureName+".png")
 	
-		addFileToWaitList(WADG.destPath+get_parent().gameName+"/textures/"+textureName+".png")
+		addFileToWaitList(WADG.destPath+parent.gameName+"/textures/"+textureName+".png")
 		
 		
 	if texture == null:
@@ -279,21 +338,18 @@ func fetchPatchedTextureDisk(textureName : String,rIndex : bool= false):
 
 
 func addFileToWaitList(path):
-	var file = File.new()
+	#var file = File.new()
 	
 	var fileName = path.get_basename().get_file()
 	var fileHash = fileName + "-" + path.md5_text()
 	
-	var pre = "res://.import/" + fileHash.split("-",false)[0] + ".png-"  + fileHash.split("-")[1] + ".md5" #the file in .import for filename-md5Code 
+	var pre = "res://.godot/imported/" + fileHash.split("-",false)[0] + ".png-"  + fileHash.split("-")[1] + ".md5" #the file in super.import for filename-md5Code 
 	
 	
-	var p0 = WADG.getAllFlat("res://.import/")
 
+	if FileAccess.file_exists(pre):
+		DirAccess.remove_absolute(pre)
 
-	if file.file_exists(pre):
-		var dir = Directory.new()
-		dir.remove(pre)#we delete the old .md5 to ensure data gets updated
-	
 	
 	if !imageBuilder.skyboxTextures.has(path.get_file()):
 		createImportFile(path)
@@ -302,141 +358,65 @@ func addFileToWaitList(path):
 		
 	var p = getImportPath(path)
 	waitingForFiles.append(p)
+	filesToUpdate.append(path)
 	
 
 
-func fetchMaterialDisk(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided:bool):
-	var mat
-	
-	
-	lightLevel = WADG.getLightLevel(lightLevel)
-	var tintParam = range_lerp(lightLevel,0,16,0.0,1.0)
-	var materialKey = String(textureName) +"," + String(lightLevel)+ "," + String(scroll) + "," + String(alpha)
-	var path = WADG.destPath+get_parent().gameName+"/materials/" + textureName + materialKey +".tres"
-	
-	textureName += "-" + String(lightLevel)
-		
-
-	if WADG.doesFileExist(path):
-		mat = ResourceLoader.load(path)
-		mat.resource_path = path
-		return mat
-		return ResourceLoader.load(path)
-	
-	
-	if !get_parent().dontUseShader: mat = createMatShader(texture,lightLevel,scroll,alpha)
-	
-	var shader = load("res://addons/godotWad/shaders/base2.shader")
-	mat.set_shader_param("tint",Color(tintParam,tintParam,tintParam))
-	mat.shader = shader
-	
-
-	var pack = PackedScene.new()
-	var err = ResourceSaver.save(path,mat)
-
-	mat = load(path)
-	mat.resource_path = path
-	
-	return mat
-	#return WADG.destPath+get_parent().gameName+"/materials/" + textureName +".tres"
-	return  load(WADG.destPath+get_parent().gameName+"/materials/" + textureName +".tres")
 
 
-func fetchMaterialRuntime(textureName,texture,lightLevel,scroll,alpha,lightInc,skyDoubleSided):
-	
-	var mat
-	var materialKey = String(textureName) +"," + String(lightLevel)+ "," + String(scroll) + "," + String(alpha)
-	
-	if materialCache.has(materialKey):
-		return materialCache[materialKey]
-	
-	
-	lightLevel = WADG.getLightLevel(lightLevel)
-	var tintParam = range_lerp(lightLevel,0,16,0.0,1.0)
-
-		
-	if !get_parent().dontUseShader: mat = createMatShader(texture,lightLevel,scroll,alpha)
-
-	materialCache[materialKey] = mat
-		
-	var shader = load("res://addons/godotWad/shaders/base2.shader")
-		
-	mat.set_shader_param("tint",Color(tintParam,tintParam,tintParam))
-	mat.shader = shader
-	mat = materialCache[materialKey]
-	
-	
-	if mat == null:
-		breakpoint
-	
-	return mat
-
-
-func createMatSpatial(texture,sector):
-	var mat = SpatialMaterial.new()
-	var sectorLightLevel = sector["lightLevel"]/255
-	sectorLightLevel = sectorLightLevel
-	#var lightLevel = max(31-(sectorLightLevel/8),0)
-	
-	mat.albedo_color = Color(sectorLightLevel,sectorLightLevel,sectorLightLevel)
-	mat.albedo_texture = texture
-	
-	if texture.has_alpha():#at the moment this is also true which will need to be fixed if it makes performance bad
-		mat.params_use_alpha_scissor = true
-	return mat
-
-
-	
-func createMatShader(texture,lightLevel,scroll,alpha):
-#	if alpha != 1:
-#		breakpoint
-	
-	var shader = load("res://addons/godotWad/shaders/base2.shader")
-	var sectorLightLevel = lightLevel#sector["lightLevel"]/255.0
-	var mat = ShaderMaterial.new()
-	#var scrollSpeed = Vector2(0,0)
-	mat.shader = shader
-	
-	mat.set_shader_param("texture_albedo" , texture)
-	mat.set_shader_param("scrolling",scroll)
-	mat.set_shader_param("alpha",1)
-	
-	return mat
-
-
-func fetchFlat(name : String,rIndexed : bool =false) -> ImageTexture:
-	if !get_parent().toDisk:
+func fetchFlat(name : String,rIndexed : bool =false) -> Texture2D:
+	if !parent.toDisk:
 		return fetchFlatRuntime(name,rIndexed)
 	else:
 		return fetchFlatDisk(name,rIndexed)
 
-func fetchFlatRuntime(name : String,rIndexed : bool =false) -> ImageTexture:
+func fetchFlatRuntime(name : String,rIndexed : bool =false) -> Texture:
 	
 	rIndexed = false
 	
-	var fte = get_parent().flatTextureEntries
+	var fte : Dictionary = parent.flatTextureEntries
 	
 	if !fte.has(name):
 		return null
 	
-	var subStr = name.substr(0,name.length()-1)
+	
 
-	
-	var textureFileEntry = fte[name]
-	var textureObj = null
-	
-	
-	if $"../ImageBuilder".animatedTextures.has(subStr):
+	if typeof(fte[name]) == TYPE_STRING:
 		if !flatCache.has(name):
-			var textureNames = $"../ImageBuilder".animatedTextures[subStr]
-			var animatedTexture = createAnimatedFlat(textureNames,rIndexed,true)
+			
+			var img : Image
+			
+			if fte[name].find(".pk3") != -1 or fte[name].find(".zip") != -1:
+				img = loadPngFromZip(fte[name])
+				var t = img.get_format()
+				
+			else: 
+				img = Image.load_from_file(fte[name])
+				var t = img.get_format()
+				
+			
+			var texture : ImageTexture= ImageTexture.new()
+			texture = texture.create_from_image(img)
+
+			flatCache[name] = texture
+		
+		return flatCache[name]
+		
+	
+	var textureFileEntry : Array = fte[name]
+	
+	var subStr : String = name.substr(0,name.length()-1)
+	
+	if imageBuilder.animatedTextures.has(subStr):
+		if !flatCache.has(name):
+			var textureNames : Array = imageBuilder.animatedTextures[subStr]
+			var animatedTexture : Texture2D = createAnimatedFlat(textureNames,rIndexed,true)
 			flatCache[name] = animatedTexture
 			
 			
 	elif !flatCache.has(name):
-		var texture
-		var flag = false
-		texture =  $"../ImageBuilder".parseFlat(textureFileEntry,rIndexed)
+		var  texture : Texture2D
+		texture =  imageBuilder.parseFlat(textureFileEntry,rIndexed)
 		flatCache[name] = texture
 	
 	return flatCache[name]
@@ -444,10 +424,10 @@ func fetchFlatRuntime(name : String,rIndexed : bool =false) -> ImageTexture:
 
 
 
-func fetchFlatDisk(name,rIndexed):
+func fetchFlatDisk(name : String,rIndexed : bool):
 	rIndexed = false
 	
-	var fte = get_parent().flatTextureEntries
+	var fte = parent.flatTextureEntries
 	
 	if !fte.has(name):
 		
@@ -457,130 +437,107 @@ func fetchFlatDisk(name,rIndexed):
 
 	var textureFileEntry = fte[name]
 	
-	if $"../ImageBuilder".animatedTextures.has(subStr):#if it's an animated flat
-		if !ResourceLoader.exists(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres"):
+	if imageBuilder.animatedTextures.has(subStr):#if it's an animated flat
+		if !ResourceLoader.exists(WADG.destPath+parent.gameName+"/textures/animated/"+subStr+".tres"):
 			
-			var textureNames = $"../ImageBuilder".animatedTextures[subStr]
+			var textureNames = imageBuilder.animatedTextures[subStr]
 			var animatedTexture = createAnimatedFlat(textureNames,rIndexed,true)
 			
-			ResourceSaver.save(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres",animatedTexture)
+			ResourceSaver.save(animatedTexture,WADG.destPath+parent.gameName+"/textures/animated/"+subStr+".tres")
 			
 			return
 
 			
 		else:
 			
-			var r = ResourceLoader.load(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres","",true)
+			var r = ResourceLoader.load(WADG.destPath+parent.gameName+"/textures/animated/"+subStr+".tres","",0)
+			#var r = ResourceLoader.load(WADG.destPath+get_parent().gameName+"/textures/animated/"+subStr+".tres","")
 			return r
 			
 			
+	var resourcePath = WADG.destPath+parent.gameName+"/textures/"+name+".png"
 	
-	if !ResourceLoader.exists(WADG.destPath+get_parent().gameName+"/textures/"+name+".png"):#if it's a non-animated flat
-		var texture = $"../ImageBuilder".parseFlat(textureFileEntry,rIndexed)
-		texture.get_data().save_png(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
-		addFileToWaitList(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
+	
+	if !ResourceLoader.exists(resourcePath):#if it's a non-animated flat
+		var texture =imageBuilder.parseFlat(textureFileEntry,rIndexed)
+		texture.get_image().save_png(resourcePath)
+		addFileToWaitList(resourcePath)
 		return
-		
-
-	var t = ResourceLoader.load(WADG.destPath+get_parent().gameName+"/textures/"+name+".png","",true)
+	
+	var t = ResourceLoader.load(resourcePath,"",0)
+	#var t : Texture2D= ResourceLoader.load(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
+	#if t.resource_path.is_empty():
+	#	print("setting path of ",name," to ",resourcePath)
+	#	t.resource_path = resourcePath
+	#print("type of loaded texture:" , t.get_class())
+	#print("loaded texture load_path",t.load_path)
+	#print("loaded texture resrouce path:",t.resource_path)
+	#print("loaded texture UID:",ResourceLoader.get_resource_uid(resourcePath))
+	
+	
+	#t.resource_path = WADG.destPath+get_parent().gameName+"/textures/"+name+".png"
+	#print_debug("fetched cached texture load_path:",t.load_path,"of tyepe:",t.get_class())
 	return t
 		
 
 	
-
-func fetchSkyMat(texName,skyDoubleSided : bool = false):
-
-	if !get_parent().toDisk:
-		return fetchSkyMatRuntime(texName,skyDoubleSided)
-	else:
-		return fetchSkyMatDisk(texName,skyDoubleSided)
-
-
-func fetchSkyMatRuntime(texName,skyDoubleSided):
+func fetchDoomGraphicThreaded(patchNames : PackedStringArray ,flipH : bool =false,raw = false) -> Array[Texture2D]:
 	
+	var tarr : Array[Thread] = []
+	var results : Array[Texture2D] =[]
 	
-	if skyMatDoubleSided == null or lastSkyName != texName:
-		lastSkyName = texName
-		skyMatDoubleSided = createSkyMat(texName,true)
-		return skyMatDoubleSided
-	
-	if skyMatOneSided == null or lastSkyName != texName:
-		lastSkyName = texName
-		skyMatOneSided = createSkyMat(texName,false)
-		return skyMatOneSided
-	
-	if skyDoubleSided == true: 
-		return skyMatDoubleSided
-	else: 
-		return skyMatOneSided
+	for i in patchNames.size():
+		var t = Thread.new()
+		var err = t.start(fetchDoomGraphic.bind(patchNames[i]))
+		if err != OK:
+			breakpoint
+		#var err = t.start(fetchDoomGraphic.bind(patchNames[i]))
+		tarr.append(t)
 	
 	
 	
+	for i : Thread in tarr:
+		results.append(i.wait_to_finish())
+
+	return results
+
+func fetchDoomGraphic(patchName : String,flipH : bool =false,raw = false) -> Texture2D:
 	
 
-
-func fetchSkyMatDisk(texName,skyDoubleSided : bool = false):
-
-	var textureName = texName#+String(skyDoubleSided)
-	var path = WADG.destPath+get_parent().gameName+"/materials/" + textureName +".tres"
-
-	if !ResourceLoader.exists(textureName):
-
-		var mat = createSkyMat(texName,skyDoubleSided)
-
-		var pack = PackedScene.new()
-		
-		var err = ResourceSaver.save(path,mat)
-
-
-	var ret = load(path)
-	return ret
-	
-
-
-func fetchDoomGraphic(patchName : String,flipH : bool =false) -> Texture:
-	
-	
-	#if patchName.find("\\") != -1:
-	#	patchName = patchName.replace("\\","")
-	
 	if patchName.find("_flipped") != -1:
-		var s = patchName.split("_flipped")
+		var s: = patchName.split("_flipped")
 		patchName = s[0]
 		flipH = true
 	
-	if !Engine.editor_hint:
-		get_parent().toDisk = false
+	if !isEditor:
+		parent.toDisk = false
 	
 	if get_parent().wadInit == false:
-		get_parent().loadWads()
+		parent.loadWads()
 
-	
-	
-	
-	if !get_parent().toDisk:
-		return fetchDoomGraphicRuntime(patchName,flipH)
+	if !parent.toDisk:
+		return fetchDoomGraphicRuntime(patchName,flipH,raw)
 	else:
-		return fetchDoomGraphicDisk(patchName,flipH)
+		return fetchDoomGraphicDisk(patchName,flipH,raw)
 
 func fetchDoomGraphicOffset(patchName : String):
-	return $"../ImageBuilder".getDoomGraphicOffests(patchName)
+	return imageBuilder.getDoomGraphicOffests(patchName)
 
-func createAnimatedFlat(nameArr,rIndexed,runtime):
-	var flatTextureEntries = get_parent().flatTextureEntries
-	var texture = null
-	var animatedTexture = AnimatedTexture.new()
-	var count = 0
+func createAnimatedFlat(nameArr:Array,rIndexed:bool,runtime:bool) -> AnimatedTexture:
+	var flatTextureEntries : Dictionary= parent.flatTextureEntries
+	var texture : Texture2D = null
+	var animatedTexture : AnimatedTexture= AnimatedTexture.new()
+	var count : int= 0
 	
 	animatedTexture.frames = nameArr.size()
 	
-	for name in nameArr:
-		var textureFileEntry = flatTextureEntries[name]
-		texture = $"../ImageBuilder".parseFlat(textureFileEntry,rIndexed)
+	for name : String in nameArr:
+		var textureFileEntry : Array = flatTextureEntries[name]
+		texture = imageBuilder.parseFlat(textureFileEntry,rIndexed)
 		
-		if get_parent().toDisk:#if to disk we save each frame to disk
-			texture.get_data().save_png(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
-			addFileToWaitList(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
+		if parent.toDisk:#if to disk we save each frame to disk
+			texture.get_image().save_png(WADG.destPath+parent.gameName+"/textures/"+name+".png")
+			addFileToWaitList(WADG.destPath+parent.gameName+"/textures/"+name+".png")
 			
 		animatedTexture.set_frame_texture(count,texture)
 
@@ -589,16 +546,16 @@ func createAnimatedFlat(nameArr,rIndexed,runtime):
 	return animatedTexture
 
 
-func fetchAnimatedSimple(outName : String,inNames : Array,fps : int = 4):
+func fetchAnimatedSimple(outName : String,inNames : Array,timeScale : int = 4,oneShot = false):
 	var animArr = []
+	var toDisk: bool = get_parent().toDisk
+	var path = WADG.destPath+parent.gameName+"/textures/animated/"+outName+".tres"
 	
-	var path = WADG.destPath+get_parent().gameName+"/textures/animated/"+outName+".tres"
-	
-	if !get_parent().toDisk and spriteCache.has(outName+"_anim"):
+	if !toDisk and spriteCache.has(outName+"_anim"):
 		return spriteCache[outName+"_anim"]
 	
-	if get_parent().toDisk and WADG.doesFileExist(path):
-		return ResourceLoader.load(path,"",true)
+	if toDisk and WADG.doesFileExist(path):
+		return ResourceLoader.load(path,"",0)
 	
 	
 	for i in inNames:
@@ -607,23 +564,29 @@ func fetchAnimatedSimple(outName : String,inNames : Array,fps : int = 4):
 	
 	var animatedTexture = AnimatedTexture.new()
 	animatedTexture.frames = animArr.size()
-	animatedTexture.fps = fps
+	animatedTexture.speed_scale = timeScale
+	animatedTexture.one_shot = oneShot
 	
+
 	for i in animArr.size():
 		animatedTexture.set_frame_texture(i,animArr[i])
 	
-	if get_parent().toDisk:
-		ResourceSaver.save(path,animatedTexture)
-		return ResourceLoader.load(path,"",true)
+	if toDisk:
 		
-	if !get_parent().toDisk:
+		ResourceSaver.save(animatedTexture,path)
+		return ResourceLoader.load(path,"",0)
+		
+	if !toDisk:
 		spriteCache[outName+"_anim"] = animatedTexture
+		
 		return animatedTexture
-	
+		
 	
 
-func createAnimatedPatchedTexture(nameArr,rIndexed,runtime):
-	var textureEntries = get_parent().patchTextureEntries
+	
+	
+func createAnimatedPatchedTexture(nameArr):
+	var textureEntries = parent.patchTextureEntries
 	var texture = null
 	var animatedTexture = AnimatedTexture.new()
 	var count = 0
@@ -640,11 +603,11 @@ func createAnimatedPatchedTexture(nameArr,rIndexed,runtime):
 			continue
 		
 		var textureFileEntry = textureEntries[name]
-		texture = $"../ImageBuilder".createPatchedTexture(textureFileEntry)
+		texture = imageBuilder.createPatchedTexture(textureFileEntry)
 		
-		if get_parent().toDisk:#if to disk we save each frame to disk
-			texture.get_data().save_png(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
-			addFileToWaitList(WADG.destPath+get_parent().gameName+"/textures/"+name+".png")
+		if parent.toDisk:#if to disk we save each frame to disk
+			texture.get_image().save_png(WADG.destPath+parent.gameName+"/textures/"+name+".png")
+			addFileToWaitList(WADG.destPath+parent.gameName+"/textures/"+name+".png")
 		
 		animatedTexture.set_frame_texture(count,texture)
 
@@ -652,64 +615,58 @@ func createAnimatedPatchedTexture(nameArr,rIndexed,runtime):
 		
 	return animatedTexture
 
-func fetchDoomGraphicRuntime(patchName : String,flipH : bool) -> ImageTexture:
+func fetchDoomGraphicRuntime(patchName : String,flipH : bool,raw = false) -> Texture2D:
 	
-	if !get_parent().flatTextureEntries.has(patchName):
+	
+	if !parent.flatTextureEntries.has(patchName):
 		return null
 		
-		
+	
+	if raw:
+		var texture = ImageTexture.create_from_image(imageBuilder.createDoomGraphic(patchName,false,raw))
 		
 	if !spriteCache.has(patchName) and !flipH:
-		var texture = ImageTexture.new()
-		texture.create_from_image($"../ImageBuilder".createDoomGraphic(patchName,false))
+		var texture = ImageTexture.create_from_image(imageBuilder.createDoomGraphic(patchName,false,raw))
 		
-		texture.flags -= texture.FLAG_REPEAT
 		
-		if get_parent().textureFiltering == false: 
-			texture.flags -= Texture.FLAG_FILTER
-		if get_parent().mipMaps == get_parent().MIP.OFF:
-			texture.flags -= Texture.FLAG_MIPMAPS
-		
+			
 		spriteCache[patchName] = texture
-		spriteOffsetCache[patchName] = $"../ImageBuilder".getDoomGraphicOffests(patchName)
 		
+		spriteOffsetCache[patchName] =imageBuilder.getDoomGraphicOffests(patchName)
 	
 	if !spriteCache.has(patchName+"_flipped") and flipH:
 		var texture = ImageTexture.new()
-		var img  : Image = $"../ImageBuilder".createDoomGraphic(patchName,false)
+		var img  : Image = imageBuilder.createDoomGraphic(patchName,false)
 		img.flip_x()
 		
-		texture.create_from_image(img)
-		texture.flags -= texture.FLAG_REPEAT
+		texture = texture.create_from_image(img)
 		
-		if get_parent().textureFiltering == false: 
-			texture.flags -= Texture.FLAG_FILTER
-		if get_parent().mipMaps == get_parent().MIP.OFF:
-			texture.flags -= Texture.FLAG_MIPMAPS
 		
 		spriteCache[patchName+"_flipped"] = texture
 	
 	
 	if !flipH:
+		#mutex.unlock()
 		return spriteCache[patchName]
 	else:
+		#mutex.unlock()
 		return spriteCache[patchName+"_flipped"]
 
-func fetchDoomGraphicDisk(patchName,flipH):
-	if !get_parent().flatTextureEntries.has(patchName):
+func fetchDoomGraphicDisk(patchName,flipH,raw):
+	if !parent.flatTextureEntries.has(patchName):
 		print("no entry for patch found in wad for:",patchName)
 		return null
 	
 	
-	var path = WADG.destPath+get_parent().gameName+"/sprites/"+patchName+".png"
+	var path = WADG.destPath+parent.gameName+"/sprites/"+patchName+".png"
 	
 	
 	
 	if flipH:
-		path = WADG.destPath+get_parent().gameName+"/sprites/"+patchName+ "_flipped.png"
+		path = WADG.destPath+parent.gameName+"/sprites/"+patchName+ "_flipped.png"
 
 	if patchName.find("\\") != -1:
-		path = WADG.destPath+get_parent().gameName+"/sprites/"+patchName.replace("\\","bs")+".png"
+		path = WADG.destPath+parent.gameName+"/sprites/"+patchName.replace("\\","bs")+".png"
 
 	
 	if waitingForFiles.has(getImportPath(path)):
@@ -717,7 +674,7 @@ func fetchDoomGraphicDisk(patchName,flipH):
 		
 
 	if WADG.doesFileExist(path):
-		var ret = ResourceLoader.load(path,"Texture",true)
+		var ret = ResourceLoader.load(path,"Texture2D",0)
 		return ret
 		
 	
@@ -725,38 +682,32 @@ func fetchDoomGraphicDisk(patchName,flipH):
 	var offsetPath = path.replace(".png",".txt")
 	
 	
-
-	
-	
 	if !WADG.doesFileExist(path) and !flipH:
-		texture.create_from_image($"../ImageBuilder".createDoomGraphic(patchName,false))
-		texture.get_data().save_png(path)
-		texture.flags -= texture.FLAG_REPEAT
+		texture = texture.create_from_image(imageBuilder.createDoomGraphic(patchName,false))
 		
-		spriteOffsetCache[patchName] = $"../ImageBuilder".getDoomGraphicOffests(patchName)
+		#texture.flags -= texture.FLAG_REPEAT
+		
+		spriteOffsetCache[patchName] = imageBuilder.getDoomGraphicOffests(patchName)
 		
 
 	if !WADG.doesFileExist(path) and flipH:
 	
-		var img = $"../ImageBuilder".createDoomGraphic(patchName,false)
+		var img =imageBuilder.createDoomGraphic(patchName,false,raw)
 		img.flip_x()
-		texture.create_from_image(img)
+		texture = texture.create_from_image(img)
 		
-		spriteOffsetCache[patchName] = $"../ImageBuilder".getDoomGraphicOffests(patchName)
+		spriteOffsetCache[patchName] =imageBuilder.getDoomGraphicOffests(patchName)
 		
-
-	texture.get_data().save_png(path)
-	texture.flags -= texture.FLAG_REPEAT
-	
+	#texture.flags -= texture.FLAG_REPEAT
+	texture.get_image().save_png(path)
 	addFileToWaitList(path)
 	
 
 func createOffsetFile(offsetPath,patchName):
 	if !WADG.doesFileExist(offsetPath):
-		var file = File.new()
-		file.open(offsetPath,File.WRITE)
+		var file = FileAccess.open(offsetPath,FileAccess.WRITE)
 		
-		var offset = $"../ImageBuilder".getDoomGraphicOffests(patchName)
+		var offset = imageBuilder.getDoomGraphicOffests(patchName)
 		file.store_32(offset.x)
 		file.store_32(offset.y)
 		file.close()
@@ -764,10 +715,9 @@ func createOffsetFile(offsetPath,patchName):
 		
 
 func saveSound(soundName,audio):
-	if get_parent().toDisk:
-		var file = File.new()
-		if !file.file_exists(WADG.destPath+get_parent().gameName+"/sounds/" + soundName +".tres"):
-			ResourceSaver.save(WADG.destPath+get_parent().gameName+"/sounds/" + soundName +".tres",audio)
+	if parent.toDisk:
+		if !FileAccess.file_exists(WADG.destPath+parent.gameName+"/sounds/" + soundName +".tres"):
+			ResourceSaver.save(audio,WADG.destPath+parent.gameName+"/sounds/" + soundName +".tres")
 	else:
 		soundCache[soundName] = audio
 
@@ -779,69 +729,30 @@ func saveAllSondsToDisk():
 func fetchSound(soundName,diskOverride : bool=false):
 	
 	
-	if !Engine.editor_hint:
-		get_parent().toDisk = false
+	if !isEditor:
+		parent.toDisk = false
 	
-	if get_parent().wadInit == false:
-		 get_parent().loadWads()
+	if parent.wadInit == false:
+		parent.loadWads()
 	
 	
-	if get_parent().toDisk or diskOverride == true:
-		if !WADG.doesFileExist(WADG.destPath+get_parent().gameName+"/sounds/" + soundName +".tres"):
+	if parent.toDisk or diskOverride == true:
+		if !WADG.doesFileExist(WADG.destPath+parent.gameName+"/sounds/" + soundName +".tres"):
 			if soundCache.has(soundName):
 				saveSound(soundName,soundCache[soundName])
-				
-		return load(WADG.destPath+get_parent().gameName+"/sounds/" + soundName +".tres")
+			else:
+				return null
+		return load(WADG.destPath+parent.gameName+"/sounds/" + soundName +".tres")
 	else:
 		if soundCache.has(soundName):
 			return soundCache[soundName]
+		elif audioLumps.has(soundName):
+			$"../LumpParser".parseDs(audioLumps[soundName],soundName)
+			audioLumps.erase(soundName)
+			return soundCache[soundName]
 	
 
-func createSkyMat(texName : String,skyDoubleSided : bool =false):
-	var matKey = texName+String(skyDoubleSided)
-	if $"../ResourceManager".materialCache.has(matKey) and !get_parent().toDisk:
-		return $"../ResourceManager".materialCache[matKey]
-	
-	var image : Image
-	var txt = fetchPatchedTexture(texName,false)
-	if txt == null:
-		return
-	image = txt.get_data()
-	var colArr : PoolByteArray = []
-	
 
-	var srcRectA = Rect2(Vector2(0,0),Vector2(128,128))
-	var srcRectB = Rect2(Vector2(128,0),Vector2(128,128))
-	
-	
-	
-	var imageTop = $"../ImageBuilder".createTopImage(image)
-	var imageBottom = $"../ImageBuilder".createBottomImage(image)
-	var imageLeft = image.get_rect(srcRectA)
-	var imageRight = image.get_rect(srcRectB)
-	var imageFront = imageLeft.duplicate()
-	var imageBack = imageRight.duplicate()
-	
-	
-	imageBack.flip_x()
-	imageLeft.flip_x()
-
-	var cubemap = $"../ImageBuilder".createCubemap(imageLeft,imageRight,imageTop,imageBottom,imageFront,imageBack)
-	
-	var mat = ShaderMaterial.new()
-	
-
-	if skyDoubleSided:
-		mat.shader = cubeMapShader
-	else:
-		mat.shader = cubeMapShaderOneSided
-	
-	mat.set_shader_param("cube_map",cubemap)
-	
-	if !get_parent().toDisk:
-		materialCache[matKey] = mat
-	
-	return mat
 
 	
 
@@ -857,30 +768,60 @@ var entityC = {}
 
 
 func getSceneRuntimeName(sceneName):
-	var runtimePath = sceneName.substr(sceneName.find_last("/")+1,-1)
+	var runtimePath = sceneName.substr(sceneName.rfind("/")+1,-1)
 	runtimePath  = runtimePath.split(".")[0]
 	return runtimePath.to_lower()
 
 
-			
-			
-func loadImageFileAsTexture(path):
-	var image = Image.new()
-	var error = image.load(path)
+
+func loadPngFromZip(path) -> Image:
+	var img = Image.new()
+	var zipType = ""
 	
-	if error != 0:
-		var file = File.new()
-		if file.open(path,File.READ) != 0:
-			return false
-		var data = file.get_buffer(file.get_len())
-		var e = image.load_png_from_buffer(data)
+	if path.find(".pk3") != -1:
+		zipType = ".pk3"
+	if path.find(".zip")!= -1:
+		zipType = ".zip"
+	
+	var zipPath = path.substr(0,path.find(zipType))
+	var zipDirectory = path.substr(path.find(zipType)+5,-1)
+	var zip : ZIPReader = ZIPReader.new()
+	
+	zip.open(zipPath+zipType)
+	var data: PackedByteArray = zip.read_file(zipDirectory)
+	img.load_png_from_buffer(data)
+	return img
+	
+func loadImageFileAsTexture(path : String):
+	var image = Image.new()
+	
+	
+	var zipType = ""
+	
+	if path.find(".pk3") != -1:
+		zipType = ".pk3"
+	if path.find(".zip")!= -1:
+		zipType = ".zip"
+	
+	if path.find(".pk3") != -1 or path.find(".zip") != -1:
+		image = loadPngFromZip(path)
+
+	
+	else:
+		var error = image.load(path)
+		if error != 0:
+			var file = FileAccess.open(path,FileAccess.READ)
+			if file == null:
+				return false
+			var data = file.get_buffer(file.get_length())
+			var e = image.load_png_from_buffer(data)
 		
 		
 	var texture = ImageTexture.new()
 	texture.create_from_image(image)
 	return texture
 
-var file = File.new()
+var file = FileAccess
 
 func updateWaitingFor():
 	var newWaiting = []
@@ -892,8 +833,7 @@ func updateWaitingFor():
 	waitingForFiles = newWaiting
 
 func importDisableDetect3D(path):
-	var file = File.new()
-	var err = file.open(path, File.READ_WRITE)
+	var file = FileAccess.open(path, FileAccess.READ_WRITE)
 
 	var content = file.get_as_text()
 	
@@ -909,34 +849,48 @@ func importDisableDetect3D(path):
 	file.store_string(content)
 	file.close()
 
-func createImportFile(path):
-	var file = File.new()
-	var err = file.open("res://addons/godotWad/importSettings.txt", File.READ)
+func createImportFile(path : String):
+	if pngImportTemplate.is_empty():
+		var file = FileAccess.open("res://addons/godotWad/importSettingsGodot4.txt", FileAccess.READ)
+		pngImportTemplate = file.get_as_text()
+		file.close()
 	
-	var fileName = path.get_basename().get_file()
+	#var fileName = path.get_basename().get_file()
+	var fileName = path.get_file()
 	var fileHash = fileName + "-" + path.md5_text()
+
 	
-	var content = file.get_as_text()
-	content = content % [fileHash,fileHash,path,fileHash,fileHash,String($"..".textureFiltering).to_lower()]
+	var id = ResourceUID.create_id()
+	var content = pngImportTemplate
+	content = content % [ResourceUID.id_to_text(id),fileHash,path,fileHash]
+	ResourceUID.add_id(id,path)
 	
-	file.close()
-	file.open(path+".import",File.WRITE)
+	
+
+	file = FileAccess.open(path+".import",FileAccess.WRITE)
+	
 	file.store_string(content)
 	file.close()
-
-func createImportFilePNG(path):
-	var file = File.new()
-	var err = file.open("res://addons/godotWad/importSettingsPNG.txt", File.READ)
 	
-	var fileName = path.get_basename().get_file()
+	
+
+func createImportFilePNG(path : String):
+	var file = FileAccess.open("res://addons/godotWad/importSettingsGodot4.txt", FileAccess.READ)
+	
+	#var fileName = path.get_basename().get_file()
+	var fileName = path.get_file()
 	var fileHash = fileName + "-" + path.md5_text()
 	
-	var content = file.get_as_text()
-	content = content % [fileHash,path,fileHash]
 	
+	
+	
+	var id = ResourceUID.create_id()
+	var content = file.get_as_text()
+	content = content % [ResourceUID.id_to_text(id),fileHash,path,fileHash]
+	ResourceUID.add_id(id,path)
 	
 	file.close()
-	file.open(path+".import",File.WRITE)
+	file.open(path+ ".import",FileAccess.WRITE)
 	file.store_string(content)
 	file.close()
 	
@@ -944,32 +898,27 @@ func createImportFilePNG(path):
 func getImportPath(path):
 	var fileName = path.get_basename().get_file()
 	var fileHash = fileName + ".png-" + path.md5_text()
-	return ".import/" + fileHash + ".md5"
+	return ".godot/imported/" + fileHash + ".md5"
 	
 	
-
-func waitForFilesToExist(editorInterface):
-	
+var ui : Window = null
+func waitForFilesToExist(editorInterface,subwait = false):
 	var count = 0
-	if editorInterface != null:
-		editorInterface.get_resource_filesystem().scan()
+	
 
-	var start = OS.get_system_time_secs()
-	var pSize = waitingForFiles.size()
-	var initialSize = pSize
-	var ui : WindowDialog = null
+
+
+	var start = Time.get_ticks_msec() / 1000.0
+	var pSize = 0
+	var initialSize = waitingForFiles.size()
 	
-	if pSize > 0:
-		ui = load("res://addons/godotWad/scenes/ui/progressBar/progressBar.tscn").instance()
-		get_tree().get_root().add_child(ui)
-		ui.setTotal(pSize)
-		ui.popup_centered_ratio(0.4)
-		
-	
-	while(!waitingForFiles.empty()):
+	ui = null
+
+ 
+	while(!waitingForFiles.is_empty()):
 		if waitingForFiles.size() != pSize:
 			pSize = waitingForFiles.size()
-			start = OS.get_system_time_secs()
+			start = Time.get_ticks_msec() / 1000.0
 			
 			if ui != null:
 				var diff= float(initialSize-pSize)
@@ -982,20 +931,118 @@ func waitForFilesToExist(editorInterface):
 		if ui != null:
 			if count % 10 == 0:
 				ui.setTime(count)
-			
-		if OS.get_system_time_secs()-start > 10:
-			print("BIG ERROR: files coundn't be found:",$ResourceManager.waitingForFiles)
-			break
-			
-		
-		if !editorInterface.get_resource_filesystem().is_scanning():
-			updateWaitingFor()
 		
 		
-		OS.delay_msec(1)
+		updateWaitingFor()
+		
+		OS.delay_msec(150)
 		count += 1
 	
-	if ui!= null:
-		ui.hide()
+	#if ui == null:
+		#print("progress bar is null")
+	#if ui!= null:
+		#print("freeing progress bar")
+		#ui.queue_free()
+
+	if subwait==false:
+		call_deferred("emit_signal","fileWaitDone")
+	else:
+		call_deferred("emit_signal","subFileWaitDone")
+
+
+
+
+
+func fetchMusAndPlayer(tree : SceneTree,fileName : String):
 	
-	emit_signal("fileWaitDone")
+	var midiP = fetchMidiPlayer(get_tree())
+	var data = fetchMus(fileName)
+	
+	
+	ENTG.setMidiPlayerData(midiP,data)
+	return midiP
+
+	
+
+func fetchMidiPlayer(tree : SceneTree):
+	
+	
+	if !tree.has("midiPlayer"):
+		tree.setMeta("midiPlayer",ENTG.createMidiPlayer(SETTINGS.getSetting(tree,"soundFont")))
+	
+	#if midiPlayer == null:
+	#	midiPlayer = ENTG.createMidiPlayer(SETTINGS.getSetting(get_tree(),"soundFont"))
+		
+	return tree.getMeta("midiPlayer")
+
+
+func fetchMidiOrMus(fileName):
+	
+	var midiList=  parent.musListPre
+	
+	if parent.midiListPre.has(fileName):
+		return getRawMidiData(fileName)
+		
+	elif parent.musListPre.has(fileName):
+		return createMidiFromMus(fileName)
+		
+
+func fetchMus(fileName) -> PackedByteArray:
+	if !parent.toDisk:
+		if parent.musList.has(fileName):
+			return parent.musList[fileName]
+		
+		if !parent.musListPre.has(fileName):
+			return []
+	
+		parent.musList[fileName] = createMidiFromMus(fileName)
+		return parent.musList[fileName]
+		
+	else:
+		
+		var midiPath = WADG.destPath+parent.gameName+"/music/midi/"+fileName+".mid"
+		
+		if !WADG.doesFileExist(midiPath):
+			var file = FileAccess.open(midiPath,FileAccess.WRITE)
+			file.store_buffer(createMidiFromMus(fileName))
+			file.close()
+			
+			
+		
+		return FileAccess.get_file_as_bytes(midiPath)
+		
+	
+	
+
+func createMidiFromMus(fileName : String) -> PackedByteArray:
+	
+	var musListPre = parent.musListPre
+	
+	if !musListPre.has(fileName):
+		print_debug("missing mus file:",fileName)
+		return []
+	
+	var t = musListPre[fileName]
+	var file = t[0]
+	var offset = t[1]
+	var size = t[2]
+	
+	file.seek(offset)
+	var a = Time.get_ticks_msec()
+	var midiData = musConverter.convertMusToMidi(file.get_buffer(size))
+	SETTINGS.setTimeLog(get_tree(),"mus2mid time:",a)
+	return midiData
+
+func getRawMidiData(fileName : String):
+	var midiListPre =parent.midiListPre
+	
+	var t = midiListPre[fileName]
+	var file = t[0]
+	var offset = t[1]
+	var size = t[2]
+	
+	file.seek(offset)
+	
+	return file.get_buffer(size)
+	
+	

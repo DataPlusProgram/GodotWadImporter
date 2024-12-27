@@ -1,15 +1,22 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cce1syo0lssy8"]
 
-[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 data = {
 "-1": {
 "3": "",
 "4": "",
 "category": "weapons",
 "name": "Spiked gauntlets",
+"sourceScene": "res://addons/godotWad/scenes/hexen/weapons/spikedGauntlets_template.tscn"
+},
+"0": {
+"3": "",
+"4": "",
+"category": "",
+"name": "",
 "sourceScene": ""
 },
 "1": {
@@ -33,22 +40,13 @@ data = {
 "name": "",
 "sourceScene": ""
 },
-"4": {
-"3": "",
-"4": "",
-"category": "",
-"name": "",
-"sourceScene": ""
-},
 "meta": {
-"colNames": [ "name", "sourceScene", "category", "3", "4" ],
-"enumColumns": {
-},
-"enumColumnsPrefix": {
-},
+"colNames": ["name", "sourceScene", "category", "3", "4"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
 "hasId": false,
-"rowOrder": [ "-1", "1", "2", "3", "4" ],
-"sheetWidth": 1108.0,
+"rowOrder": ["-1", "0", "1", "2", "3"],
+"sheetWidth": 1553.0,
 "splitSize": {
 0: 0,
 1: 94,

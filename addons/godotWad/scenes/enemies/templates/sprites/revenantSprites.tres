@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://b37dl0wp6782h"]
 
-[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 data = {
 "A": {
 "e": "SKELA7D3",
@@ -36,34 +36,34 @@ data = {
 "w": "SKELC3F7"
 },
 "D": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "SKELA7D3_flipped",
+"n": "SKELA5D5_flipped",
+"ne": "SKELA6D4_flipped",
+"nw": "SKELA4D6_flipped",
+"s": "SKELA1D1_flipped",
+"se": "SKELA8D2_flipped",
+"sw": "SKELA2D8_flipped",
+"w": "SKELA3D7_flipped"
 },
 "E": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "SKELA3D7_flipped",
+"n": "SKELA3D7_flipped",
+"ne": "SKELA3D7_flipped",
+"nw": "SKELA3D7_flipped",
+"s": "SKELB1E1_flipped",
+"se": "SKELA3D7_flipped",
+"sw": "SKELA2D8_flipped",
+"w": "SKELA3D7_flipped"
 },
 "F": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "SKELC7F3_flipped",
+"n": "SKELC5F5_flipped",
+"ne": "SKELC6F4_flipped",
+"nw": "SKELC4F6_flipped",
+"s": "SKELC1F1_flipped",
+"se": "SKELC8F2_flipped",
+"sw": "SKELC2F8_flipped",
+"w": "SKELC3F7_flipped"
 },
 "G": {
 "e": "SKELG7",
@@ -176,14 +176,12 @@ data = {
 "w": ""
 },
 "meta": {
-"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
-"enumColumns": {
-},
-"enumColumnsPrefix": {
-},
+"colNames": ["s", "sw", "w", "nw", "n", "ne", "e", "se"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
 "hasId": false,
-"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q" ],
-"sheetWidth": 773.0,
+"rowOrder": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q"],
+"sheetWidth": 2584.0,
 "splitSize": {
 0: 0,
 1: 0,

@@ -1,9 +1,9 @@
-tool
+@tool
 extends Node
 
 
 
-func initialize(wadArr = [],gameName = "gameName"):
+func initialize(fileArr = [],gameName = "gameName"):
 	pass
 	
 func getReqDirs():
@@ -18,9 +18,9 @@ func getReqs(configName):
 	var base = {
 		"UIname" : "gameName:",
 		"required" : true,
-		"ext" : ".",
+		"ext" : "*.dat",
 		"multi" : false,
-		"fileNames" : ["gameName.txt"],
+		"fileNames" : ["gameName.dat"],
 		"hints" : ["Program Files,gameName"]
 	}
 	

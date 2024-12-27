@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 
 
@@ -7,15 +7,15 @@ func _process(delta):
 	
 	
 	for i in get_children():
-		if "rect_size" in i:
-			sum += i.rect_size.x
+		if "size" in i:
+			sum += i.size.x
 	
-	rect_size.x = sum
+	size.x = sum
 
 
 
 func _ready():
-	$TextureButton.connect("toggled",self,"toggled")
+	$TextureButton.connect("toggled", Callable(self, "toggled"))
 
 func setAudio(stream):
 	$AudioStreamPlayer.stream = stream

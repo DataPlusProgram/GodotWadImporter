@@ -1,0 +1,366 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://bn2ymq6l0p05v"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_7j17s"]
+
+[resource]
+script = ExtResource("1_7j17s")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Parameters": "",
+"Sprite": "POSSA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Parameters": "",
+"Sprite": "POSSB"
+},
+"10": {
+"": "",
+"Dur": 10,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 11,
+"Parameters": "",
+"Sprite": "POSSE"
+},
+"11": {
+"": "",
+"Dur": 10,
+"Frame": "F",
+"Function": "attack",
+"Lit": true,
+"Next": 12,
+"Parameters": "",
+"Sprite": "POSSF"
+},
+"12": {
+"": "",
+"Dur": 8,
+"Frame": "E",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Parameters": "",
+"Sprite": "POSSE"
+},
+"13": {
+"": "",
+"Dur": 3,
+"Frame": "G",
+"Function": "",
+"Lit": false,
+"Next": 14,
+"Parameters": "",
+"Sprite": "POSSG"
+},
+"14": {
+"": "",
+"Dur": 3,
+"Frame": "G",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Parameters": "",
+"Sprite": "POSSG"
+},
+"15": {
+"": "",
+"Dur": 5,
+"Frame": "H",
+"Function": "deadState",
+"Lit": false,
+"Next": 16,
+"Parameters": "",
+"Sprite": "POSSH"
+},
+"16": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "playDeath",
+"Lit": false,
+"Next": 17,
+"Parameters": "",
+"Sprite": "POSSI"
+},
+"17": {
+"": "",
+"Dur": 5,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 18,
+"Parameters": "",
+"Sprite": "POSSJ"
+},
+"18": {
+"": "",
+"Dur": 5,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Parameters": "",
+"Sprite": "POSSK"
+},
+"19": {
+"": "",
+"Dur": -1,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Parameters": "",
+"Sprite": "POSSL"
+},
+"2": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Parameters": "",
+"Sprite": "POSSA"
+},
+"20": {
+"": "",
+"Dur": 5,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 21,
+"Parameters": "",
+"Sprite": "POSSM"
+},
+"21": {
+"": "",
+"Dur": 5,
+"Frame": "N",
+"Function": "playGib",
+"Lit": false,
+"Next": 22,
+"Parameters": "",
+"Sprite": "POSSN"
+},
+"22": {
+"": "",
+"Dur": 5,
+"Frame": "O",
+"Function": "deadState",
+"Lit": false,
+"Next": 23,
+"Parameters": "",
+"Sprite": "POSSO"
+},
+"23": {
+"": "",
+"Dur": 5,
+"Frame": "P",
+"Function": "",
+"Lit": false,
+"Next": 24,
+"Parameters": "",
+"Sprite": "POSSP"
+},
+"24": {
+"": "",
+"Dur": 5,
+"Frame": "Q",
+"Function": "",
+"Lit": false,
+"Next": 25,
+"Parameters": "",
+"Sprite": "POSSQ"
+},
+"25": {
+"": "",
+"Dur": 5,
+"Frame": "R",
+"Function": "",
+"Lit": false,
+"Next": 26,
+"Parameters": "",
+"Sprite": "POSSR"
+},
+"26": {
+"": "",
+"Dur": 5,
+"Frame": "S",
+"Function": "",
+"Lit": false,
+"Next": 27,
+"Parameters": "",
+"Sprite": "POSSS"
+},
+"27": {
+"": "",
+"Dur": 5,
+"Frame": "T",
+"Function": "",
+"Lit": false,
+"Next": 28,
+"Parameters": "",
+"Sprite": "POSST"
+},
+"28": {
+"": "",
+"Dur": -1,
+"Frame": "U",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Parameters": "",
+"Sprite": "POSSU"
+},
+"29": {
+"": "",
+"Dur": 5,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 30,
+"Parameters": "",
+"Sprite": "POSSL"
+},
+"3": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Parameters": "",
+"Sprite": "POSSA"
+},
+"30": {
+"": "",
+"Dur": 5,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 31,
+"Parameters": "",
+"Sprite": "POSSK"
+},
+"31": {
+"": "",
+"Dur": 5,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 32,
+"Parameters": "",
+"Sprite": "POSSJ"
+},
+"32": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 33,
+"Parameters": "",
+"Sprite": "POSSI"
+},
+"33": {
+"": "",
+"Dur": 5,
+"Frame": "H",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Parameters": "",
+"Sprite": "POSSH"
+},
+"4": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Parameters": "",
+"Sprite": "POSSB"
+},
+"5": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Parameters": "",
+"Sprite": "POSSB"
+},
+"6": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Parameters": "",
+"Sprite": "POSSC"
+},
+"7": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Parameters": "",
+"Sprite": "POSSC"
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Parameters": "",
+"Sprite": "POSSD"
+},
+"9": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Parameters": "",
+"Sprite": "POSSD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Parameters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33"],
+"sheetWidth": 1990.0,
+"splitSize": {
+0: 64,
+1: 64,
+2: 65,
+3: 64,
+4: 66,
+5: 83,
+6: 105,
+7: 0
+}
+}
+}

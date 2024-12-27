@@ -1,17 +1,20 @@
-tool
+@tool
 extends Control
-signal dictChanged
-
-export(Resource) var sheetStyle
-export var autoGrow = false
+signal dictChangedSignal
+signal fileLoadedSignal
+@export var sheetStyle : Resource
+@export var autoGrow = false
 
 var customStyle = null
 var customStyleSide= null
 var saveFlag = false
 var serializeFlag = true
 var updateSizingsFlag = false
-var initialColumns =5#12
-var initialRows = 5#20
+
+@export var initialColumns = 15
+@export var initialRows = 20
+
+@export var headingTitles : Array[String]= []
 
 var numRows = 0
 var numCols = 0
@@ -22,8 +25,7 @@ var cells = []
 var cellW
 var cellH
 var nodePool = []
-
-var core = null
+var root
 var top = null
 var side = null
 var corner = null
@@ -34,36 +36,33 @@ var undoStack = []
 var needsSaving = false
 
 
-onready var initialSpreadSheetX = get_parent().rect_position.x
 var initialTopX 
-onready var marginLeft = sheetStyle.marginLeft
-onready var marginRight = sheetStyle.marginRight
-onready var marginTop = sheetStyle.marginTop
-onready var marginBottom = sheetStyle.marginBottom
-
+@onready var marginLeft = sheetStyle.marginLeft
+@onready var marginRight = sheetStyle.marginRight
+@onready var marginTop = sheetStyle.marginTop
+@onready var marginBottom = sheetStyle.marginBottom
+@onready var scrollContainer = $ScrollContainer
 
 var colsTop = []
 var rowsSide = []
 var baseSplit : HSplitContainer = null
-onready var scrollContainer = $ScrollContainer
+
 func _ready():
 	
-	top = get_node_or_null("../../../TopContainer/top")
-	side = get_node_or_null("../../side")
-	corner =  get_node_or_null("../../../../Corner")
+	root = get_node_or_null("../../../../")
+	
+	if root != null:
+		await root.ready
+		
+		top = root.get_node("%upperBox")
+		side =  root.get_node("%sideBox")
+		corner =  root.get_node("%corner")
 	
 	
-	
-	
-	if get_node_or_null("../../../../DataFromText") != null:
-		$"../../../../DataFromText".connect("confirm",self,"textToDataConfirm")
-	
-	if get_node_or_null("../../../../../") != null:
-		core = $"../../../../"
-		connect("dictChanged",core,"dictChanged")
-	
-	get_viewport().connect("size_changed",self,"viewportChanged")
+
+	get_viewport().size_changed.connect(viewportChanged)
 	var windowRes = get_viewport().size
+
 	instanceStylesFromRes()
 	
 	if customStyle != null:
@@ -85,9 +84,9 @@ func _ready():
 	
 	for i in neededColumns:
 		if i == 0:
-			addColumn("",false)
+			addColumn("",false,i)
 		else:
-			addColumn("",false)
+			addColumn("",false,i)
 	
 	
 	
@@ -98,30 +97,27 @@ func _ready():
 			return
 	
 	
-		$"../../".set("custom_constants/separation",(marginLeft+marginRight)/2.0)
+		$"../../".set("theme_override_constants/separation",(marginLeft+marginRight)/2.0)
 	
 		var vBox = VBoxContainer.new()
 		side = vBox
-		side.set("custom_constants/separation",marginBottom+marginTop-1)
-		vBox.margin_top
+		side.set("theme_override_constants/separation",marginBottom+marginTop-1)
 		
 		hSplit.add_child(vBox)
 	
-		$"../../side".rect_min_size.x = marginLeft+marginRight+48 
+		side.custom_minimum_size.x = marginLeft+marginRight+48 
+
 
 	
 	if top != null:
 		
-		initialTopX = top.get_parent().rect_position.x
+
+		initialTopX = top.get_parent().position.x
+		top.set("theme_override_constants/separation",0)
 		
-		var t = top.get_parent().get_parent()
-		t.set("custom_constants/separation",0)
 		
-		#corner.set("custom_styles/normal",customStyleSide)
-		#corner.visible = true
-		#corner.rect_min_size = Vector2(cellW,0)
-		#corner.rect_size = Vector2(cellW,0)
-		top.get_parent().rect_min_size = Vector2(cellW,cellH)
+		corner.set("theme_override_styles/read_only",customStyleSide)
+		top.get_parent().custom_minimum_size = Vector2(cellW,cellH+15)
 	
 	
 	for i in neededRows:
@@ -133,9 +129,8 @@ func _process(delta):
 	
 	if saveFlag:
 		data = serializeData()
-		if core != null:
-			emit_signal("dictChanged",data)
-			saveFlag = false
+		emit_signal("dictChangedSignal",data)
+		saveFlag = false
 	
 	
 	if updateSizingsFlag:
@@ -146,11 +141,14 @@ func _process(delta):
 		return 
 	
 	if serializeFlag:
-		emit_signal("dictChanged",serializeData())
+		emit_signal("dictChangedSignal",serializeData())
 		serializeFlag = false
 	
-	top.rect_position.x = -scrollContainer.scroll_horizontal+(1.5*(marginLeft+marginRight)+48) #- 2
-	$"../../side".rect_position.y = -scrollContainer.scroll_vertical
+	
+	#top.position.x = -scrollContainer.scroll_horizontal+(1.5*(marginLeft+marginRight)+48) - 3 + side.get_parent().custom_minimum_size.x
+	top.position.x = -scrollContainer.scroll_horizontal+(1.5*(marginLeft+marginRight)+48) - 62 + side.get_parent().custom_minimum_size.x
+	side.position.y = -scrollContainer.scroll_vertical
+
 	
 	call_deferred("poolTick")
 
@@ -169,16 +167,18 @@ func addColumn(title : String,emitSignal : bool = true,idx : int = -1,addToUndoS
 	
 	#hSplit.set_meta("index",numCols)
 	hSplit.set_meta("index",idx)
-	hSplit.connect("hDraw",self,"hDrawMain")
+	#hSplit.connect("hDraw",self,"hDrawMain")
+	hSplit.hDraw.connect(hDrawMain)
 	hSplit.add_child(vBox)
-	hSplit.connect("hDrag",self,"hDragged")
-	hSplit.name = "col " + String(numCols)
-	hSplit.set("custom_constants/separation",marginLeft+marginRight-1)
-	vBox.set("custom_constants/separation",marginBottom+marginTop-1)
+	#hSplit.connect("hDrag",self,"hDragged")
+	hSplit.hDrag.connect(hDragged)
+	hSplit.name = "col " + str(numCols)
+	hSplit.set("theme_override_constants/separation",marginLeft+marginRight-1)
+	vBox.set("theme_override_constants/separation",marginBottom+marginTop-1)
 	
 	
 	if sheetStyle.customGrabber != null:
-		hSplit.set("custom_icons/grabber",sheetStyle.customGrabber)
+		hSplit.set("theme_override_icons/grabber",sheetStyle.customGrabber)
 	
 	
 	if idx == -1:
@@ -187,14 +187,14 @@ func addColumn(title : String,emitSignal : bool = true,idx : int = -1,addToUndoS
 	if top != null:
 		if title == "":
 			if idx == -1:
-				addHeadingColumn(numCols,numCols)
+				addHeadingColumn(numCols,idx)
 			else:
-				addHeadingColumn(numCols,numCols)
+				addHeadingColumn(numCols,idx)
 		else:
 			if idx==-1:
-				addHeadingColumn(title,numCols)
+				addHeadingColumn(title,idx)
 			else:
-				addHeadingColumn(title,numCols)
+				addHeadingColumn(title,idx)
 		
 	if initial:
 		baseSplit = hSplit
@@ -247,13 +247,14 @@ func addColumn(title : String,emitSignal : bool = true,idx : int = -1,addToUndoS
 				
 				
 	if idx != -1:
+		
 		for x in range(idx-1,numCols):#for each column
 			if colsTop.size() > 0:
 				colsTop[x].get_child(0).set_meta("index",x)
-				
-				for yIdx in cols[x].get_children().size():
-					var y = cols[x].get_children()[yIdx]
-					y.set_meta("cellId",[x,yIdx])
+			
+			for yIdx in cols[x].get_children().size():
+				var y = cols[x].get_children()[yIdx]
+				y.set_meta("cellId",[x,yIdx])
 	
 	
 	if addToUndoStack:
@@ -320,11 +321,13 @@ func poolTick():
 			nodePool.append(createLineEdit("",true,true))
 
 
+func ensureControlVisible(cell):
+	scrollContainer.ensure_control_visible(cell)
 
 func fetchLineEdit(content="",grow=false,editable=false) -> LineEdit:
-	if !nodePool.empty():
+	if !nodePool.is_empty():
 		var node : LineEdit = nodePool.pop_front()
-		node.text = String(content)
+		node.text = str(content)
 		return node
 		
 	return createLineEdit(content,grow,editable)
@@ -344,12 +347,12 @@ func createLineEdit(content=null,grow=false,editable=false) -> LineEdit:
 	edit.expand_to_text_length = true
 		
 	if customStyle != null:
-		edit.set("custom_styles/normal",customStyle)
-	
+		edit.set("theme_override_styles/normal",customStyle)
+		
 		
 
 	if content != null:
-		edit.text = String(content)
+		edit.text = str(content)
 		
 	
 	return edit
@@ -376,18 +379,55 @@ func _on_addCategory_pressed():
 func _on_Button_pressed():
 	addRow()
 
-var lineDuper : LineEdit = load("res://addons/gSheet/scenes/typedLineEdit/typedLineEdit.tscn").instance()
+func areRowsNumericalProgression(start = 0, end = -1):
+	
+	if end == -1:
+		end = rowsSide.size()
+	
+	for i in end:
+		if rowsSide[i].text != str(i):
+			return false
+			
+	return true
+
+
+
+func areColsNumericalProgression(start = 0, end = -1):
+	
+	if end == -1:
+		end = colsTop.size()
+	
+	for i in end:
+		if colsTop[i].get_child(0).text != str(i):
+			return false
+		
+	return true
+
+
+
+
+var lineDuper : LineEdit = load("res://addons/gSheet/scenes/typedLineEdit/typedLineEdit.tscn").instantiate()
+
 func lineEditNew() -> LineEdit:
 
 	#var line : LineEdit = load("res://addons/gSheet/scenes/typedLineEdit/typedLineEdit.tscn").instance()
 	var line : LineEdit = lineDuper.duplicate()
 	
-	line.connect("update",self,"cellChanged")
-	line.connect("updateRowHeight",self,"updateRowHeight")
-	line.connect("focusEntered",self,"focusCell")
-	line.connect("focusExit",self,"exitFocusCell")
-	line.set("custom_colors/font_color",sheetStyle.fontColor)
-	line.set("custom_colors/cursor_color",sheetStyle.cursorColor)
+	#line.connect("update",self,"cellChanged")
+	#line.connect("updateRowHeight",self,"updateRowHeight")
+	#line.connect("focusEntered",self,"focusCell")
+	#line.connect("focusExit",self,"exitFocusCell")
+	#line.connect("focusExit",self,"exitFocusCell")
+	
+	#
+	line.update.connect(cellChanged)
+	line.updateRowHeight.connect(updateRowHeight)
+	line.focusEntered.connect(focusCell)
+	line.focusExit.connect(exitFocusCell)
+
+	
+	line.set("theme_override_colors/font_color",sheetStyle.fontColor)
+	line.set("theme_override_colors/cursor_color",sheetStyle.cursorColor)
 	line.hoverColor = sheetStyle.optionButtonHoverFontColor
 	line.par = self
 	return line
@@ -399,6 +439,7 @@ func addRow(emitSignal : bool = true,idx : int =-1,addToUndoStack : bool = false
 	
 	if side != null:#this creates the side cellth
 		sideCell = createSideCell(idx)
+		side
 		rowsSide.erase(sideCell)
 		rowsSide.insert(max(idx,0),sideCell)
 		sideCell.set_meta("index",max(idx,0))
@@ -426,15 +467,13 @@ func addRow(emitSignal : bool = true,idx : int =-1,addToUndoStack : bool = false
 			ret = lineEdit
 		
 		if idx == -1:#we just add lineEdit to vbox
-			var t  = side
+			
 			col.add_child(lineEdit)
 			cells[c].insert(0,lineEdit)
 			col.move_child(lineEdit,0)
-			
-			
-			
 		else:
 			col.add_child(lineEdit)
+			smartText(lineEdit,cells[c],idx)
 			col.move_child(lineEdit,idx)
 			
 			cells[c].insert(idx,lineEdit)
@@ -474,31 +513,47 @@ func addRow(emitSignal : bool = true,idx : int =-1,addToUndoStack : bool = false
 	if addToUndoStack:
 		pass
 	
+	var scrollY =  $ScrollContainer.scroll_vertical
+	#updateScrollManual(get_viewport().gui_get_focus_owner())
+	
 	return ret
+	
+#func updateScrollManual(curSelected):
+	#if curSelected != null:
+		#var scroll : ScrollContainer = $ScrollContainer
+		#var end = scroll.size.y + scroll.scroll_vertical
+		#var cur = curSelected.position.y
+			#
+		#if cur +  curSelected.size.y > end:
+			#scroll.scroll_vertical += (cur+(curSelected.size.y*2)) -end
+			
+		#if cur - curSelected.size.y < start:
+		#	scroll.scroll_vertical += (cur-curSelected.size.y) -start
+	
 func createRowCell(colNum : int,rowNum : int) -> LineEdit:
 	
 	var lineEdit : LineEdit = fetchLineEdit("",true,true)
 	lineEdit.set_meta("cellId",[colNum,rowNum])
-	lineEdit.set_name("row " + String(numRows))
+	lineEdit.set_name("row " + str(numRows))
 	
 	return lineEdit
 	
 
 func hDragged(amt,caller):
-	var totalSize = rect_size
+	var totalSize = size
 	var wos = getWidthOfCells()
 	var diff =  amt - caller.lastAmount
 	
-	baseSplit.rect_min_size.x = max(0,baseSplit.rect_size.x+diff)
-	
+	#baseSplit.rect_min_size.x = max(0,baseSplit.rect_size.x+diff)
+	baseSplit.custom_minimum_size.x = max(0,baseSplit.size.x+diff)
 	caller.lastAmount = amt
 	
 	
 	for i in colsTop.size()-1:#for each heading cell
-		var topSize = colsTop[i].rect_size
-		var cellSize = cols[i].get_child(0).rect_size
+		var topSize = colsTop[i].size
+		var cellSize = cols[i].get_child(0).size
 			
-		colsTop[i].rect_min_size = cols[i].get_child(0).rect_size
+		colsTop[i].custom_minimum_size = cols[i].get_child(0).size
 		
 	updateSizingsFlag = true
 	serializeFlag = true
@@ -507,16 +562,14 @@ func hDragged(amt,caller):
 func getWidthOfCells():
 	var running = 0
 	for i in cols.size():
-		#if !is_instance_valid(cols[i]):
-		#	print(cols[i].name)
-		running += cols[i].rect_size.x
+		running += cols[i].size.x
 		
 	return running
 		
 
 	
 func hDrawMain(caller):
-	if colsTop.empty():
+	if colsTop.is_empty():
 		return
 	
 	
@@ -526,12 +579,13 @@ func hDrawMain(caller):
 		return
 
 	var col = colsTop[colIdx]
-	col.rect_min_size.x = cols[colIdx].rect_size.x 
+	col.custom_minimum_size.x = cols[colIdx].size.x 
 	
 func cellChanged(caller):
 	saveFlag = true
 	updateSizingsFlag = true
 	
+	serializeFlag = true
 #	if !caller.has_meta("cellId"):
 #		if rowsSide.has(caller):
 #			var count = 0
@@ -540,7 +594,10 @@ func cellChanged(caller):
 #				if i!= caller:
 #					if i.text == caller.text:
 #						caller.text += "_duplicate" + String(count)
-						
+	
+	if !caller.has_meta("cellId"):
+		return
+	
 	var id = caller.get_meta("cellId")
 	
 	
@@ -576,10 +633,10 @@ func cellChanged(caller):
 func topCellChanged(cell):
 	var col = cell.get_meta("index")
 	
-	var a = cell.rect_size.x
-	var b = cols[col].rect_size.x
+	var a = cell.size.x
+	var b = cols[col].size.x
 	
-	cols[col].rect_min_size = cell.rect_size
+	cols[col].custom_minimum_size = cell.size
 
 
 func focusCell(cell):
@@ -600,21 +657,24 @@ func focusCell(cell):
 	
 	
 	
-	if rowsSide.empty():
+	if rowsSide.is_empty():
 		return
 		
-	rowsSide[curRow].modulate = Color.lightgray
-	colsTop[curCol].modulate = Color.lightgray
+	rowsSide[curRow].modulate = Color.LIGHT_GRAY
+	colsTop[curCol].modulate = Color.LIGHT_GRAY
 	
 
 		
 func addHeadingColumn(text,idx=-1):
 		var hSplit = HSplitContainer.new()
 		var vBox = VBoxContainer.new()
-		hSplit.name = "col " + String(colsTop.size())
+		
+		hSplit.name = "col " + str(colsTop.size())
+		hSplit.name = "col " +  str(colsTop.size())
+		
 		var root 
 		
-		if colsTop.empty():
+		if colsTop.is_empty():
 			root = top
 		else:
 			root = colsTop.back().get_parent()
@@ -627,14 +687,16 @@ func addHeadingColumn(text,idx=-1):
 				root = colsTop[idx-1].get_parent()
 		
 		hSplit.set_script(load("res://addons/gSheet/scenes/spreadsheet/hSplitSignal.gd"))
-		hSplit.connect("hDrag",self,"hDragged")
-		hSplit.set("custom_constants/separation",marginLeft+marginRight-1)
+		#hSplit.connect("hDrag",self,"hDragged")
+		hSplit.hDrag.connect(hDragged)
+		hSplit.set("theme_override_constants/separation",marginLeft+marginRight-1)
 		
 		var heading = fetchLineEdit(text,true,false)
-
+		heading.value = text
 		
-		heading.set("custom_styles/normal",customStyleSide)
+		#heading.set("custom_styles/normal",customStyleSide)
 		
+		heading.set("theme_override_styles/normal",customStyleSide)
 		
 		heading.set_meta("index",text)
 		
@@ -664,7 +726,7 @@ func addHeadingColumn(text,idx=-1):
 	
 
 func createSideCell(txt : int,autoAdd : bool = true) -> LineEdit:
-	var text = String(txt)
+	var text = str(txt)
 
 #	for i in rowsSide:
 #		if i.text == text:
@@ -672,9 +734,13 @@ func createSideCell(txt : int,autoAdd : bool = true) -> LineEdit:
 #			break
 	
 	var heading : LineEdit = fetchLineEdit(text,true,false)
-	heading.connect("focus_entered",self,"sideFocusCellFocus")
-	heading.set("custom_styles/normal",customStyleSide)
+	heading.value = text
+	#heading.connect("focus_entered",self,"sideFocusCellFocus")
+	heading.focus_entered.connect(sideFocusCellFocus)
+	#heading.set("custom_styles/normal",customStyleSide)
+	heading.set("theme_override_styles/normal",customStyleSide)
 	heading.set_meta("index",txt)
+	
 	if autoAdd:
 		side.add_child(heading) 
 		rowsSide.append(heading)
@@ -694,12 +760,12 @@ func exitFocusCell(cell):
 	var row = id[1]
 	
 	
-	if rowsSide.empty(): return
+	if rowsSide.is_empty(): return
 	if row < numRows:
-		rowsSide[row].modulate = Color.white
+		rowsSide[row].modulate = Color.WHITE
 		
 	if col < numCols:
-		colsTop[col].modulate = Color.white
+		colsTop[col].modulate = Color.WHITE
 		
 	updateSizingsFlag = true
 
@@ -707,7 +773,7 @@ func updateRowHeight(id,size):
 	var row = getRow(id[1])
 	
 	for i in row:
-		i.rect_min_size.y = size.y
+		i.custom_minimum_size.y = size.y
 	
 
 func updateSizingsSignal():
@@ -1095,7 +1161,7 @@ func getStringOuterSimple(txt):
 func getStringOuter(txt):
 	var count = 0
 	var runningTxt = ""
-	txt = txt.substr(0,txt.find_last("\"")+1)
+	txt = txt.substr(0,txt.rfind("\"")+1)
 	
 	for i in txt.length():
 		var chara = txt[i]
@@ -1141,11 +1207,11 @@ var b
 var loadThread
 func csvImport(path,headings=false,delimeter = ","): 
 	blankSheet()
-	a = OS.get_system_time_msecs()
-	var file = File.new()
+	a = Time.get_ticks_msec()
+	var file = FileAccess.open(path,FileAccess.READ)
 	var cats = []
 	var data = []
-	file.open(path,File.READ)
+	#file.
 	
 	var i = 0
 	
@@ -1159,13 +1225,14 @@ func csvImport(path,headings=false,delimeter = ","):
 		numRows-=1
 		cats = data.pop_front()
 		
-	a = OS.get_system_time_msecs()
+	a = Time.get_ticks_msec()
 	resize(numRows,numCols)
 	for idx in cats.size():
 		colsTop[idx].get_child(0).setData({"type":"str","data":cats[idx]})
 		
 	for idx in numRows:
-		rowsSide[idx].text = String(idx)
+		rowsSide[idx].text = str(idx)
+		#rowsSide[idx].data = str(idx)
 	
 	#loadThread = Thread.new()
 	#loadThread.start(self,"threadAdd",[numRows,numCols,data])
@@ -1228,11 +1295,10 @@ func CSVparse(file,delimeter = ","):
 		
 			
 			
-	
 	return data
 	
 
-func getLineAlt(file:File):
+func getLineAlt(file:FileAccess):
 	var runningStr = ""
 	
 	while true:
@@ -1264,15 +1330,16 @@ func threadAdd(arr : Array) -> void:
 			cells[col][row].setData({"type":"str","data":entries[row][col]})
 
 
-	b = OS.get_system_time_msecs()
+	b = Time.get_ticks_msec()
 	
 
-func updateSizings(var delay = true):
+func updateSizings( delay = true):
 	
 	var biggestLast = 0
 	for i in cols[numCols-1].get_children():
-		if i.rect_size.x > biggestLast:
-			biggestLast = i.rect_size.x
+		#if i.rect_size.x > biggestLast:
+		if i.size.x > biggestLast:
+			biggestLast = i.size.x
 		i.size_flags_horizontal = 0
 
 #	for i in cols[numCols-1].get_children():
@@ -1280,46 +1347,88 @@ func updateSizings(var delay = true):
 #		i.rect_min_size.x = biggestLast
 
 	for i in colsTop.size():
-		var topSize = colsTop[i].rect_size
-		var cellSize = cols[i].get_child(0).rect_size
-		top.rect_size.x = getWidthOfCells()# * 2
+		#var topSize = colsTop[i].rect_size
+		#var cellSize = cols[i].get_child(0).rect_size
+		
+		var topSize = colsTop[i].size
+		var cellSize = cols[i].get_child(0).size
+		
+		#top.rect_size.x = getWidthOfCells()# * 2
+	#	top.size.x = getWidthOfCells()
 #
 #
 		for c in colsTop:
 			c.get_child(0).expand_to_text_length = false
-		colsTop[i].rect_size = cols[i].get_child(0).rect_size
-		colsTop[i].rect_min_size = cols[i].get_child(0).rect_size
+		
+		colsTop[i].size = cols[i].get_child(0).size
+		colsTop[i].custom_minimum_size = cols[i].get_child(0).size
+		
 
 
+	var widestSideCell =  62
+	
+	if root == null:
+		return
+		
+	
+	var defaultFont = rowsSide[0].get_theme_default_font()
+	
+	#if root.defualtFont != null:
+	#	defaultFont = root.defualtFont
 
-	var widestSideCell = 0
-
+	
+	
+	#var editorTheme = EditorInterface.get_base_control().theme
+	
 	for rowIdx in rowsSide.size():
-		var x = cells[0][rowIdx].rect_size.y
-		rowsSide[rowIdx].rect_size.y = cells[0][rowIdx].rect_size.y
-		rowsSide[rowIdx].rect_min_size.y = cells[0][rowIdx].rect_size.y
+		
+		var row = rowsSide[rowIdx]
+		
+		#rowsSide[rowIdx].size.y = cells[0][rowIdx].size.y
+		row.custom_minimum_size.y = cells[0][rowIdx].size.y
+		#row.custom_minimum_size.x = 
+			
+		#if row.size.x  > widestSideCell:
+		#	widestSideCell =row.size.x
+			
+		if  defaultFont.get_string_size(row.text ).x > widestSideCell:
+			widestSideCell =defaultFont.get_string_size(row.text).x
 
-		if rowsSide[rowIdx].rect_size.x  > widestSideCell:
-			widestSideCell = rowsSide[rowIdx].rect_size.x
-
-	if top != null:
-		top.get_parent().rect_position.x = initialTopX + widestSideCell - 62#+ widestSideCell#+ widestSideCell
-	#corner.rect_size.x = widestSideCell
-	get_parent().rect_position.x = widestSideCell+7
+	corner.size.x = widestSideCell + 10
+	
+	for i in rowsSide:
+		i.size.x = widestSideCell
+	
+	side.get_parent().custom_minimum_size.x = widestSideCell
+	
+	#if top != null:
+	#	top.get_parent().position.x = initialTopX# + widestSideCell# - 62
+		#top.get_parent().position.x = initialTopX + widestSideCell# - 50
+		#position.x = initialTopX + widestSideCell# - 50
+		#top.position.x = position.x
+	
+	#get_parent().position.x = widestSideCell+7
+	
+	
+	
 	updateLastColWidth()
 
 	
 
-func setNumRows(var num : int,changeSingal : bool = true):
+func setNumRows(num : int,changeSingal : bool = true):
 	var diff : int= num - numRows
 	
 	for i in diff:
 		addRow(changeSingal)
+	
+	if diff >=0:
+		return
 		
-		
+	for i in abs(diff):#negative diff so we reomve rows
+		pass
 
 
-func setNumCols(var num : int,var changeSignal : bool = true) -> void:
+func setNumCols( num : int, changeSignal : bool = true) -> void:
 	var diff : int = num - numCols
 	
 	for i in diff:
@@ -1328,13 +1437,16 @@ func setNumCols(var num : int,var changeSignal : bool = true) -> void:
 
 func save():
 	var data = serializeData()
-	var file = File.new()
-	file.open("res://test.gsheet",File.WRITE)
-	file.store_line(to_json(var2str(data)))
+	var file : FileAccess
+	var json = JSON
+	file.open("res://test.gsheet",FileAccess.WRITE)
+	
+	file.store_line(json.stringify(data))
 
 func loadFromFile(path:String) -> void:
 	
-	var filePathLabel = $"../../../Label"
+	var filePathLabel = $"../../../pathLabel"
+	
 	filePathLabel.text = path
 	
 	var data = ResourceLoader.load(path).data
@@ -1348,9 +1460,18 @@ func loadFromFile(path:String) -> void:
 	
 	
 	dataIntoSpreadsheet(data)
-	
+	emit_signal("fileLoadedSignal",path)
+
+func getDim():
+	return Vector2(numRows,numCols)
+
 func serializeData():
 	var dict = {"meta":{"hasId":false,"rowOrder":[],"enumColumns":{},"enumColumnsPrefix":{}}}
+	
+	
+	if colsTop.size() == 0:
+		return
+	
 	var heading1 = colsTop[0].get_child(0).text.to_lower()
 	
 	if heading1 == "id":
@@ -1358,13 +1479,18 @@ func serializeData():
 	for i in numRows:
 		dict["meta"]["rowOrder"].append(rowsSide[i].text)
 	
+	if rowsSide.size() != numRows:
+		print_debug("row side != numRows")
+		breakpoint
+	
 	var colNames = []
 	for x in numCols:
 		colNames.append(colsTop[x].get_child(0).text)
 	
 	dict["meta"]["colNames"] = colNames
 	dict["meta"]["splitSize"] = {} 
-	dict["meta"]["sheetWidth"] = baseSplit.rect_size.x
+	#dict["meta"]["sheetWidth"] = baseSplit.rect_size.x
+	dict["meta"]["sheetWidth"] = baseSplit.size.x
 	
 	for idx in cols.size():
 		var col = cols[idx]
@@ -1383,18 +1509,22 @@ func serializeData():
 			var cell =cells[x][y]
 			
 			var columnName = colsTop[x].get_child(0).text
+			var theValue = cell.value
 			rowDict[columnName] = cell.value
 
-		var row = rowsSide[y] 
 		dict[rowsSide[y].text] = rowDict#if there a duplicate row keys a problem will occur here
 			
-			
+	
+	if dict["meta"]["rowOrder"].size() != rowsSide.size():
+		breakpoint
+	
 	needsSaving = true
 	return dict
 
 
 
 func dataIntoSpreadsheet(arr : Dictionary) -> void:
+	
 	blankSheet()
 	needsSaving = false
 	
@@ -1402,9 +1532,10 @@ func dataIntoSpreadsheet(arr : Dictionary) -> void:
 	var cat : Array = meta["colNames"]#arr.pop_front()# getCategories(dict)
 	
 	
-	var numCat : int = max(5,cat.size())
-	var numRow : int= max(5,arr.size()-1)#exclude meta
-
+	var numCat : int = cat.size()
+	#var numRow : int= max(5,arr.size()-1)#don't this, this will corrupt
+	var numRow : int= arr.size()-1#exclude meta
+#
 	
 	resize(numRow,numCat)
 
@@ -1431,22 +1562,42 @@ func dataIntoSpreadsheet(arr : Dictionary) -> void:
 	
 	for i in cat.size():
 		colsTop[i].get_child(0).text = String(cat[i])
+		colsTop[i].get_child(0).value = String(cat[i])
 	
-	for i in rowOrder.size():
+	
+	var areSideRowsNumeric = true
+	var pSide = null
+	for i in min(rowOrder.size(),rowsSide.size()):#settting side rows
 		rowsSide[i].text = rowOrder[i]
+		rowsSide[i].value = rowOrder[i]
+		rowsSide[i].set("theme_override_colors/font_color",sheetStyle.fontColor)
+		if pSide == null:
+			pSide = rowOrder[i]
+			
+		if !rowOrder[i].is_valid_int():
+			areSideRowsNumeric = false
+			
+			
 	
+	if areSideRowsNumeric:
+		rowOrderBreakHighlight(rowsSide)
+	#if rowOrder.size() < rowsSide.size():
+		#print_debug("row order missing")
+		#breakpoint
+		#rowOrderAttemptFix(rowOrder,rowsSide)
 	
 	
 	for x in cat.size():#for each category(column)
-		
-		for y in rowOrder.size():
+		#for y in rowOrder.size(): sometimes rowOrder becomes bigger than rowsside 
+		for y in rowsSide.size():
 			var cell : LineEdit = cells[x][y]
 			var t1 = cat[x]
 			var t2 = rowOrder[y]
 			var vari = arr[t2][t1]
 			
 			if typeof(vari) != TYPE_STRING:
-				vari = var2str(vari)
+				#vari = str(vari)
+				vari =var_to_str(vari)
 				
 			var oldText = arr[t2][t1]
 			var newText
@@ -1457,7 +1608,7 @@ func dataIntoSpreadsheet(arr : Dictionary) -> void:
 					if vari[0] == "\"" and vari[vari.length()-1] == "\"": 
 						newText = vari.substr(1,vari.length()-2)
 			else:
-				newText = var2str(oldText)
+				newText = str(oldText)
 			
 			
 			
@@ -1482,21 +1633,21 @@ func dataIntoSpreadsheet(arr : Dictionary) -> void:
 			if !wasEnum:
 				cell.setData({"type":"str","data":newText})
 				
-			baseSplit.update()
+			baseSplit.queue_redraw()
 			
 			if y == 0:
 				if meta["splitSize"].has(x):
 					cols[x].get_parent().set_split_offset( meta["splitSize"][x])
-					baseSplit.rect_min_size.x += baseSplit.rect_size.x+meta["splitSize"][x]
-					cols[x].get_parent().update()
+					baseSplit.custom_minimum_size.x += baseSplit.size.x+meta["splitSize"][x]
+					cols[x].get_parent().queue_redraw()
 				else:
 					cols[x].get_parent().set_split_offset(0)#temp
-					cols[x].get_parent().rect_min_size.x = 0
-					cols[x].get_parent().update()
+					cols[x].get_parent().custom_minimum_size.x = 0
+					cols[x].get_parent().queue_redraw()
 
 	
 	if meta.has("sheetWidth"):
-		baseSplit.rect_min_size.x = meta["sheetWidth"]
+		baseSplit.custom_minimum_size.x = meta["sheetWidth"]
 
 	undoStack.clear()
 	updateSizingsFlag=true
@@ -1517,13 +1668,13 @@ func cellsDebug():
 	
 	for idx in colsTop.size():
 		var cell = colsTop[idx].get_child(0)
-		cell.text = var2str(colsTop[idx].get_child(0).get_meta("index"))#String(idx)
+		cell.text = str(colsTop[idx].get_child(0).get_meta("index"))#String(idx)
 		#if colsTop[idx].get_child(0).has_meta("enum"):
 		#	cell.text = var2str(colsTop[idx].get_child(0).get_meta("enum"))
 		
 	for idx in rowsSide.size():
 		var cell = rowsSide[idx]
-		cell.text = String(idx) + "j"
+		cell.text = str(idx) + "j"
  
 func deleteCurRow():
 	if curRow != -1:
@@ -1565,8 +1716,8 @@ func deleteCol(cIdx,dictChange = true,addToRedoStack = true):
 	
 	
 	
-	cols.remove(cIdx)
-	colsTop.remove(cIdx)
+	cols.remove_at(cIdx)
+	colsTop.remove_at(cIdx)
 	
 	if addToRedoStack:
 		undoStack.append(actionDict)
@@ -1574,7 +1725,7 @@ func deleteCol(cIdx,dictChange = true,addToRedoStack = true):
 	
 	for i in cells[cIdx]:
 		i.queue_free()
-	cells.remove(cIdx)
+	cells.remove_at(cIdx)
 
 	
 	
@@ -1585,11 +1736,11 @@ func deleteCol(cIdx,dictChange = true,addToRedoStack = true):
 		
 		if i != numCols-2:
 			var next = colsTop[i+1].get_child(0).text
-			if typeof(str2var(next)) == TYPE_INT:
-				colsTop[i].get_child(0).text = String(i)
+			if typeof(str_to_var(next)) == TYPE_INT:
+				colsTop[i].get_child(0).text = str(i)
 		else:
-			if typeof(str2var(colsTop[i].get_child(0).text)) == TYPE_INT:
-				colsTop[i].get_child(0).text = String(i)
+			if typeof(str_to_var(colsTop[i].get_child(0).text)) == TYPE_INT:
+				colsTop[i].get_child(0).text = str(i)
 		
 		for c in col.get_children():#for each row in column
 			var oldIdx = c.get_meta("cellId")
@@ -1637,11 +1788,11 @@ func deleteRow(rIdx,dictChange,storeUndo):
 		var column :VBoxContainer = cols[cIdx]
 		column.get_child(rIdx).queue_free()
 		cells[cIdx][rIdx].queue_free()
-		cells[cIdx].remove(rIdx)
+		cells[cIdx].remove_at(rIdx)
 		
 		for i in range(rIdx+1,numRows):
 			var oldIdx = column.get_child(i).get_meta("cellId")
-			var stro = String(i-1)
+			var stro = str(i-1)
 			actionDict["rowTitle"] = rowsSide[i].text
 			column.get_child(i).set_meta("cellId",[oldIdx[0],oldIdx[1]-1])
 	
@@ -1650,7 +1801,7 @@ func deleteRow(rIdx,dictChange,storeUndo):
 	rowsSide[rIdx].queue_free()
 	rowsSide[rIdx].get_parent().remove_child(rowsSide[rIdx])
 
-	rowsSide.remove(rIdx)
+	rowsSide.remove_at(rIdx)
 
 	cols[0]
 	if numRows == 0:
@@ -1708,7 +1859,7 @@ func resize(r : int,c : int) -> void:
 
 func undo():
 	
-	if undoStack.empty():
+	if undoStack.is_empty():
 		return
 		
 	var actionDict = undoStack.pop_back()
@@ -1728,7 +1879,7 @@ func undo():
 		deleteCol(actionDict["id"],true,false)
 	
 func actionAddColumn(colName,colIdx,oldData,colTitles):
-	if oldData.empty():
+	if oldData.is_empty():
 		breakpoint
 		
 	insertColumn(colName,colIdx)
@@ -1859,25 +2010,25 @@ func blankSheet():
 		for cell in cells[colIdx]:
 			cell.text = ""
 			cell.deactivateOptionMode()
-			cell.rect_size.y = 0#24
-			cell.rect_min_size.y = 0
+			cell.size.y = 0#24
+			cell.custom_minimum_size.y = 0
 			
 			
-		cols[colIdx].get_parent().rect_min_size.x = 0
+		cols[colIdx].get_parent().custom_minimum_size.x = 0
 		cols[colIdx].get_parent().split_offset = 0 
 		
-		cols[colIdx].rect_min_size.x = 0
-		colsTop[colIdx].rect_min_size.x = 0
+		cols[colIdx].custom_minimum_size.x = 0
+		colsTop[colIdx].custom_minimum_size.x = 0
 		
 		colsTop[colIdx].get_parent().split_offset = 0
-		colsTop[colIdx].get_parent().rect_min_size.x = 0
+		colsTop[colIdx].get_parent().custom_minimum_size.x = 0
 	
 	
 	for i in rowsSide.size():
-		rowsSide[i].text = String(i)
+		rowsSide[i].text = str(i)
 	
 	for i in colsTop.size():
-		colsTop[i].get_child(0).text = String(i)
+		colsTop[i].get_child(0).text = str(i)
 	
 	for y in numRows:
 		for x in numCols:
@@ -1892,24 +2043,36 @@ func getWidestColumn(cIdx) -> int:
 	var widest = -INF
 	
 	var lastCol = cols[cIdx].get_children()
+	#for i in lastCol:
+		#if i.rect_size.x > widest:
+			#widest = i.rect_size.x
+	
 	for i in lastCol:
-		if i.rect_size.x > widest:
-			widest = i.rect_size.x
-				
+		if i.size.x > widest:
+			widest = i.size.x
+	
 	return widest
 
 func setColumnWidth(cIdx,width):
 	var lastCol = cols[cIdx].get_children()
+	#for i in lastCol:
+		#i.rect_min_size.x = width
+		
 	for i in lastCol:
-		i.rect_min_size.x = width
+		i.custom_minimum_size.x = width
 	
 func updateLastColWidth():
 	var w = getWidestColumn(cols.size()-1)
 	setColumnWidth(cols.size()-1,w)
 
-func grabFocusIfTextFound(text,caseSensitive):
+func getArrayOfMatches(text : StringName,caseSensitive : bool):
 	
-	if caseSensitive:
+	if text.is_empty():
+		return []
+	
+	var matches = []
+	
+	if !caseSensitive:
 		text = text.to_lower()
 	
 	
@@ -1917,26 +2080,25 @@ func grabFocusIfTextFound(text,caseSensitive):
 		for y in x:
 			var txt = y.text
 			
-			if caseSensitive:
+			if !caseSensitive:
 				txt = txt.to_lower()
 			
 			if txt.find(text) != -1:
-				y.grab_focus()
-				return true
+				matches.append(y)
 				
 	
-	return false
+	return matches
 			
 func sideFocusCellFocus():
-	var owner = get_focus_owner()
-	
+	#var owner = get_focus_owner()
+	var owner = get_viewport().gui_get_focus_owner()
 	if !owner.has_meta("index"):
 		return
 	
 	curCol = 0
 	curRow = owner.get_meta("index")
 	
-func getColData(var colIdx):
+func getColData(colIdx):
 	
 	var ret : Array = []
 	
@@ -1944,3 +2106,125 @@ func getColData(var colIdx):
 		ret.append(i.value)
 	
 	return ret
+
+func textChanged():
+	breakpoint
+
+func setSideLabelsToNumericProgression():
+	for i in rowsSide.size():
+		rowsSide[i].text = str(i)
+		rowsSide[i].value = str(i)
+
+func setColLabelsToNumericProgression():
+	for i in colsTop.size():
+		colsTop[i].get_child(0).text = str(i)
+		colsTop[i].get_child(0).value = str(i)
+
+func smartText(node : Node,column : Array,idx : int):
+	if column.is_empty():
+		return
+	
+	var searchDepth = 5
+	var colLen : int = column.size()
+	var start : int = max(0,idx - searchDepth) 
+	
+	if colLen - start < searchDepth:
+		return
+	
+	var end = max(0,idx)
+	var isMatch = true
+	var isProgression = true
+	var matchStr = column[start].text
+	
+	if matchStr.is_empty():
+		return
+	
+	if start+1 == end:
+		return
+	
+	
+	
+	for i in range(start+1,end):
+		
+		if !isMatch and !isProgression:
+			return
+		
+		var test = column[i].text
+		
+		if column[i].text != matchStr:
+			isMatch = false
+			
+		
+		if !isProgression:
+			continue
+		
+		var pValue = column[max(0,i-1)].value
+		var value = column[i].value
+		
+		if typeof(value) != TYPE_INT or typeof(pValue) != TYPE_INT:
+			isProgression = false
+			continue
+		
+		if value != pValue + 1:
+			isProgression = false
+			continue
+				
+		
+		
+	
+	if isProgression:
+		var a = column[max(0,idx-1)].value
+		var t = column[max(0,idx-1)].value+1
+		node.text = str(column[max(0,idx-1)].value+1)
+		node._on_typedLineEdit_text_changed(node.text)
+		return
+	
+	if isMatch:
+		node.text = matchStr
+		node._on_typedLineEdit_text_changed(matchStr)
+	
+	
+	
+	
+func rowOrderAttemptFix(rowOrder,rowsSide):
+	var a = rowOrder.size()
+	var b = rowsSide.size()-rowOrder.size()
+	for i in range(b):
+		rowOrder.append(str(a+i))
+		
+func rowOrderBreakHighlight(rows):
+	
+	if rows.size() <4:
+		return
+	
+	var inc1 = 0
+	var notInc1 = 0
+	var pRow = null
+	var notIncs = []
+	
+	for i in rows.size()-1:
+		if pRow == null:
+			pRow = int(rows[i].text)
+			continue
+		
+		if pRow != int(rows[i].text)-1:#if previous row is not 1 less than next row
+			notInc1 +=1
+			notIncs.append(rows[i])
+		else:
+			inc1 += 1
+			
+		pRow = int(rows[i].text)
+	
+	if notInc1/max(1,inc1) > 0.5:
+		return
+	
+	for i : LineEdit in notIncs:
+		i.set("theme_override_colors/font_color",sheetStyle.fontColor * 0.5)
+		
+
+func forceKeysToInt():
+	for i in rowsSide:
+		var t = i.text
+		var value = str_to_var(i.text)
+		i.value = value
+	

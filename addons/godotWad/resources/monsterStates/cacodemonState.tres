@@ -1,0 +1,236 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://l18w8cpq0hpy"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_0kppo"]
+
+[resource]
+script = ExtResource("1_0kppo")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "HEADA"
+},
+"1": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "HEADA"
+},
+"10": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "HEADI"
+},
+"11": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "HEADJ"
+},
+"12": {
+"": "",
+"Dur": 8,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "HEADK"
+},
+"13": {
+"": "",
+"Dur": -1,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "HEADL"
+},
+"14": {
+"": "",
+"Dur": 8,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "HEADL"
+},
+"15": {
+"": "",
+"Dur": 8,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 16,
+"Paramters": "",
+"Sprite": "HEADK"
+},
+"16": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 17,
+"Paramters": "",
+"Sprite": "HEADJ"
+},
+"17": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "HEADI"
+},
+"18": {
+"": "",
+"Dur": 8,
+"Frame": "H",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "HEADH"
+},
+"19": {
+"": "",
+"Dur": 8,
+"Frame": "G",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "HEADG"
+},
+"2": {
+"": "",
+"Dur": 5,
+"Frame": "B",
+"Function": "face",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "HEADB"
+},
+"20": {
+"": "",
+"Dur": "",
+"Frame": "",
+"Function": "",
+"Lit": "",
+"Next": "",
+"Paramters": "",
+"Sprite": ""
+},
+"3": {
+"": "",
+"Dur": 5,
+"Frame": "C",
+"Function": "face",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "HEADC"
+},
+"4": {
+"": "",
+"Dur": 5,
+"Frame": "D",
+"Function": "attack",
+"Lit": true,
+"Next": 1,
+"Paramters": "",
+"Sprite": "HEADD"
+},
+"5": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "HEADE"
+},
+"6": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "playHurt",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "HEADE"
+},
+"7": {
+"": "",
+"Dur": 6,
+"Frame": "F",
+"Function": "",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "HEADF"
+},
+"8": {
+"": "",
+"Dur": 8,
+"Frame": "G",
+"Function": "deadState",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "HEADG"
+},
+"9": {
+"": "",
+"Dur": 8,
+"Frame": "H",
+"Function": "playDeath",
+"Lit": false,
+"Next": 10,
+"Paramters": "",
+"Sprite": "HEADH"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"],
+"sheetWidth": 2112.0,
+"splitSize": {
+0: 95,
+1: 65,
+2: 0,
+3: 64,
+4: 65,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

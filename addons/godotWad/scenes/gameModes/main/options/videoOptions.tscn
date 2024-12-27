@@ -1,0 +1,323 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0akwvcy07xky"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/options/videoOptions.gd" id="1_85fq1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1083u"]
+bg_color = Color(0.290196, 0.290196, 0.290196, 0.407843)
+
+[node name="Video" type="VBoxContainer"]
+script = ExtResource("1_85fq1")
+
+[node name="Video" type="GridContainer" parent="."]
+layout_mode = 2
+theme_override_constants/v_separation = 7
+columns = 2
+
+[node name="displayModeLabel" type="Label" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Display Mode"
+
+[node name="displayMode" type="OptionButton" parent="Video"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 1
+item_count = 2
+popup/item_0/text = "Fullscreen"
+popup/item_1/text = "Windowed"
+popup/item_1/id = 1
+
+[node name="fpsLimitedLabel" type="Label" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fps Lmit"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+
+[node name="fpsLimitedLabelOption" type="OptionButton" parent="Video/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "Disabled"
+popup/item_1/text = "Enabled"
+popup/item_1/id = 1
+
+[node name="fpsLimitValue" type="SpinBox" parent="Video/HBoxContainer2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 500.0
+value = 60.0
+allow_greater = true
+alignment = 1
+
+[node name="Label" type="Label" parent="Video"]
+layout_mode = 2
+text = "Scaling Mode"
+
+[node name="scalingModeOptions" type="OptionButton" parent="Video"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Bilinear (Fastest)"
+popup/item_1/text = "FSR 1.0 (Fast)"
+popup/item_1/id = 1
+popup/item_2/text = "FSR 2.2 (Slow)"
+popup/item_2/id = 2
+
+[node name="resolutionScaling" type="Label" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Resolution Scaling"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="resolucionScalingSlider" type="HSlider" parent="Video/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.25
+max_value = 2.0
+step = 0.01
+value = 1.0
+
+[node name="resolutionLabel" type="LineEdit" parent="Video/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+text = "1"
+alignment = 1
+
+[node name="VSyncLabel" type="Label" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "V-Sync"
+
+[node name="VSync" type="OptionButton" parent="Video"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 4
+popup/item_0/text = "Disabled"
+popup/item_1/text = "Enabled"
+popup/item_1/id = 1
+popup/item_2/text = "Adaptive"
+popup/item_2/id = 2
+popup/item_3/text = "Letterbox"
+popup/item_3/id = 3
+
+[node name="FOVlabel" type="Label" parent="Video"]
+layout_mode = 2
+text = "FOV"
+
+[node name="fovSlider" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="FOVslider" type="HSlider" parent="Video/fovSlider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.41
+min_value = 65.0
+max_value = 120.0
+value = 100.0
+
+[node name="FOVlabel" type="Label" parent="Video/fovSlider"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/keepColor = true
+
+[node name="mouseSensLabel" type="Label" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mouse Sensitivity"
+
+[node name="mouseSensSlider" type="HBoxContainer" parent="Video"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="mouseSensSlider" type="HSlider" parent="Video/mouseSensSlider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+size_flags_stretch_ratio = 1.41
+min_value = 0.05
+max_value = 1.8
+step = 0.001
+value = 0.5
+
+[node name="senseSliderLabel" type="LineEdit" parent="Video/mouseSensSlider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_stretch_ratio = 0.43
+text = "100"
+alignment = 1
+metadata/keepColor = false
+
+[node name="Button" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 28
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 2
+
+[node name="Label" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+text = "Texture filtering"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="textureFilteringOption" type="OptionButton" parent="GridContainer/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+popup/item_2/text = "Custom"
+popup/item_2/id = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+
+[node name="MipLabel" type="Label" parent="GridContainer/HBoxContainer2"]
+z_as_relative = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mipmaps"
+
+[node name="Panel" type="Panel" parent="GridContainer/HBoxContainer2/MipLabel"]
+show_behind_parent = true
+layout_mode = 0
+offset_right = 222.0
+offset_bottom = 27.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_1083u")
+
+[node name="mipMaps" type="CheckBox" parent="GridContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 7.37
+
+[node name="Control" type="Control" parent="GridContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_stretch_ratio = 5.25
+
+[node name="ansiotropicLabel" type="Label" parent="GridContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Ansiotropic"
+
+[node name="ansiotropic" type="CheckBox" parent="GridContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+button_pressed = true
+
+[node name="AdvancedFiltering" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="GFilterLabel" type="Label" parent="AdvancedFiltering"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Geometry Filtering"
+
+[node name="GFilterOption" type="OptionButton" parent="AdvancedFiltering"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+
+[node name="SpriteFilterLabel" type="Label" parent="AdvancedFiltering"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sprite Filtering"
+
+[node name="SpriteFilterOption" type="OptionButton" parent="AdvancedFiltering"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+
+[node name="SkyFilterLabel" type="Label" parent="AdvancedFiltering"]
+layout_mode = 2
+text = "Sky Filtering"
+
+[node name="SkyOption" type="OptionButton" parent="AdvancedFiltering"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+
+[node name="UIFilterLabel" type="Label" parent="AdvancedFiltering"]
+layout_mode = 2
+text = "UI Filtering"
+
+[node name="UIFilterOption" type="OptionButton" parent="AdvancedFiltering"]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Nearest"
+popup/item_1/text = "Linear"
+popup/item_1/id = 1
+
+[connection signal="item_selected" from="Video/displayMode" to="." method="_on_display_mode_item_selected"]
+[connection signal="item_selected" from="Video/HBoxContainer2/fpsLimitedLabelOption" to="." method="_on_fps_limited_label_option_item_selected"]
+[connection signal="value_changed" from="Video/HBoxContainer2/fpsLimitValue" to="." method="_on_fps_limit_value_value_changed"]
+[connection signal="item_selected" from="Video/scalingModeOptions" to="." method="_on_scaling_mode_options_item_selected"]
+[connection signal="value_changed" from="Video/HBoxContainer/resolucionScalingSlider" to="." method="_on_resolucion_scaling_slider_value_changed"]
+[connection signal="item_selected" from="Video/VSync" to="." method="_on_v_sync_item_selected"]
+[connection signal="value_changed" from="Video/fovSlider/FOVslider" to="." method="_on_fo_vslider_value_changed"]
+[connection signal="value_changed" from="Video/mouseSensSlider/mouseSensSlider" to="." method="_on_mouse_sens_slider_value_changed"]
+[connection signal="item_selected" from="GridContainer/HBoxContainer3/textureFilteringOption" to="." method="_on_option_button_item_selected"]
+[connection signal="toggled" from="GridContainer/HBoxContainer2/mipMaps" to="." method="_on_mip_maps_toggled"]
+[connection signal="toggled" from="GridContainer/HBoxContainer/ansiotropic" to="." method="_on_ansiotropic_toggled"]
+[connection signal="item_selected" from="AdvancedFiltering/GFilterOption" to="." method="_on_g_filter_option_item_selected"]
+[connection signal="item_selected" from="AdvancedFiltering/SpriteFilterOption" to="." method="_on_sprite_filter_option_item_selected"]
+[connection signal="item_selected" from="AdvancedFiltering/SkyOption" to="." method="_on_sky_option_item_selected"]
+[connection signal="item_selected" from="AdvancedFiltering/UIFilterOption" to="." method="_on_ui_filter_option_item_selected"]

@@ -1,0 +1,326 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://ct001ja6lv4wj"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_8wmrq"]
+
+[resource]
+script = ExtResource("1_8wmrq")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "BOSSA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "BOSSB"
+},
+"10": {
+"": "",
+"Dur": 8,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "BOSSE"
+},
+"11": {
+"": "",
+"Dur": 8,
+"Frame": "E",
+"Function": "face",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "BOSSE"
+},
+"12": {
+"": "",
+"Dur": 8,
+"Frame": "F",
+"Function": "face",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "BOSSF"
+},
+"13": {
+"": "",
+"Dur": 8,
+"Frame": "F",
+"Function": "attack",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "BOSSF"
+},
+"14": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "BOSSH"
+},
+"15": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "BOSSH"
+},
+"16": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "deadState",
+"Lit": false,
+"Next": 17,
+"Paramters": "",
+"Sprite": "BOSSI"
+},
+"17": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "playDeath",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "BOSSJ"
+},
+"18": {
+"": "",
+"Dur": 8,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 19,
+"Paramters": "",
+"Sprite": "BOSSK"
+},
+"19": {
+"": "",
+"Dur": 8,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 20,
+"Paramters": "",
+"Sprite": "BOSSL"
+},
+"2": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "BOSSA"
+},
+"20": {
+"": "",
+"Dur": 8,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "BOSSM"
+},
+"21": {
+"": "",
+"Dur": 8,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 22,
+"Paramters": "",
+"Sprite": "BOSSN"
+},
+"22": {
+"": "",
+"Dur": 8,
+"Frame": "O",
+"Function": "",
+"Lit": false,
+"Next": 23,
+"Paramters": "",
+"Sprite": "BOSSO"
+},
+"23": {
+"": "",
+"Dur": -1,
+"Frame": "O",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "BOSSO"
+},
+"24": {
+"": "",
+"Dur": 8,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "BOSSN"
+},
+"25": {
+"": "",
+"Dur": 8,
+"Frame": "M",
+"Function": "",
+"Lit": false,
+"Next": 26,
+"Paramters": "",
+"Sprite": "BOSSM"
+},
+"26": {
+"": "",
+"Dur": 8,
+"Frame": "L",
+"Function": "",
+"Lit": false,
+"Next": 27,
+"Paramters": "",
+"Sprite": "BOSSL"
+},
+"27": {
+"": "",
+"Dur": 8,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 28,
+"Paramters": "",
+"Sprite": "BOSSK"
+},
+"28": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 29,
+"Paramters": "",
+"Sprite": "BOSSJ"
+},
+"29": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "BOSSI"
+},
+"3": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "BOSSA"
+},
+"4": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "BOSSB"
+},
+"5": {
+"": "",
+"Dur": 3,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "BOSSB"
+},
+"6": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "BOSSC"
+},
+"7": {
+"": "",
+"Dur": 3,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "BOSSC"
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "BOSSD"
+},
+"9": {
+"": "",
+"Dur": 3,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "BOSSD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29"],
+"sheetWidth": 2112.0,
+"splitSize": {
+0: 95,
+1: 65,
+2: 65,
+3: 64,
+4: 65,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

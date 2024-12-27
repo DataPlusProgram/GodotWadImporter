@@ -1,6 +1,6 @@
 extends Node
 
-export var overrideParentBehaviour = false
+@export var overrideParentBehaviour = false
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -14,10 +14,10 @@ func _ready():
 func hit(collider):
 	var par = get_parent()
 	
-	par.velo = Vector3.ZERO
+	par.velocity = Vector3.ZERO
 	var entHitsThisY = []
 	
-	var rc = RayCast.new()
+	var rc = RayCast3D.new()
 	par.add_child(rc)
 	entHitsThisY.clear()
 	var xcount = 0
@@ -25,7 +25,7 @@ func hit(collider):
 	for x in range(-22.5,22.5,1):
 		ycount += 1
 		for y in range (-22,22,1):
-			rc.cast_to = Vector3.FORWARD * 300
+			rc.target_position = Vector3.FORWARD * 300
 			rc.enabled = true
 			
 			rc.rotation_degrees.y = x
@@ -46,7 +46,7 @@ func hit(collider):
 						
 		
 		if ycount % 10 == 0:
-			yield(get_tree(), "physics_frame")
+			await get_tree().physics_frame
 	rc.queue_free()
 			
 

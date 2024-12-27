@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://4cwisyhl8nx3"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_y4w7e"]
+
+[resource]
+script = ExtResource("1_y4w7e")
+data = {
+"*": {
+"0": "INTERPIC"
+},
+"meta": {
+"colNames": ["0"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["*"],
+"sheetWidth": 77.0,
+"splitSize": {
+0: 0
+}
+}
+}

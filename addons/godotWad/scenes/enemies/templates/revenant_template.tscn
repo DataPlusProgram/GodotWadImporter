@@ -1,42 +1,53 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://bwfxejr4yfj13"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/revenantSprites.tres" type="Resource" id=1]
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=2]
+[ext_resource type="Resource" uid="uid://b37dl0wp6782h" path="res://addons/godotWad/scenes/enemies/templates/sprites/revenantSprites.tres" id="1"]
+[ext_resource type="PackedScene" uid="uid://dhxyaai4rce5r" path="res://addons/godotWad/scenes/enemies/npc_template.tscn" id="2"]
 
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 1.271, 2.263 )
+[sub_resource type="QuadMesh" id="QuadMesh_ipxol"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 20, 28, 20 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(40, 56, 40)
 
-[node name="npc" instance=ExtResource( 2 )]
+[node name="npc" instance=ExtResource("2")]
 initialHP = 300.0
+npcName = "revenant"
 height = 56.0
+mass = 500.0
+meleeDamage = 30.0
+stateDataPath = "res://addons/godotWad/resources/monsterStates/revenantState.tres"
+attackStateId = 18
+painStateId = 22
+deadStateId = 24
+meleeStateId = 14
+speed = 10.0
 painChance = 0.398
 
 [node name="AnimatedSprite3D" parent="." index="0"]
-mesh = SubResource( 2 )
+mesh = SubResource("QuadMesh_ipxol")
 
-[node name="CollisionShape" parent="." index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0 )
-shape = SubResource( 1 )
+[node name="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0)
+shape = SubResource("1")
 
 [node name="cast" parent="." index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0)
 
 [node name="Generator" parent="." index="7"]
-sprites = ExtResource( 1 )
+sprites = ExtResource("1")
 idle = "AB"
 chase = "AABBCCDDEEFF"
 attack = "JJKK"
 melee = "GGHI"
 hurt = "LL"
 dying = "LMNOPQ"
-attackSounds = [  ]
-meleeSounds = [ "DSSKEPCH" ]
-entityDepends = [ "revenant_missile" ]
+deathSounds = ["DSSKEDTH"]
+attackSounds = []
+meleeSounds = ["DSSKEPCH"]
+alertSounds = ["DSSKESIT"]
+searchSounds = Array[StringName]([&"DSSKEACT"])
+entityDepends = ["revenant_missile"]
 
-[node name="VisibilityNotifier" parent="." index="9"]
-aabb = AABB( -1, 0, -1, 2, 56, 2 )
+[node name="VisibleOnScreenNotifier3D" parent="." index="8"]
+aabb = AABB(-1, 0, -1, 2, 56, 2)
 
 [editable path="AnimatedSprite3D"]

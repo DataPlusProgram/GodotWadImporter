@@ -1,28 +1,20 @@
 extends AudioStreamPlayer3D
 
 
-export(Array,AudioStreamSample) var fireSounds = []
+@export var fireSounds = [] # (Array,AudioStreamWAV)
 
 var audioQueueTime = null
 
 func _ready():
 	stream = fireSounds[0]
 
-onready var lastPlay = OS.get_system_time_msecs()
+@onready var lastPlay = Time.get_ticks_msec()
 
 func playFire():
 		play()
 
 
-#func _process(delta):
-#	if audioQueueTime != null:
-#		audioQueueTime += delta*1000
-#		if audioQueueTime >= 0:
-			#print(audioQueueTime)
-#			seek(0)
-#			play()
-			#print("play")
-#			audioQueueTime = null
+
 #		
 
 func _physics_process(delta):
@@ -30,19 +22,16 @@ func _physics_process(delta):
 
 func pre():
 	if !Input.is_action_pressed("shoot"):
-		fireSounds[0].loop_mode = AudioStreamSample.LOOP_DISABLED
+		fireSounds[0].loop_mode = AudioStreamWAV.LOOP_DISABLED
 
 
 
 func disableLoop():
-	
-	#print("disable loop:",get_playback_position())
-	fireSounds[0].loop_mode = AudioStreamSample.LOOP_DISABLED
-	#seek(0)
+	fireSounds[0].loop_mode = AudioStreamWAV.LOOP_DISABLED
+
 
 func enableLoop():
-	#print("enable loop",get_playback_position())
-	fireSounds[0].loop_mode = AudioStreamSample.LOOP_FORWARD
+	fireSounds[0].loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 func playRandom(streamArr):
 	if streamArr.size() == 0:
@@ -53,7 +42,7 @@ func playRandom(streamArr):
 	play()
 
 func isDisabled():
-	return fireSounds[0].loop_mode == AudioStreamSample.LOOP_DISABLED
+	return fireSounds[0].loop_mode == AudioStreamWAV.LOOP_DISABLED
 
 func getDuration():
 	var sampleRate = stream.mix_rate

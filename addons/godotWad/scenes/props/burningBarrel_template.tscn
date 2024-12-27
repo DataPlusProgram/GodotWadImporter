@@ -1,10 +1,9 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://du8qno6hfxaly"]
 
-[ext_resource path="res://addons/godotWad/scenes/props/explosiveBarrel_template.tscn" type="PackedScene" id=1]
+[ext_resource type="PackedScene" uid="uid://cqonvst8e1tlh" path="res://addons/godotWad/scenes/props/explosiveBarrel_template.tscn" id="1"]
 
-[node name="Barrel" instance=ExtResource( 1 )]
-mode = 1
+[node name="Barrel" instance=ExtResource("1")]
 hp = 99999999
 
 [node name="Generator" parent="." index="5"]
-idleSpriteNames = [ "FCANA0", "FCANB0", "FCANC0" ]
+idleSpriteNames = ["FCANA0", "FCANB0", "FCANC0"]

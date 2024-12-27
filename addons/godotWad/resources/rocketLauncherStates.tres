@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cy308qvm8d58n"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_qimwq"]
+
+[resource]
+script = ExtResource("1_qimwq")
+data = {
+"0": {
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Sprite": "MISGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"Dur": 8,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"Sprite": "MISGA",
+"flashFrame": "A",
+"flashSprite": "MISFA0"
+},
+"2": {
+"Dur": 6,
+"Frame": "B",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"Sprite": "MISGB",
+"flashFrame": "B",
+"flashSprite": "MISFB0"
+},
+"3": {
+"Dur": 6,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"Sprite": "MISGB",
+"flashFrame": "C",
+"flashSprite": "MISFC0"
+},
+"4": {
+"Dur": 0,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Sprite": "MISGB",
+"flashFrame": "D",
+"flashSprite": "MISFD0"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "flashSprite", "flashFrame"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4"],
+"sheetWidth": 2244.0,
+"splitSize": {
+0: 64,
+1: 0,
+2: 0,
+3: 0,
+4: 65,
+5: 93,
+6: 0,
+7: 0
+}
+}
+}

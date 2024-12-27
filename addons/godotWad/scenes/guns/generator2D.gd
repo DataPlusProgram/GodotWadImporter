@@ -1,16 +1,16 @@
-tool
+@tool
 extends Node
 
 signal SpritesLoaded
 
-export(NodePath) var loaderPath
-export(Array,String) var idleSpriteNames
-export(Array,String) var shootSpriteNames
+@export var loaderPath: NodePath
+@export var idleSpriteNames : Array[String]
+@export var shootSpriteNames : Array[String]
 
-export(float) var idleAnimDuration = 0
-export(float) var shootAnimDurationMS = 300
+@export var idleAnimDuration: float = 0
+@export var shootAnimDurationMS: float = 300
 
-export(Array,String) var shootSounds = []
+@export var shootSounds = [] # (Array,String)
 
 var loader
 var initialized = false
@@ -21,8 +21,8 @@ var scaleFactor = 1
 func _ready():
 	
 	
-	if !Engine.editor_hint:
-		yield(get_parent(), "ready")
+	if !Engine.is_editor_hint():
+		await get_parent().ready
 		
 		initialize(false)
 
@@ -31,8 +31,6 @@ func initialize(toDisk=true):
 	
 	loader = get_node_or_null(loaderPath)
 	
-	if toDisk:
-		loader.get_parent().createDirectories()
 	
 	
 	if loader == null:
@@ -45,7 +43,7 @@ func initialize(toDisk=true):
 	
 	animatedSprite.pixel_size = 0.002 * scaleFactor
 	
-	animatedSprite.name = "AnimatedSprite"
+	animatedSprite.name = "AnimatedSprite2D"
 	animationPlayer.name = "AnimationPlayer"
 	
 	
@@ -80,7 +78,7 @@ func initSprites():
 	
 	for s in allSprites.size():
 		
-		var sprite : Texture = loader.fetchDoomGraphic(allSprites[s])
+		var sprite : Texture2D = loader.fetchDoomGraphic(allSprites[s])
 	
 		if sprite == null:
 			print("missing srpite:",allSprites[s]," for weapon ",get_parent().weaponName)
@@ -88,11 +86,11 @@ func initSprites():
 		
 		
 		
-		if loader.get_parent().textureFiltering == false: 
-			sprite.flags -= Texture.FLAG_FILTER
+	#	if loader.get_parent().textureFiltering == false: 
+		#	sprite.flags -= Texture2D.FLAG_FILTER
 
-		if loader.get_parent().mipMaps == loader.get_parent().MIP.OFF:
-			sprite.flags -= Texture.FLAG_MIPMAPS
+	#	if loader.get_parent().mipMaps == loader.get_parent().MIP.OFF:
+	#		sprite.flags -= Texture2D.FLAG_MIPMAPS
 	
 		
 		animatedSprite.frames.add_frame("default",sprite,s)
@@ -108,7 +106,7 @@ func createAnim(animName,startIndex,numSprites,dur:float):
 	var anim = Animation.new()
 	anim.add_track(Animation.TYPE_VALUE,0)
 	anim.length = dur
-	anim.track_set_path(0,"AnimatedSprite:frame")
+	anim.track_set_path(0,"AnimatedSprite2D:frame")
 	
 	var delta = max(dur / numSprites,0.001)
 	
@@ -116,31 +114,31 @@ func createAnim(animName,startIndex,numSprites,dur:float):
 		anim.track_insert_key(0,delta*s,s+startIndex)
 	
 	
-	var e = animationPlayer.add_animation(animName,anim)
+	var e = animationPlayer.add_animation_library(animName,anim)
 
 func createBringDown():
 	
 	var anim = Animation.new()
 	anim.add_track(Animation.TYPE_VALUE,0)
 	anim.length = 0.25
-	anim.track_set_path(0,"AnimatedSprite:offset")
+	anim.track_set_path(0,"AnimatedSprite2D:offset")
 	
 	anim.track_insert_key(0,0,Vector3.ZERO)
 	anim.track_insert_key(0,anim.length,Vector3(0,-50,0))
 	
-	var e = animationPlayer.add_animation("bringDown",anim)
+	var e = animationPlayer.add_animation_library("bringDown",anim)
 
 func createBringUp():
 	
 	var anim = Animation.new()
 	anim.add_track(Animation.TYPE_VALUE,0)
 	anim.length = 0.25
-	anim.track_set_path(0,"AnimatedSprite:offset")
+	anim.track_set_path(0,"AnimatedSprite2D:offset")
 	
 	anim.track_insert_key(0,0,Vector3(0,-50,0))
 	anim.track_insert_key(0,anim.length,Vector3.ZERO)
 	
-	var e = animationPlayer.add_animation("bringUp",anim)
+	var e = animationPlayer.add_animation_library("bringUp",anim)
 
 
 func initSounds():

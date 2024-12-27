@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://sufgmcwetli6"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/richList/hoverHighlight.gd" id="1_7jmx0"]
+
+[node name="HighlightHoverRtl" type="RichTextLabel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+text = "rrrrrrrrrtetrereererererere"
+fit_content = true
+autowrap_mode = 0
+script = ExtResource("1_7jmx0")
+regularColor = Color(0.658824, 0.733333, 1, 1)
+
+[connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
+[connection signal="meta_clicked" from="." to="." method="_on_meta_clicked"]

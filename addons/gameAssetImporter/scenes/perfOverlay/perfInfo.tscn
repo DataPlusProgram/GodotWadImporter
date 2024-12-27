@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3 uid="uid://k3yruj1jf1rh"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/perfOverlay/debug.gd" id="1_oriyt"]
+[ext_resource type="Material" uid="uid://cbwy7kgkoemp4" path="res://addons/gameAssetImporter/scenes/perfOverlay/invertMaterial.tres" id="2_hbvnq"]
+
+[node name="perfInfo" type="CanvasLayer"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("1_oriyt")
+
+[node name="fps" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+text = "fps"
+
+[node name="drawCalls" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+
+[node name="objects" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+
+[node name="physTime" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+
+[node name="orphans" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+
+[node name="resource" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2
+
+[node name="ram" type="Label" parent="VBoxContainer"]
+material = ExtResource("2_hbvnq")
+layout_mode = 2

@@ -1,12 +1,12 @@
-tool
+@tool
 extends Node
 
 
 
 func parse(path):
-	var file = File.new()
-	var err = file.open(path, File.READ)
-	var content = file.get_as_text()
+	var file = FileAccess#.new()
+	#var err = file.open(path, FileAccess.READ)
+	var content = file.get_file_as_string(path)
 	var ret = {}
 	var nl = content.split("\n")
 	
@@ -78,7 +78,7 @@ func guessTypes(dict):
 func stringToType(string):
 	var value
 	
-	if string.is_valid_integer():
+	if string.is_valid_int():
 		value = string.to_int()
 	elif string.is_valid_float(): 
 		value = string.to_float()

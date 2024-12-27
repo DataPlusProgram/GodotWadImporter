@@ -1,52 +1,56 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://csn7mv7y1a622"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=1]
-[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/cacoDemonSprites.tres" type="Resource" id=2]
+[ext_resource type="PackedScene" uid="uid://dhxyaai4rce5r" path="res://addons/godotWad/scenes/enemies/npc_template.tscn" id="1"]
+[ext_resource type="Resource" uid="uid://camk4xgj333uc" path="res://addons/godotWad/scenes/enemies/templates/sprites/cacoDemonSprites.tres" id="2"]
 
-[sub_resource type="QuadMesh" id=4]
-size = Vector2( 6.045, 3.41 )
+[sub_resource type="QuadMesh" id="QuadMesh_mrf1m"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 31, 28, 31 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(62, 56, 62)
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 31, 0.05, 31 )
-
-[node name="Cacodemon" instance=ExtResource( 1 )]
+[node name="Cacodemon" instance=ExtResource("1")]
 initialHP = 400.0
+npcName = "cacodemon"
 height = 56.0
 thickness = 31.0
+mass = 400.0
+stateDataPath = "res://addons/godotWad/resources/monsterStates/cacodemonState.tres"
+attackStateId = 2
+painStateId = 5
+deadStateId = 8
+chaseStateId = 1
 painChance = 0.5
+flying = true
 
 [node name="AnimatedSprite3D" parent="." index="0"]
-mesh = SubResource( 4 )
+mesh = SubResource("QuadMesh_mrf1m")
 
-[node name="CollisionShape" parent="." index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0 )
-shape = SubResource( 1 )
+[node name="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28, 0)
+shape = SubResource("1")
 
 [node name="cast" parent="." index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 44.8, 0)
 
 [node name="Generator" parent="." index="7"]
-sprites = ExtResource( 2 )
+sprites = ExtResource("2")
 idle = "A"
 chase = "A"
 attack = "BCD"
 melee = "BCD"
 hurt = "EEF"
 dying = "GHIJKL"
-deathSounds = [ "DSCACDTH" ]
-painSounds = [ "DSDMPAIN" ]
-attackSounds = [ "DSFIRSHT" ]
-alertSounds = [ "DSCACSIT" ]
-entityDepends = [ "fireball" ]
+deathSounds = ["DSCACDTH"]
+painSounds = ["DSDMPAIN"]
+attackSounds = ["DSFIRSHT"]
+alertSounds = ["DSCACSIT"]
+searchSounds = Array[StringName]([&"DSDMACT"])
+entityDepends = ["fireball"]
 
-[node name="footCast" parent="." index="8"]
-shape = SubResource( 3 )
-target_position = Vector3( 0, -0.1, 0 )
+[node name="VisibleOnScreenNotifier3D" parent="." index="8"]
+aabb = AABB(-1, 0, -1, 2, 56, 2)
 
-[node name="VisibilityNotifier" parent="." index="9"]
-aabb = AABB( -1, 0, -1, 2, 56, 2 )
+[node name="movement" parent="." index="9"]
+gravity = 0.0
 
 [editable path="AnimatedSprite3D"]

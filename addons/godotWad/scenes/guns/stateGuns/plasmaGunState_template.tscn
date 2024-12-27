@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccao5hl28hexq"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_blamr"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_ybgp3"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_s7fx3"]
+
+[node name="plasmaGun" instance=ExtResource("1_blamr")]
+weaponName = "plasmaGun"
+category = 6
+ammoType = "energy"
+projectile = "plasma"
+magSize = 0
+damage = 80
+pickupAmmo = 40
+maxSpread = Vector2(0, 0)
+stateResPath = "res://addons/godotWad/resources/plasmaGunStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_ybgp3")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_s7fx3")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["PLSGA0", "PLSGB0"])
+worldSprite = "PLASA0"
+fireSounds = Array[String](["DSPLASMA"])
+entityDepends = PackedStringArray()

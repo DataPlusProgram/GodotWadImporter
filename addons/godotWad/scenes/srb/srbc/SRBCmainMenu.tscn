@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://cavpy0gwvpuvx"]
+
+[ext_resource type="PackedScene" uid="uid://mcii7ruo5u7o" path="res://addons/godotWad/scenes/gameModes/templates/D2/D2mainMenu.tscn" id="1_egf3x"]
+
+[node name="mainMenu" instance=ExtResource("1_egf3x")]
+
+[node name="Label" parent="v/retry" index="0"]
+scale = Vector2(2.95082, 2.76923)
+
+[editable path="v/retry"]
+[editable path="options"]
+[editable path="options/VBoxContainer/TabContainer/Video/Video"]
+[editable path="options/VBoxContainer/TabContainer/Input"]

@@ -1,0 +1,186 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://dqvulv2a1rclg"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_iwfy7"]
+
+[resource]
+script = ExtResource("1_iwfy7")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": true,
+"Next": 1,
+"Paramters": "",
+"Sprite": "SKULA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": true,
+"Next": 0,
+"Paramters": "",
+"Sprite": "SKULB"
+},
+"10": {
+"": "",
+"Dur": 6,
+"Frame": "F",
+"Function": "",
+"Lit": true,
+"Next": 11,
+"Paramters": "",
+"Sprite": "SKULF"
+},
+"11": {
+"": "",
+"Dur": 6,
+"Frame": "G",
+"Function": "playDeath",
+"Lit": true,
+"Next": 12,
+"Paramters": "",
+"Sprite": "SKULG"
+},
+"12": {
+"": "",
+"Dur": 6,
+"Frame": "H",
+"Function": "",
+"Lit": true,
+"Next": 13,
+"Paramters": "",
+"Sprite": "SKULH"
+},
+"13": {
+"": "",
+"Dur": 6,
+"Frame": "I",
+"Function": "",
+"Lit": true,
+"Next": 14,
+"Paramters": "",
+"Sprite": "SKULI"
+},
+"14": {
+"": "",
+"Dur": 6,
+"Frame": "I",
+"Function": "",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "SKULJ"
+},
+"15": {
+"": "",
+"Dur": -1,
+"Frame": "K",
+"Function": "deadState",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "SKULK"
+},
+"2": {
+"": "",
+"Dur": 6,
+"Frame": "A",
+"Function": "chase",
+"Lit": true,
+"Next": 3,
+"Paramters": "",
+"Sprite": "SKULA"
+},
+"3": {
+"": "",
+"Dur": 6,
+"Frame": "B",
+"Function": "chase",
+"Lit": true,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SKULB"
+},
+"4": {
+"": "",
+"Dur": 10,
+"Frame": "C",
+"Function": "face",
+"Lit": true,
+"Next": 5,
+"Paramters": "",
+"Sprite": "SKULC"
+},
+"5": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "charge",
+"Lit": true,
+"Next": 6,
+"Paramters": "",
+"Sprite": "SKULD"
+},
+"6": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 7,
+"Paramters": "",
+"Sprite": "SKULC"
+},
+"7": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 6,
+"Paramters": "",
+"Sprite": "SKULD"
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 9,
+"Paramters": "",
+"Sprite": "SKULE"
+},
+"9": {
+"": "",
+"Dur": 3,
+"Frame": "E",
+"Function": "playHurt",
+"Lit": true,
+"Next": 2,
+"Paramters": "",
+"Sprite": "SKULE"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
+"sheetWidth": 2174.0,
+"splitSize": {
+0: 85,
+1: 65,
+2: 64,
+3: 65,
+4: 65,
+5: 83,
+6: 97,
+7: 0
+}
+}
+}

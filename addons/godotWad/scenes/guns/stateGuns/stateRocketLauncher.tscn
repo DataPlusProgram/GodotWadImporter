@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccuetkwmeqg0d"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_hes25"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_jeacb"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_7w3af"]
+
+[node name="rocketLauncher" instance=ExtResource("1_hes25")]
+weaponName = "rocketLauncher"
+category = 5
+ammoType = "rocket"
+projectile = "rocket"
+pickupAmmo = 2
+stateResPath = "res://addons/godotWad/resources/rocketLauncherStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_jeacb")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_7w3af")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["MISGA0", "MISGB0"])
+spriteListMuzzleFlash = Array[String](["MISFA0", "MISFB0", "MISFC0", "MISFD0"])
+worldSprite = "LAUNA0"
+fireSounds = Array[String](["DSRLAUNC"])

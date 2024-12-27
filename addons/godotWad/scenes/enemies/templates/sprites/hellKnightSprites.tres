@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://p0hmfslf0pem"]
 
-[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 data = {
 "A": {
 "e": "BOS2A7C3",
@@ -26,24 +26,24 @@ data = {
 "w": "BOS2B3D7"
 },
 "C": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "BOS2A7C3_flipped",
+"n": "BOS2A5C5_flipped",
+"ne": "BOS2A6C4_flipped",
+"nw": "BOS2A4C6_flipped",
+"s": "BOS2A1C1_flipped",
+"se": "BOS2A8C2_flipped",
+"sw": "BOS2A2C8_flipped",
+"w": "BOS2A3C7_flipped"
 },
 "D": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "BOS2B7D3_flipped",
+"n": "BOS2B5D5_flipped",
+"ne": "BOS2B6D4_flipped",
+"nw": "BOS2B4D6_flipped",
+"s": "BOS2B1D1_flipped",
+"se": "BOS2B8D2_flipped",
+"sw": "BOS2B2D8_flipped",
+"w": "BOS2B3D7_flipped"
 },
 "E": {
 "e": "BOS2E7",
@@ -156,16 +156,14 @@ data = {
 "w": ""
 },
 "meta": {
-"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
-"enumColumns": {
-},
-"enumColumnsPrefix": {
-},
+"colNames": ["s", "sw", "w", "nw", "n", "ne", "e", "se"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
 "hasId": false,
-"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O" ],
-"sheetWidth": 808.0,
+"rowOrder": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"],
+"sheetWidth": 2563.0,
 "splitSize": {
-0: 0,
+0: 137,
 1: 0,
 2: 0,
 3: 0,

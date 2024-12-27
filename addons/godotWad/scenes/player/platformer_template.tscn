@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://dnqo45c7mw8mi"]
+
+[ext_resource type="PackedScene" uid="uid://dm4psfgy7p5y8" path="res://addons/godotWad/scenes/player/playerBase.tscn" id="1_6b6bu"]
+[ext_resource type="PackedScene" uid="uid://br07pau6iijsu" path="res://addons/godotWad/scenes/quad3Dsprite.tscn" id="2_ug316"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/debug/playerGenerator.gd" id="3_v26gx"]
+[ext_resource type="Resource" uid="uid://i8d83uub0gm5" path="res://addons/godotWad/scenes/enemies/templates/sprites/hogsprites.tres" id="4_q21ug"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/playerSounds.gd" id="5_ep5g3"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_gvsy4"]
+size = Vector2(1.271, 1.767)
+
+[node name="platformer_template" instance=ExtResource("1_6b6bu")]
+inventory = {}
+
+[node name="AnimatedSprite3D" parent="visual" index="0" instance=ExtResource("2_ug316")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+mesh = SubResource("QuadMesh_gvsy4")
+
+[node name="Crosshair" parent="UI" index="0"]
+visible = false
+
+[node name="Generator" type="Node" parent="." index="6"]
+script = ExtResource("3_v26gx")
+sprites = ExtResource("4_q21ug")
+spawnWeapons = []
+chase = "ADEFGHIJK"
+gib = "OPQRSTUV"
+jumping = "LMN"
+running = "QRST"
+gruntSound = "DSNOWAY"
+
+[node name="movement" parent="." index="9"]
+forwardSpeed = 3.126
+airSpeed = 1.563
+friction = 0.95
+jumpVelo = 1000
+gravity = 12.5
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." index="12"]
+script = ExtResource("5_ep5g3")

@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="%s"]
+
+[ext_resource type="Shader" path="res://addons/godotWad/shaders/base2.gdshader" id="a"]
+[ext_resource type="Texture2D" path="%s" id="%s"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("a")
+shader_parameter/tint = Color(%s, %s, %s, %s)
+shader_parameter/alpha = %s
+shader_parameter/scrolling = Vector2(%s, %s)
+shader_parameter/emission = null
+shader_parameter/emission_energy = 1.0
+shader_parameter/texture_albedo = ExtResource("%s")

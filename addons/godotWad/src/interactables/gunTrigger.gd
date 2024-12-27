@@ -1,6 +1,8 @@
-extends StaticBody
-signal takeDamage
+extends StaticBody3D
+signal takeDamageSignal
 
-	
-func takeDamage(dcit):
-	emit_signal("takeDamage")
+
+
+
+func takeDamage(dict):
+	emit_signal("takeDamageSignal")

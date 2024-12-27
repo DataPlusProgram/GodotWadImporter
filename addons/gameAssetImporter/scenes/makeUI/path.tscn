@@ -1,74 +1,70 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dylxxssl5t4na"]
 
-[ext_resource path="res://addons/gameAssetImporter/scenes/makeUI/path.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/makeUI/path.gd" id="1"]
 
 [node name="path" type="VBoxContainer"]
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 0.048
-margin_bottom = 0.199999
+offset_bottom = 0.199999
 size_flags_horizontal = 3
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="h" type="HBoxContainer" parent="."]
-margin_right = 1024.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="h"]
-margin_top = 5.0
-margin_right = 28.0
-margin_bottom = 19.0
+layout_mode = 2
 text = "path"
 
 [node name="pathTxt" type="LineEdit" parent="h"]
-margin_left = 32.0
-margin_right = 970.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
-editable = false
 caret_blink = true
-caret_blink_speed = 0.5
+caret_blink_interval = 0.5
 
 [node name="Button3" type="Button" parent="h"]
-margin_left = 974.0
-margin_right = 996.0
-margin_bottom = 24.0
+layout_mode = 2
+disabled = true
 text = "\\/"
 
 [node name="Button" type="Button" parent="h"]
-margin_left = 1000.0
-margin_right = 1024.0
-margin_bottom = 24.0
+layout_mode = 2
 text = "..."
 
 [node name="Button2" type="Button" parent="h"]
 visible = false
-margin_left = 1004.0
-margin_right = 1024.0
-margin_bottom = 24.0
+layout_mode = 2
 text = "+"
+
+[node name="deleteSelf" type="Button" parent="h"]
+visible = false
+layout_mode = 2
+text = "-"
+
+[node name="PopupPanel" type="PopupPanel" parent="h"]
 
 [node name="ErrorText" type="RichTextLabel" parent="."]
 visible = false
-margin_top = 28.0
-margin_right = 1024.0
-margin_bottom = 43.0
+layout_mode = 2
 bbcode_enabled = true
+fit_content = true
 tab_size = 0
-fit_content_height = true
 
 [node name="FileDialog" type="FileDialog" parent="."]
-margin_top = 28.0
-margin_right = 1024.0
-margin_bottom = 158.0
-window_title = "Open a File"
-mode = 0
+title = "Open a File"
+popup_window = true
+ok_button_text = "Open"
+file_mode = 0
 access = 2
 show_hidden_files = true
 
-[connection signal="text_changed" from="h/pathTxt" to="." method="_on_pathTxt_text_changed"]
+[connection signal="text_changed" from="h/pathTxt" to="." method="_on_path_txt_text_changed"]
+[connection signal="text_submitted" from="h/pathTxt" to="." method="_on_path_txt_text_submitted"]
 [connection signal="pressed" from="h/Button3" to="." method="_on_Button3_pressed"]
 [connection signal="pressed" from="h/Button" to="." method="_on_Button_pressed"]
 [connection signal="pressed" from="h/Button2" to="." method="_on_Button2_pressed"]
+[connection signal="pressed" from="h/deleteSelf" to="." method="_on_delete_self_pressed"]
 [connection signal="dir_selected" from="FileDialog" to="." method="_on_FileDialog_dir_selected"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

@@ -1,0 +1,346 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://blkbyalp44ehe"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_lwvjs"]
+
+[resource]
+script = ExtResource("1_lwvjs")
+data = {
+"0": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "",
+"Lit": true,
+"Next": 1,
+"Paramters": "",
+"Sprite": "FIREA"
+},
+"1": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "",
+"Lit": true,
+"Next": 2,
+"Paramters": "",
+"Sprite": "FIREB"
+},
+"10": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 11,
+"Paramters": "",
+"Sprite": "FIREC"
+},
+"11": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 12,
+"Paramters": "",
+"Sprite": "FIRED"
+},
+"12": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 13,
+"Paramters": "",
+"Sprite": "FIREC"
+},
+"13": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 14,
+"Paramters": "",
+"Sprite": "FIRED"
+},
+"14": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 15,
+"Paramters": "",
+"Sprite": "FIREE"
+},
+"15": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 16,
+"Paramters": "",
+"Sprite": "FIRED"
+},
+"16": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 17,
+"Paramters": "",
+"Sprite": "FIREE"
+},
+"17": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 18,
+"Paramters": "",
+"Sprite": "FIRED"
+},
+"18": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 19,
+"Paramters": "",
+"Sprite": "FIREE"
+},
+"19": {
+"": "",
+"Dur": 2,
+"Frame": "F",
+"Function": "",
+"Lit": true,
+"Next": 20,
+"Paramters": "",
+"Sprite": "FIREF"
+},
+"2": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "playCrackle",
+"Lit": true,
+"Next": 3,
+"Paramters": "",
+"Sprite": "FIREA"
+},
+"20": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 21,
+"Paramters": "",
+"Sprite": "FIREE"
+},
+"21": {
+"": "",
+"Dur": 2,
+"Frame": "F",
+"Function": "",
+"Lit": true,
+"Next": 22,
+"Paramters": "",
+"Sprite": "FIREF"
+},
+"22": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "",
+"Lit": true,
+"Next": 23,
+"Paramters": "",
+"Sprite": "FIREE"
+},
+"23": {
+"": "",
+"Dur": 2,
+"Frame": "F",
+"Function": "",
+"Lit": true,
+"Next": 24,
+"Paramters": "",
+"Sprite": "FIREF"
+},
+"24": {
+"": "",
+"Dur": 2,
+"Frame": "G",
+"Function": "",
+"Lit": true,
+"Next": 25,
+"Paramters": "",
+"Sprite": "FIREG"
+},
+"25": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "",
+"Lit": true,
+"Next": 26,
+"Paramters": "",
+"Sprite": "FIREH"
+},
+"26": {
+"": "",
+"Dur": 2,
+"Frame": "G",
+"Function": "",
+"Lit": true,
+"Next": 27,
+"Paramters": "",
+"Sprite": "FIREG"
+},
+"27": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "",
+"Lit": true,
+"Next": 28,
+"Paramters": "",
+"Sprite": "FIREH"
+},
+"28": {
+"": "",
+"Dur": 2,
+"Frame": "G",
+"Function": "",
+"Lit": true,
+"Next": 29,
+"Paramters": "",
+"Sprite": "FIREG"
+},
+"29": {
+"": "",
+"Dur": 2,
+"Frame": "H",
+"Function": "",
+"Lit": true,
+"Next": 30,
+"Paramters": "",
+"Sprite": "FIREH"
+},
+"3": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "",
+"Lit": true,
+"Next": 4,
+"Paramters": "",
+"Sprite": "FIREB"
+},
+"30": {
+"": "",
+"Dur": 0,
+"Frame": "H",
+"Function": "blastDamage",
+"Lit": true,
+"Next": 31,
+"Paramters": "",
+"Sprite": "FIREH"
+},
+"31": {
+"": "",
+"Dur": 0,
+"Frame": "H",
+"Function": "queue_free",
+"Lit": true,
+"Next": -1,
+"Paramters": "",
+"Sprite": "FIREH"
+},
+"4": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 5,
+"Paramters": "",
+"Sprite": "FIREC"
+},
+"5": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "",
+"Lit": true,
+"Next": 6,
+"Paramters": "",
+"Sprite": "FIREB"
+},
+"6": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 7,
+"Paramters": "",
+"Sprite": "FIREC"
+},
+"7": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "",
+"Lit": true,
+"Next": 8,
+"Paramters": "",
+"Sprite": "FIREB"
+},
+"8": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "",
+"Lit": true,
+"Next": 9,
+"Paramters": "",
+"Sprite": "FIREC"
+},
+"9": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "",
+"Lit": true,
+"Next": 10,
+"Paramters": "",
+"Sprite": "FIRED"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"],
+"sheetWidth": 2316.0,
+"splitSize": {
+0: 64,
+1: 75,
+2: 64,
+3: 74,
+4: 64,
+5: 95,
+6: 98,
+7: 0
+}
+}
+}

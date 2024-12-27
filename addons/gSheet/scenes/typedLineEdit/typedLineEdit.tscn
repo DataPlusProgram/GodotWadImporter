@@ -1,14 +1,16 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://c1jyb0dowphiu"]
 
-[ext_resource path="res://addons/gSheet/scenes/typedLineEdit/typedLineEdit.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/typedLineEdit/typedLineEdit.gd" id="1"]
 
 [node name="typedLineEdit" type="LineEdit"]
+anchors_preset = -1
 anchor_right = 0.155
 anchor_bottom = 0.04
-margin_right = 0.279999
 caret_blink = true
-caret_blink_speed = 0.5
-script = ExtResource( 1 )
+caret_blink_interval = 0.5
+script = ExtResource("1")
 
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
 [connection signal="focus_entered" from="." to="." method="_on_typedLineEdit_focus_entered"]
 [connection signal="focus_exited" from="." to="." method="_on_typedLineEdit_focus_exited"]
+[connection signal="text_submitted" from="." to="." method="_on_text_submitted"]

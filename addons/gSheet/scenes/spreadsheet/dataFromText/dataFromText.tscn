@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://bveyyu6jeengh"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/spreadsheet/full/DataFromText.gd" id="1_6acvh"]
+
+[node name="DataFromText" type="ConfirmationDialog"]
+position = Vector2i(0, 36)
+visible = true
+script = ExtResource("1_6acvh")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "var thingsDict ={
+	1:{\"shape\":\"square\",\"color\":\"red\",\"size\":\"big\"},
+	2:{\"shape\":\"circle\",\"color\":\"blue\",\"size\":\"small\"},
+	3:{\"shape\":\"triangle\",\"color\":\"red\",\"size\":\"small\"},
+	4:{\"shape\":\"rectangle\",\"color\":\"green\",\"size\":\"big\"},
+}"

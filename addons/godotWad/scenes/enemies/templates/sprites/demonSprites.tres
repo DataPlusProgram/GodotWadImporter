@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://cda30qn0tlxw4"]
 
-[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 data = {
 "A": {
 "e": "",
@@ -146,13 +146,11 @@ data = {
 "w": ""
 },
 "meta": {
-"colNames": [ "n", "ne", "e", "se", "s", "sw", "w", "nw" ],
-"enumColumns": {
-},
-"enumColumnsPrefix": {
-},
+"colNames": ["n", "ne", "e", "se", "s", "sw", "w", "nw"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
 "hasId": false,
-"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N" ],
+"rowOrder": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"],
 "sheetWidth": 1439.0,
 "splitSize": {
 0: 0,

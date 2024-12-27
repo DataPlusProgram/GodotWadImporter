@@ -1,83 +1,150 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=10 format=3 uid="uid://cy5lvq7dxe1ft"]
 
-[ext_resource path="res://addons/godotWad/scenes/guns/icon.png" type="Texture" id=1]
-[ext_resource path="res://addons/godotWad/scenes/gameModes/main/title/mainMenu_template.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/scenes/gameModes/main/title/Generator.gd" type="Script" id=3]
+[ext_resource type="Texture2D" uid="uid://cl15uxs12aiar" path="res://addons/godotWad/scenes/guns/icon.png" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/title/mainMenu_template.gd" id="2"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/title/Generator.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://doas350f5b056" path="res://addons/godotWad/scenes/player/scenes/resizableText/resizableText.tscn" id="3_6q6af"]
+[ext_resource type="Shader" path="res://addons/godotWad/shaders/melt.gdshader" id="4_cs0ry"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/title/TextureRect.gd" id="4_hgbsj"]
+[ext_resource type="PackedScene" uid="uid://dyr0nmjpo3o8x" path="res://addons/godotWad/scenes/gameModes/main/saveLoadMenu/saveLoadUI.tscn" id="6_ifq6d"]
+[ext_resource type="PackedScene" uid="uid://bo2tojwq3nvf0" path="res://addons/godotWad/scenes/gameModes/main/options/options_template.tscn" id="7_fa4xi"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qg8hx"]
+shader = ExtResource("4_cs0ry")
+shader_parameter/timer = 0.0
+shader_parameter/y_offsets = null
+shader_parameter/melting = false
 
 [node name="mainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 2 )
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2")
 
 [node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = ExtResource( 1 )
-expand = true
+texture = ExtResource("1")
+expand_mode = 1
 
 [node name="v" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -150.0
-margin_top = -32.0
-margin_right = 150.0
-margin_bottom = 32.0
+offset_left = -150.0
+offset_top = -32.0
+offset_right = 150.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/separation = 16
+theme_override_constants/separation = 16
+metadata/_edit_use_anchors_ = true
+
+[node name="retry" parent="v" instance=ExtResource("3_6q6af")]
+visible = false
+custom_minimum_size = Vector2(180, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 2
+scaleFactor = Vector2(1, 1.2)
+
+[node name="Label" parent="v/retry" index="0"]
+scale = Vector2(2.95082, 2.76923)
+text = "Retry"
 
 [node name="newGame" type="TextureButton" parent="v"]
-margin_right = 300.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 300, 40 )
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 1 )
-expand = true
+texture_normal = ExtResource("1")
 stretch_mode = 5
 
 [node name="options" type="TextureButton" parent="v"]
-margin_top = 56.0
-margin_right = 300.0
-margin_bottom = 96.0
-rect_min_size = Vector2( 300, 40 )
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 1 )
-expand = true
+texture_normal = ExtResource("1")
+stretch_mode = 5
+
+[node name="saveGame" type="TextureButton" parent="v"]
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
+size_flags_vertical = 3
+stretch_mode = 5
+
+[node name="loadGame" type="TextureButton" parent="v"]
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
+size_flags_vertical = 3
 stretch_mode = 5
 
 [node name="quit" type="TextureButton" parent="v"]
-margin_top = 112.0
-margin_right = 300.0
-margin_bottom = 152.0
-rect_min_size = Vector2( 300, 40 )
+custom_minimum_size = Vector2(300, 40)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture_normal = ExtResource( 1 )
-expand = true
+texture_normal = ExtResource("1")
 stretch_mode = 5
 
 [node name="Generator" type="Node" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 
 [node name="target" type="TextureRect" parent="."]
+layout_mode = 0
 anchor_left = 0.022
 anchor_top = 0.037
 anchor_right = 0.022
 anchor_bottom = 0.037
-margin_left = -22.528
-margin_top = -22.2
-margin_right = 23.472
-margin_bottom = 22.8
-expand = true
+offset_left = -22.528
+offset_top = -22.2
+offset_right = 23.472
+offset_bottom = 22.8
+expand_mode = 1
 
 [node name="move" type="AudioStreamPlayer" parent="."]
 
 [node name="select" type="AudioStreamPlayer" parent="."]
 
+[node name="meltRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_qg8hx")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_hgbsj")
+
+[node name="SaveLoadUi" parent="." instance=ExtResource("6_ifq6d")]
+visible = false
+layout_mode = 1
+
+[node name="options" parent="." instance=ExtResource("7_fa4xi")]
+layout_mode = 1
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="gui_input" from="v/retry" to="." method="_on_retry_gui_input"]
+[connection signal="mouse_entered" from="v/retry" to="." method="_on_retry_mouse_entered"]
+[connection signal="mouse_exited" from="v/retry" to="." method="_on_retry_mouse_exited"]
 [connection signal="pressed" from="v/newGame" to="." method="_on_newGame_pressed"]
 [connection signal="pressed" from="v/options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="v/saveGame" to="." method="_on_save_game_pressed"]
+[connection signal="pressed" from="v/loadGame" to="." method="_on_load_game_pressed"]
 [connection signal="pressed" from="v/quit" to="." method="_on_quit_pressed"]
+[connection signal="visibility_changed" from="options" to="." method="_on_options_visibility_changed"]
+
+[editable path="v/retry"]
+[editable path="options"]
+[editable path="options/VBoxContainer/TabContainer/Video/Video"]
+[editable path="options/VBoxContainer/TabContainer/Input"]

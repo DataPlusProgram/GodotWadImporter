@@ -1,10 +1,15 @@
-tool
+@tool
 class_name WADG
 extends Node
 
 const destPath = "res://game_imports/"
 
-
+enum SHADER_TYPE {
+	GEOMETRY,
+	SPRITE,
+	SPRITE_FOV,
+	SKY
+}
 
 enum TEXTUREDRAW{
 	BOTTOMTOP,
@@ -72,10 +77,19 @@ enum DEST{
 	SHORTEST_LOWER_TEXTURE
 }
 
+enum LIGHT_TYPE{
+	NONE,
+	BLINK,
+	GLOW,
+	STROBE
+}
 
 
 
 static func getDest(dest,sector,scaleFactor):
+	
+	
+	
 	if dest == DEST.LOWEST_ADJ_CEILING: 
 		return sector["lowestNeighCeilExc"]
 	if dest == DEST.NEXT_HIGHEST_FLOOR: 
@@ -86,11 +100,14 @@ static func getDest(dest,sector,scaleFactor):
 	if dest == DEST.LOWEST_ADJ_FLOOR: 
 		return sector["lowestNeighFloorInc"]
 	if dest == DEST.up24: 
-		return sector["floorHeight"]+24.0*scaleFactor
+		return min(sector["floorHeight"]+24.0*scaleFactor,sector["ceilingHeight"])
+		#return sector["floorHeight"]+24.0*scaleFactor
 	if dest == DEST.up32: 
-		return sector["floorHeight"]+32.0*scaleFactor
+		return min(sector["floorHeight"]+32.0*scaleFactor,sector["ceilingHeight"])
+		#return sector["floorHeight"]+32.0*scaleFactor
 	if dest == DEST.up512: 
-		return sector["floorHeight"]+512.0*scaleFactor
+		return min(sector["floorHeight"]+512.0*scaleFactor,sector["ceilingHeight"])
+		#return sector["floorHeight"]+512.0*scaleFactor
 	if dest == DEST.LOWEST_ADJ_CEILING_DOWN8: 
 		return sector["lowestNeighCeilExc"]-8.0*scaleFactor
 	if dest == DEST.up8:
@@ -113,16 +130,45 @@ static func getDest(dest,sector,scaleFactor):
 		return sector["floorHeight"] + sector["lowestTextureHeight"]*scaleFactor
 	return null
 	
-		
+
+
+
+
+static func getDestStages(dest,startFloor,sectorTuples : Array[Array],scaleFactor,stage):
+	
+	
+	
+	var tuples = sectorTuples.duplicate()
+	
+	for i in tuples:
+		if i[0] < startFloor:
+			tuples.erase(i)
+	
+	tuples.sort_custom(func (a, b):return a[0] < b[0])
+	
+	
+	if dest == DEST.NEXT_HIGHEST_FLOOR:
+		return tuples[stage%tuples.size()][0]
+	else:
+		breakpoint
+	
+	
 	
 
-static func getLightLevel(light):
-	var lightLevel = max(light-62,0)
-	lightLevel = range_lerp(lightLevel,0,255-62,0,15)
+static func getLightLevel(light) -> float:
+	#var lightLevel = max(light-65,0)
+	#lightLevel = remap(lightLevel,0,255-62,0,15)
+	#lightLevel = remap(lightLevel,0,16,0.0,1.0)
+	
+	var lightLevel : float = max(light-62,0)
+	lightLevel = remap(lightLevel,0,255-62,0,15)
+	lightLevel = remap(lightLevel,0,16,0.0,1.0)
 	return lightLevel
 
 
-static func incMap(mapName,secret = false):
+static func incMap(mapName :  String,secret = false):
+	
+	mapName = mapName.to_upper()
 	
 	if secret:
 		var secrets = load("res://addons/godotWad/resources/secretRoutes.tres") 
@@ -133,13 +179,16 @@ static func incMap(mapName,secret = false):
 		else:
 			return ""
 	
+	
 	if mapName[0] == 'E' and mapName[2] == 'M':
 		return incrementDoom1Map(mapName)
 	
 	if mapName.substr(0,3) == "MAP":
 		return incrementDoom2Map(mapName)
+	
+	return ""
 
-static func incrementDoom1Map(nameStr,isSecret = false):
+static func incrementDoom1Map(nameStr : String,isSecret : bool = false):
 	var ret = nameStr
 	
 
@@ -147,16 +196,21 @@ static func incrementDoom1Map(nameStr,isSecret = false):
 	var lastDigit = int(nameStr[3])
 	
 
+
 	if lastDigit >= 8:
 		var firstDigit = int(nameStr[1])
+		
+		if firstDigit == 1 and lastDigit == 9:
+			return "E1M4"
+		
 		if firstDigit < 4:
 			firstDigit += 1
-			ret = "E" + String(firstDigit) + "M1"
+			ret = "E" + str(firstDigit) + "M1"
 		return ret
 	
 	if lastDigit < 9:
 		lastDigit+= 1
-		nameStr[3] = String(lastDigit)
+		nameStr[3] = str(lastDigit)
 		return(nameStr)
 		
 	
@@ -171,17 +225,17 @@ static func incrementDoom2Map(nameStr,isSecret = false):
 	digits += 1
 	
 	if digits < 10:
-		digitsStr = "0" + String(digits)
+		digitsStr = "0" + str(digits)
 	else:
-		digitsStr = String(digits)
+		digitsStr = str(digits)
 	
 	return "MAP" + digitsStr
 	
 
 
 static func getAreaFromExtrudedMesh(mesh,h):
-	var area = Area.new()
-	var collisionShape = CollisionShape.new()
+	var area = Area3D.new()
+	var collisionShape = CollisionShape3D.new()
 	
 	var shape = extrudeMeshIntoTrimeshShape(mesh,h)
 	collisionShape.shape = shape
@@ -189,7 +243,7 @@ static func getAreaFromExtrudedMesh(mesh,h):
 	return area
 
 static func extrudeMeshIntoTrimeshShape(mesh,h):
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	var eMesh = getExtrudedMesh(mesh,h)
 	
 	#return eMesh.create_convex_shape()
@@ -197,7 +251,7 @@ static func extrudeMeshIntoTrimeshShape(mesh,h):
 	#return meshInstance
 
 static func getExtrudedMeshInstance(mesh,h):
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	var eMesh = getExtrudedMesh(mesh,h)
 	
 	meshInstance.mesh = eMesh
@@ -307,23 +361,24 @@ func flipFace(face):
 	face.z = face.z
 	
 
-static func getVertsFromMeshArrayMesh(mesh,translation):
-	var mdt = MeshDataTool.new()
+static func getVertsFromMeshArrayMesh(mesh : ArrayMesh,position :Vector3) -> Dictionary:
+	var mdt : MeshDataTool = MeshDataTool.new()
 	mdt.create_from_surface(mesh,0)
-	var vertArr = []
-	var normArr = []
-	var uvArr = []
+	var vertArr : Array= []
+	var normArr : Array= []
+	var uvArr : Array= []
 	
 	
 	for idx in mdt.get_face_count():
 		for i in range(0,3):
-			var v = mdt.get_face_vertex(idx,i)
-			vertArr.append(mdt.get_vertex(v)+translation)
+			var v : = mdt.get_face_vertex(idx,i)
+			vertArr.append(mdt.get_vertex(v)+position)
 			normArr.append(mdt.get_vertex_normal(v))
 			uvArr.append(mdt.get_vertex_uv(v))
 	
-	var dict = {"verts":vertArr,"normals":normArr,"uv":uvArr,"material":mdt.get_material()}
-	return dict
+	
+	return {"verts":vertArr,"normals":normArr,"uv":uvArr,"material":mdt.get_material()}
+
 
 
 
@@ -338,6 +393,11 @@ static func keyNameToNumber(keyName):
 	if keyName == "Yellow skull key": return KEY.BLUE
 		
 
+static func keyNumberToColorStr(keyNumber):
+	if keyNumber == KEY.RED: return "red"
+	if keyNumber == KEY.BLUE: return "blue"
+	if keyNumber == KEY.YELLOW: return "yellow"
+
 static func keyNunmberToNameArr(keyNumber):
 	
 	if keyNumber == KEY.RED: return ["Red keycard","Red skull key"]
@@ -345,39 +405,44 @@ static func keyNunmberToNameArr(keyNumber):
 	if keyNumber == KEY.YELLOW: return ["Yellow keycard","Yellow skull key"]
 	
 	
-static func drawLine(node,start,end):
-	var ig = ImmediateGeometry.new()
+static func drawLine(node : Node,start : Vector3 ,end : Vector3,color = Color.RED):
+	var ig : ImmediateMesh = ImmediateMesh.new()
+	var meshInstance = MeshInstance3D.new()
 	
 	for i in node.get_children():
-		if i.get_class() == "ImmediateGeometry":
+		if i.get_class() == "ImmediateMesh":
 			i.queue_free()
 
-	ig.begin(Mesh.PRIMITIVE_LINE_STRIP)
+	ig.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
 	
-	ig.add_vertex(start)
-	ig.add_vertex(end)
+	ig.surface_add_vertex(start)
+	ig.surface_add_vertex(end)
 	#var random_color = Color(randf(), randf(), randf())
 	
-	#var mat = SpatialMaterial.new()
-	#mat.albedo_color = random_color
-	#mat = load("res://new_spatialmaterial.tres")
-	#ig.material_override = mat
-	ig.end()
-	node.call_deferred("add_child",ig)
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = color
 	
+	meshInstance.material_override = mat
+	ig.surface_end()
+	meshInstance.mesh = ig
+	node.call_deferred("add_child",meshInstance)
+	return meshInstance
+
+#static func drawLineRelative(node : Node,end : Vector3,color = Color.RED):
+	#drawLine(node,node.global_position,end,color)
 
 static func drawVector(node,vector,length = 1):
-	var ig = ImmediateGeometry.new()
+	var ig = ImmediateMesh.new()
 	
 	for i in node.get_children():
-		if i.get_class() == "ImmediateGeometry":
+		if i.get_class() == "ImmediateMesh":
 			i.queue_free()
 			
-		if i.get_class() == "CSGCylinder":
+		if i.get_class() == "CSGCylinder3D":
 			i.queue_free()
 
 
-	var x = node.global_transform.basis.xform(vector.normalized()*length)
+	var x = node.global_transform.basis * (vector.normalized()*length)
 	ig.begin(Mesh.PRIMITIVE_LINE_STRIP)
 	ig.add_vertex(Vector3.ZERO)
 	ig.add_vertex(x)
@@ -399,20 +464,26 @@ static func drawVector(node,vector,length = 1):
 	node.call_deferred("add_child",ig)
 #	node.add_child(cone)
 	
-static func drawSphere(node : Node,pos : Vector3,color = Color.white,radius = 0.1):
+
+
+static func drawSphere(node : Node,pos : Vector3,color = Color.WHITE,radius = 0.1):
+	
+	
 	
 	var shape : SphereMesh = SphereMesh.new()
 	shape.radius = radius/2
 	shape.height = radius
 	
-	var meshInstance = MeshInstance.new()
+	var meshInstance = MeshInstance3D.new()
 	meshInstance.mesh = shape
-	if color != Color.white:
-		meshInstance.material_override = SpatialMaterial.new()
-		meshInstance.material_override.albedo_color = color
-	meshInstance.translation = pos
+	if color != Color.WHITE:
+		meshInstance.mesh.material = StandardMaterial3D.new()
+		meshInstance.mesh.material.albedo_color = color
+		meshInstance.mesh.material.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	meshInstance.position = pos
 	meshInstance.name = "deubgSphere"
 	node.call_deferred("add_child",meshInstance)
+	return meshInstance
 	#node.add_child(meshInstance)
 	
 
@@ -435,7 +506,7 @@ static func drawPath(node,arr):
 	var pathPar =  node.get_node_or_null("path")
 	
 	if pathPar == null:
-		pathPar = Spatial.new()
+		pathPar = Node3D.new()
 		pathPar.name = "path"
 		node.add_child(pathPar)
 		
@@ -458,7 +529,7 @@ static func drawForward(node):
 	var pathPar =  node.get_node_or_null("path")
 	 
 	if pathPar == null:
-		pathPar = Spatial.new()
+		pathPar = Node3D.new()
 		pathPar.name = "path"
 		node.add_child(pathPar)
 		
@@ -483,10 +554,10 @@ static func saveNodeAsScene(node,path = "res://dbg/"):
 	
 	if path.find(".tscn") != -1:
 	#	print("saving as:",path)
-		ResourceSaver.save(path,packedScene)
+		ResourceSaver.save(packedScene,path)
 	else:
 	#	print("saving as:",path+node.name+".tscn")
-		ResourceSaver.save(path+node.name+".tscn",packedScene)
+		ResourceSaver.save(packedScene,path+node.name+".tscn")
 
 static func recursiveOwn(node,newOwner):
 	
@@ -530,7 +601,6 @@ static func recurisveRemoveNotOfOwner(node,targetOwner):
 	if x != null:
 		x = nowner.name
 	
-	print(nom,",",x)
 	
 	if node.owner != targetOwner and node != targetOwner and node.owner != null:
 		node.get_parent().remove_child(node)
@@ -557,14 +627,14 @@ static func setCollisionShapeHeight(node,height):
 	var shapeClass =  node.shape.get_class()
 
 	
-	if shapeClass == "BoxShape":
+	if shapeClass == "BoxShape3D":
 		
 		if shape.extents.y !=  height/2.0:
 			shape.extents.y = height/2.0
 		return
 	
 	
-	elif shapeClass == "CylinderShape" or shapeClass == "CapsuleShape":
+	elif shapeClass == "CylinderShape3D" or shapeClass == "CapsuleShape3D":
 		shape.height = height
 		return
 	
@@ -579,14 +649,21 @@ static func getShapeHeight(node):
 	var shapeClass =  node.shape.get_class()
 
 	
-	if shapeClass == "BoxShape":
+	if shapeClass == "BoxShape3D":
 		return shape.extents.y * 2.0
 
 	
 	
-	if  shapeClass == "CylinderShape" or shapeClass == "CapsuleShape":
+	if  shapeClass == "CylinderShape3D" or shapeClass == "CapsuleShape3D":
 		return shape.height
 
+static func getCollisionShape(node : Node) -> CollisionShape3D:
+	for i : Node in node .get_children():
+		if i is CollisionShape3D:
+			return i
+	
+	return null
+	
 static func setShapeThickness(node : Node,radius : float) -> void:
 	
 	if node == null:
@@ -598,24 +675,50 @@ static func setShapeThickness(node : Node,radius : float) -> void:
 	var shape = node.shape
 	var shapeClass =  node.shape.get_class()
 	
-	if shapeClass == "BoxShape":
+	if shapeClass == "BoxShape3D":
 		shape.extents.z = radius
 		shape.extents.x = radius
 		
-	if shapeClass == "CylinderShape":
+	if shapeClass == "CylinderShape3D":
 		shape.radius = radius
+
+static func getShapeThickness(node: Node) -> float:
+	
+	var shape = node.shape
+	var shapeClass =  node.shape.get_class()
+	
+	if shapeClass == "BoxShape3D":
+		return shape.extents.z
 		
+		
+	if shapeClass == "CylinderShape3D":
+		return shape.radius
+	
+	return 0
+
+static func getCollisionShapeFootprint(node : Shape3D):
+	if node is BoxShape3D:
+		var hW = node.size.x / 2.0
+		var hH = node.size.z / 2.0
+		return [Vector2(-hW, -hH), Vector2(hW, -hH), Vector2(hW, hH), Vector2(-hW, hH)]
+		#return [Vector2(0, 0), Vector2(node.size.x, 0), Vector2(node.size.x, node.size.z), Vector2(0, node.size.z)]
+	else:
+		return []
+
 static func getCollisionShapeHeight(node : Node) -> float:
+	
+	if node == null:
+		return 0 
 	
 	var shape = node.shape
 	var shapeClass =  node.shape.get_class()
 
 	
-	if shapeClass == "BoxShape":
+	if shapeClass == "BoxShape3D":
 		return shape.extents.y * 2.0
 	
 	
-	elif shapeClass == "CylinderShape" or shapeClass == "CapsuleShape":
+	elif shapeClass == "CylinderShape3D" or shapeClass == "CapsuleShape3D":
 		return shape.height
 		
 	return 0.0
@@ -624,17 +727,19 @@ static func scaleCollisionShape(node,scale):
 	var shape = node.shape
 	var shapeClass =  node.shape.get_class()
 	
-	if shapeClass == "BoxShape":
+	if shapeClass == "BoxShape3D":
 		shape.extents*= scale
 	
 	
 
 static func yieldWait(tree,delay):
-	yield(tree.create_timer(delay),"timeout")
+	await tree.create_timer(delay).timeout
 
 
 
 static func indexCircular(arr,index):
+	if arr.size() == 0:
+		return 0
 	return (index + arr.size() + arr.size()) % arr.size()
 
 
@@ -682,13 +787,12 @@ static func getDirFromDic(input,target : String):
 
 static func allInDirectory(path,filter=null):
 	var files = []
-	var dir = Directory.new()
-	var res = dir.open(path)
+	var dir = DirAccess.open(path)
 	
-	if res != 0:
+	if dir == null:
 		return []
 		
-	dir.list_dir_begin()
+	dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
 	while true:
 		var file = dir.get_next()
@@ -741,18 +845,19 @@ static func getImportPath() -> String:
 	return "res://wadFiles"
 
 static func normalToDegree(normal : Vector3):
-	return rad2deg(normal.angle_to(Vector3.UP))
+	return rad_to_deg(normal.angle_to(Vector3.UP))
 
 static func createCastShapeForBody(node,target = Vector3.ZERO):
 
-
-	var cast = ShapeCast.new()
+	if node == null:
+		return
+	var cast = ShapeCast3D.new()
 	var collisionShape = null
 	
 	
-	cast.max_results = 10
+	cast.max_results =7
 	for i in node.get_children():
-		if i.get_class() == "CollisionShape":
+		if i.get_class() == "CollisionShape3D":
 			collisionShape = i
 			break
 			
@@ -761,9 +866,9 @@ static func createCastShapeForBody(node,target = Vector3.ZERO):
 	
 	
 	cast.shape = node.get_parent().mesh.create_convex_shape()
-	#cast.visible = true
-	#cast.debug_shape_custom_color = Color.palevioletred
-	cast.scale *= Vector3(0.8,1,0.8) 
+	
+#	cast.scale *= Vector3(0.8,1,0.8) why did i scale it down?
+	
 	cast.target_position = target
 	cast.enabled = false
 	node.add_child(cast)
@@ -772,11 +877,11 @@ static func createCastShapeForBody(node,target = Vector3.ZERO):
 
 
 
-static func getBoundingBox(vertices: PoolVector2Array) -> Rect2:
+static func getBoundingBox(vertices: PackedVector2Array) -> Rect2:
 	var minPoint = Vector2(INF, INF)
 	var maxPoint = Vector2(-INF, -INF)
 	
-	for vertex in vertices:
+	for vertex : Vector2 in vertices:
 		minPoint.x = min(minPoint.x, vertex.x)
 		minPoint.y = min(minPoint.y, vertex.y)
 		maxPoint.x = max(maxPoint.x, vertex.x)
@@ -784,21 +889,21 @@ static func getBoundingBox(vertices: PoolVector2Array) -> Rect2:
 	
 	return Rect2(minPoint, maxPoint - minPoint)
 
-static func findOverlappingCells(boundingBox: Rect2,bbIndex,gridSize : float = 20) -> Array:
-	var overlappingCells = []
+static func findOverlappingCells(boundingBox: Rect2,bbIndex,gridSize : float = 20) -> PackedVector2Array:
+	var overlappingCells : PackedVector2Array= []
 
-	var minCellX = int(floor(boundingBox.position.x / gridSize))
-	var minCellY = int(floor(boundingBox.position.y / gridSize))
-	var maxCellX = int(floor(boundingBox.end.x / gridSize))
-	var maxCellY = int(floor(boundingBox.end.y / gridSize))
+	var minCellX : int= int(floor(boundingBox.position.x / gridSize))
+	var minCellY : int= int(floor(boundingBox.position.y / gridSize))
+	var maxCellX : int= int(floor(boundingBox.end.x / gridSize))
+	var maxCellY : int= int(floor(boundingBox.end.y / gridSize))
 
-	for x in range(minCellX, maxCellX + 1):
-		for y in range(minCellY, maxCellY + 1):
+	for x : float in range(minCellX, maxCellX + 1):
+		for y : float in range(minCellY, maxCellY + 1):
 			overlappingCells.append(Vector2(x, y))
 
 	return overlappingCells
 	
-static func getBBsForCell(var grid : Dictionary,var position: Vector2,gridSize : float = 20) -> Array:
+static func getBBsForCell(grid : Dictionary, position: Vector2, gridSize : float = 20) -> Array:
 	var cellPos = Vector2(int(floor(position.x / gridSize)),int(floor(position.y / gridSize)))
 	
 	var relevantPolygons = []
@@ -808,11 +913,19 @@ static func getBBsForCell(var grid : Dictionary,var position: Vector2,gridSize :
 		
 	return relevantPolygons
 
+static func getSectorInfo(curMap : Node,sectorIndex : int):
+	var polyIdxToInfo = curMap.get_meta("polyIdxToInfo")
+		
+	return polyIdxToInfo[sectorIndex]
 
 static func getSectorInfoForPoint(curMap : Node,posXZ : Vector2):
 	
+	
+	if !curMap.has_meta("polyGrid"):
+		return
+	
 	var polyGrid = curMap.get_meta("polyGrid")
-	var sectorPolyArr = curMap.get_meta("sectorPolyArr")
+	var sectorPolyArr : Array = curMap.get_meta("sectorPolyArr")
 	var polyIdxToInfo = curMap.get_meta("polyIdxToInfo")
 	var bbArray = curMap.get_meta("polyBB")
 
@@ -824,60 +937,49 @@ static func getSectorInfoForPoint(curMap : Node,posXZ : Vector2):
 			
 	for bbIdx in cellBBS:
 		if bbArray[bbIdx].has_point(posXZ):
-			if Geometry.is_point_in_polygon(posXZ,sectorPolyArr[bbIdx]):
+
+			if Geometry2D.is_point_in_polygon(posXZ,sectorPolyArr[bbIdx]):
 				return  polyIdxToInfo[bbIdx]
 				
 	return null
 
 
-static func setTimeLog(var tree,var valName,var startTime):
-	if !tree.has_meta("timings"):
-		tree.set_meta("timings",{})
-	
-	
-	var dict = tree.get_meta("timings")
-	dict[valName] = OS.get_system_time_msecs() - startTime
-	tree.set_meta("timings",dict)
-	
-
-
-static func incTimeLog(tree,valName,startTime):
-	if !tree.has_meta("timings"):
-		tree.set_meta("timings",{})
-	
-	
-	
-	var dict = tree.get_meta("timings")
-	
-	if !dict.has(valName):
-		dict[valName] = 0
-		
-	
-	var curValue = dict[valName] + OS.get_system_time_msecs() - startTime
-	dict[valName] = curValue
-	
-	
-	tree.set_meta("timings",dict)
 
 	
-	#tree.get_root().set_meta(valName,value)
-static func getTimeData(tree):
-	if !tree.has_meta("timings"):
-		return {}
-		
-	return tree.get_meta("timings")
-	
-static func transformToRotDegrees(t : Transform):
+static func transformToRotDegrees(t : Transform3D):
 	return t.basis.get_euler() * (180.0 / PI)
 
 
-static func getDamageInfoFromSectorType(var type : int):
-	if type == 4:  return {"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"}
-	if type == 5:  return {"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"}
-	if type == 7:  return {"amt":2,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"}
-	if type == 11: return {"amt":10,"tickRateMS":500,"atHp":"nextLevel","graceMS":100,"everyNframe":55,"specific":"nukage","atHpAmt":20}
-	if type == 16: return {"amt":10,"tickRateMS":500,"graceMS":100,"everyNframe":55,"specific":"nukage"}
-	return null
+static func getDamageInfoFromSectorType2(dict : Dictionary) -> Dictionary:
+	
+	var amt : float = 0
+	var tickRateMS : = 0
+	var secret : bool = false
+	var elemental : Array[String] = []
+	
+	if !dict.has("dmg amt"):
+		if !dict.has("secret"):
+			return {}
+		else:
+			secret = dict["secret"]
+	else:
+		amt = dict["dmg amt"]
+		tickRateMS = dict["dmg tick"]*Engine.physics_ticks_per_second
+
+	var retDict : Dictionary = {"amt":amt,"everyNframe":tickRateMS}
+	if secret: elemental.append("secret")
+	if dict.has("elemental"): elemental.append(dict["elemental"])
+	
+	if !elemental.is_empty():
+		retDict["specific"] = elemental
+	
+	if dict.has("levelChangeHp"):
+		retDict["atHp"] = "nextLevel"
+		retDict["atHpAmt"] = dict["levelChangeHp"]
+		
+	 
+	return retDict
+
 
 static func printOwner(node,prefix=""):
 	var nodeOwner = "null"
@@ -890,9 +992,167 @@ static func printOwner(node,prefix=""):
 		printOwner(i,prefix+" ")
 
 static func doesFileExist(path : String) -> bool:
-	var f : File = File.new()
-	var ret = f.file_exists(path)
-	f.close()
+	#var f : File = File.new()
+	#var ret = f.file_exists(path)
+	#f.close()
+	return FileAccess.file_exists(path)
+
+
+static func test():
+	print("test")
+
+static func funcGetMergedSectorMeshInstance(geomNode : Node,sectorIdx : int) -> Array[MeshInstance3D]:
+	
+	var ret : Array[MeshInstance3D] = []
+	
+	for i in geomNode.get_children():
+		if i.has_meta("sectorIdx"):
+			if i.get_meta("sectorIdx") == sectorIdx:
+				if i.get_class() == "MeshInstance3D":
+					ret.append(i)
+
+					
 	return ret
 
+static func getSpritesAndFrames(stateData,textureList : Dictionary):
+	
+	var allLetters = getSpritesFromStates(stateData)
+	return findWhatSpritesExist(allLetters,textureList)
 
+static func getFlashSpritesAndFrames(stateData,textureList : Dictionary):
+	
+	var allLetters = getFlashSpritesFromStates(stateData)
+	return findWhatSpritesExist(allLetters,textureList)
+
+static func getSpritesFromStates(stateData):
+	var ret : Array[String] = []
+	
+	
+	
+	for i : Dictionary in stateData:
+		var spriteName : String = i["Sprite"]
+		if !spriteName.is_empty():
+			
+			var sprName = spriteName.substr(0,5)
+			if !ret.has(sprName):
+				ret.append(sprName)
+			
+	
+	return ret
+	
+static func getFlashSpritesFromStates(stateData):
+	var ret : Array[String] = []
+	
+	for i : Dictionary in stateData:
+		if !i.has("flashSprite"):
+			continue
+		var spriteName : String = i["flashSprite"]
+		
+
+		
+		if !spriteName.is_empty():
+			
+			var sprName = spriteName.substr(0,5)
+			if !ret.has(sprName):
+				ret.append(sprName)
+			
+	
+	return ret
+
+static func findWhatSpritesExist(spriteNames : Array[String],textureList : Dictionary):
+	var frames = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','[','\\',']']
+	var allFrames : Dictionary = {}
+	var potentials = [] 
+	var uniqueSprites = []
+	
+	var numToDir = {
+	"0": "All",
+	"1": "S",
+	"2": "SW",
+	"3": "W",
+	"4": "NW",
+	"5": "N",
+	"6": "NE",
+	"7": "East",
+	"8": "SE"
+	}
+
+	
+	for i in textureList:
+		for j in spriteNames:
+			if i.find(j) != -1:
+				potentials.append(i)
+	
+	for i : String in potentials:
+		if i.length()<6 or i.length() > 8:
+			continue 
+		
+		#if i.length()>?
+			#continue
+		
+		var sprName : String = i.substr(0,4)
+		var frame : String = i[4]
+		var angle : String = i[5]
+		
+		
+		if !numToDir.has(angle):
+			continue
+		
+		#if frame.has(frame):
+			#continue
+		if !allFrames.has(frame):
+			allFrames[frame] = {}
+		var hack = false
+		
+		if i.length() < 8:
+			uniqueSprites.append(sprName + frame + angle)
+			
+			if !allFrames[frame].is_empty():#hack for cases such as plasma gun which has 2 A frames but with different sprites
+				if allFrames[frame].has(numToDir[angle]):
+					allFrames[frame + "2"] = {}
+					allFrames[frame + "2"]["All"] = sprName + frame + "0"
+					continue
+				
+			
+			allFrames[frame][numToDir[angle]] = sprName + frame + angle
+			continue
+			
+		var frame2 : String = i[6]
+		var angle2 : String = i[7]
+		
+		
+		if !numToDir.has(angle2):
+			continue
+		
+		uniqueSprites.append(sprName + frame + angle + frame2 +angle2)
+		uniqueSprites.append(sprName + frame + angle + frame2 +angle2 + "_flipped")
+
+		
+		
+		if !allFrames.has(frame2):
+			allFrames[frame2] = {}
+		
+
+		allFrames[frame][numToDir[angle]] = sprName + frame + angle + frame2 +angle2
+		allFrames[frame2][numToDir[angle2]] = sprName + frame + angle + frame2 +angle2 + "_flipped"
+
+		
+	
+	
+	for frame in allFrames:
+		var unordered = allFrames[frame]
+		var ordered = {}
+		
+		for i in numToDir.values():
+			if unordered.has(i):
+				ordered[i] = unordered[i]
+			else:
+				ordered[i] = null
+			
+		allFrames[frame] = ordered
+		
+
+	
+ 
+		
+	return {"sprites":uniqueSprites,"frames":allFrames}

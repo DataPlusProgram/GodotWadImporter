@@ -1,11 +1,11 @@
-tool
+@tool
 extends HTTPRequest
 signal gotImage
 
 var imageType = ""
 
 func _ready():
-	connect("request_completed", self, "_http_request_completed")
+	connect("request_completed", Callable(self, "_http_request_completed"))
 
 
 func fetch(url):
@@ -24,6 +24,8 @@ func _http_request_completed(result, response_code, headers, body):
 	if imageType == "jpg": image_error =image.load_jpg_from_buffer(body)
 	if imageType == "bmp": image_error =image.load_bmp_from_buffer(body)
 	if imageType == "tga": image_error =image.load_tga_from_buffer(body)
+	if imageType == "svg": image_error =image.load_svg_from_buffer(body)
+	if imageType == "webp": image_error =image.load_webp_from_buffer(body)
 	
 	
 	#if imageType == "webp":  image_error =image.load_webp_from_buffer(body)
@@ -32,6 +34,6 @@ func _http_request_completed(result, response_code, headers, body):
 		print("An error occurred while trying to display the image.")
 
 	var textureImg = ImageTexture.new()
-	textureImg.create_from_image(image)
+	textureImg = textureImg.create_from_image(image)
 	emit_signal("gotImage",textureImg)
 	

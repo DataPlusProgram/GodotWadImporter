@@ -1,4 +1,4 @@
-extends Area
+extends Area3D
 
 
 # Declare member variables here. Examples:

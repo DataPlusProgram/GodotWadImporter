@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://drec6u55x8u8p"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_bph50"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_el3cg"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_uhhbv"]
+size = Vector2(1.271, 1.767)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_orrcu"]
+size = Vector3(1, 1, 1.52624)
+
+[node name="stateGun" instance=ExtResource("1_bph50")]
+weaponName = "chainsaw"
+magSize = -1
+stateResPath = "res://addons/godotWad/resources/chainsawStates.tres"
+shootStateID = 2
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_el3cg")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_uhhbv")
+
+[node name="AudioStreamPlayer3D" parent="." index="3"]
+max_db = -1.0
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["SAWGA0", "SAWGB0", "SAWGC0", "SAWGD0"])
+worldSprite = "CSAWA0"
+fireSounds = Array[String](["DSSAWFUL"])
+impactSound = "DSSAWHIT"
+wallHitSprite = []
+
+[node name="Area3D" type="Area3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.769)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0128851)
+shape = SubResource("BoxShape3D_orrcu")

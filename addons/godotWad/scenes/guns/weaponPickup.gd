@@ -1,18 +1,18 @@
 #tool
-extends RigidBody
+extends Node3D
 
-export(String) var pickupEntityStr = ""
-export(String) var pickupEntityPath = ""
-export(AudioStreamSample) var pickupSound
+@export var pickupEntityStr: String = ""
+@export var pickupEntityPath: String = ""
+@export var pickupSound: AudioStreamWAV
 
-export(String) var pickupSoundName = "DSSGCOCK"
+@export var pickupSoundName: String = "DSSGCOCK"
 var weaponNode
 
 func _ready():
-	if Engine.editor_hint: 
+	if Engine.is_editor_hint(): 
 		return
 	
-	$Area.connect("body_entered",self,"bodyIn")
+	$Area3D.connect("body_entered", Callable(self, "bodyIn"))
 
 
 func bodyIn(body):
@@ -43,4 +43,3 @@ func addToNode(targetNode,toAdd):
 	
 	remove_child(toAdd)
 	targetNode.add_child(toAdd)
-

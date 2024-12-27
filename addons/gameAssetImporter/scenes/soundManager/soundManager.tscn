@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cf0kxe40frncs"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/soundManager/soundManager.gd" id="1_4varg"]
+
+[node name="SoundManager" type="Node3D"]
+process_physics_priority = 9999
+script = ExtResource("1_4varg")

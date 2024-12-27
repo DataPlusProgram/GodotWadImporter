@@ -1,4 +1,4 @@
-extends Area
+extends Node
 
 
 var targetNpc = ""

@@ -1,41 +1,51 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://d0iu7yuw0nhrk"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc_template.tscn" type="PackedScene" id=1]
-[ext_resource path="res://addons/godotWad/scenes/enemies/templates/sprites/hellKnightSprites.tres" type="Resource" id=2]
+[ext_resource type="PackedScene" uid="uid://dhxyaai4rce5r" path="res://addons/godotWad/scenes/enemies/npc_template.tscn" id="1"]
+[ext_resource type="Resource" uid="uid://p0hmfslf0pem" path="res://addons/godotWad/scenes/enemies/templates/sprites/hellKnightSprites.tres" id="2"]
 
-[sub_resource type="QuadMesh" id=2]
-size = Vector2( 1.271, 2.263 )
+[sub_resource type="QuadMesh" id="QuadMesh_4fcof"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 24, 32, 24 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(48, 64, 48)
 
-[node name="hellKnight" instance=ExtResource( 1 )]
+[node name="hellKnight" instance=ExtResource("1")]
 initialHP = 500.0
+npcName = "HellKnight"
 height = 64.0
 thickness = 24.0
+mass = 1000.0
+meleeDamage = 40.0
 painTimeMS = 0.309
+stateDataPath = "res://addons/godotWad/resources/monsterStates/baronOfHellStates.tres"
 painChance = 0.168
 
 [node name="AnimatedSprite3D" parent="." index="0"]
-mesh = SubResource( 2 )
+mesh = SubResource("QuadMesh_4fcof")
 
-[node name="CollisionShape" parent="." index="3"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0 )
-shape = SubResource( 1 )
+[node name="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32, 0)
+shape = SubResource("1")
 
 [node name="cast" parent="." index="4"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51.2, 0 )
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 51.2, 0)
 
 [node name="Generator" parent="." index="7"]
-sprites = ExtResource( 2 )
+sprites = ExtResource("2")
 idle = "AB"
 chase = "ABCD"
 attack = "EFG"
 melee = "EFG"
 hurt = "H"
 dying = "IJKLMNO"
+deathSounds = ["DSKNTDTH"]
+painSounds = ["DSDMPAIN"]
+attackSounds = ["DSKNTSIT"]
+meleeSounds = ["DSCLAW"]
+alertSounds = ["DSKNTSIT"]
+searchSounds = Array[StringName]([&"DSDMACT"])
+entityDepends = ["greenFireBall"]
 
-[node name="VisibilityNotifier" parent="." index="9"]
-aabb = AABB( -1, 0, -1, 2, 64, 2 )
+[node name="VisibleOnScreenNotifier3D" parent="." index="8"]
+aabb = AABB(-1, 0, -1, 2, 64, 2)
 
 [editable path="AnimatedSprite3D"]

@@ -1,213 +1,176 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://c2ghunf5b5s4q"]
 
-[ext_resource path="res://addons/godotWad/scenes/player/viewportLabel.tscn" type="PackedScene" id=1]
-[ext_resource path="res://addons/godotWad/scenes/player/head.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/scenes/guns/icon.png" type="Texture" id=4]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/head.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cl15uxs12aiar" path="res://addons/godotWad/scenes/guns/icon.png" id="4"]
+[ext_resource type="PackedScene" uid="uid://doas350f5b056" path="res://addons/godotWad/scenes/player/scenes/resizableText/resizableText.tscn" id="4_qpf8c"]
 
 [node name="HUD2" type="Control"]
-anchor_left = 0.026
-anchor_top = 0.862
-anchor_right = 0.999906
-anchor_bottom = 0.999667
-margin_left = -26.624
-margin_top = -1.20001
-margin_right = 0.0959473
-margin_bottom = 0.200012
+layout_mode = 3
+anchor_left = 0.012
+anchor_top = 0.86
+anchor_right = 0.999
+anchor_bottom = 1.0
+offset_left = 0.176
+offset_top = -0.280029
+offset_right = 0.151855
 size_flags_horizontal = 3
 size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": true
-}
 
 [node name="v" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
 anchor_left = 0.0263672
-anchor_top = -0.0963855
-anchor_right = 0.266101
+anchor_top = -0.419
+anchor_right = 0.305
 anchor_bottom = 0.879482
-margin_right = -0.487305
-margin_bottom = 0.00299072
-custom_constants/separation = 21
-__meta__ = {
-"_edit_use_anchors_": true
-}
+offset_left = -24.2869
+offset_top = 1.96484
+offset_right = -24.3412
+offset_bottom = 2.31171
+theme_override_constants/separation = 21
 
 [node name="head" type="TextureRect" parent="v"]
-margin_right = 61.0
-margin_bottom = 81.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-expand = true
-script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": true
-}
+expand_mode = 1
+script = ExtResource("2")
 
 [node name="h" type="VBoxContainer" parent="v"]
-margin_left = 82.0
-margin_right = 162.0
-margin_bottom = 81.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.29
 
-[node name="armor" parent="v/h" instance=ExtResource( 1 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 80.0
-margin_bottom = 38.0
-size_flags_horizontal = 3
+[node name="armor" parent="v/h" instance=ExtResource("4_qpf8c")]
+layout_mode = 2
 size_flags_vertical = 3
+scaleFactor = Vector2(1, 2)
 
-[node name="Control" parent="v/h/armor" index="0"]
-size = Vector2( 80, 38 )
+[node name="Label" parent="v/h/armor" index="0"]
+offset_top = 2.0
+offset_right = 39.0
+offset_bottom = 26.0
+scale = Vector2(2.74359, 4.75)
+text = "100"
+horizontal_alignment = 2
 
-[node name="Camera2D" parent="v/h/armor/Control" index="1"]
-zoom = Vector2( 0.4875, 0.421053 )
-
-[node name="hp" parent="v/h" instance=ExtResource( 1 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_top = 42.0
-margin_right = 80.0
-margin_bottom = 81.0
-size_flags_horizontal = 3
+[node name="hp" parent="v/h" instance=ExtResource("4_qpf8c")]
+layout_mode = 2
 size_flags_vertical = 3
+scaleFactor = Vector2(1, 2)
 
-[node name="Control" parent="v/h/hp" index="0"]
-size = Vector2( 80, 39 )
-
-[node name="Camera2D" parent="v/h/hp/Control" index="1"]
-zoom = Vector2( 0.4875, 0.410256 )
+[node name="Label" parent="v/h/hp" index="0"]
+offset_top = 2.0
+offset_right = 39.0
+offset_bottom = 26.0
+scale = Vector2(2.74359, 4.75)
+text = "100"
+horizontal_alignment = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="v"]
-margin_left = 183.0
-margin_right = 245.0
-margin_bottom = 81.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Control" type="Control" parent="v/VBoxContainer"]
-margin_right = 62.0
-margin_bottom = 35.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="keys" type="GridContainer" parent="v/VBoxContainer"]
-margin_top = 39.0
-margin_right = 62.0
-margin_bottom = 81.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 3
 
 [node name="skullB" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_right = 18.0
-margin_bottom = 18.0
-rect_min_size = Vector2( 0, 18 )
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
 size_flags_horizontal = 3
-expand = true
+expand_mode = 1
 
 [node name="skullY" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_left = 22.0
-margin_right = 40.0
-margin_bottom = 18.0
+layout_mode = 2
 size_flags_horizontal = 3
-expand = true
+expand_mode = 1
 
 [node name="skullR" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_left = 44.0
-margin_right = 62.0
-margin_bottom = 18.0
+layout_mode = 2
 size_flags_horizontal = 3
-expand = true
+expand_mode = 1
 
 [node name="keyB" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_top = 22.0
-margin_right = 18.0
-margin_bottom = 42.0
-rect_min_size = Vector2( 0, 20 )
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-expand = true
+expand_mode = 1
 
 [node name="keyY" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_left = 22.0
-margin_top = 22.0
-margin_right = 40.0
-margin_bottom = 42.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-expand = true
+expand_mode = 1
 
 [node name="keyR" type="TextureRect" parent="v/VBoxContainer/keys"]
-margin_left = 44.0
-margin_top = 22.0
-margin_right = 62.0
-margin_bottom = 42.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-expand = true
+expand_mode = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
-anchor_left = 0.787608
-anchor_top = 0.409494
-anchor_right = 0.961659
-anchor_bottom = 0.891373
-margin_left = 0.489929
-margin_top = 0.0120049
-margin_right = 0.261719
-margin_bottom = 0.0160294
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.781096
+anchor_top = 0.263978
+anchor_right = 0.971096
+anchor_bottom = 0.915978
+offset_left = -0.106018
+offset_top = -0.0220013
+offset_right = 1.86401
+offset_bottom = -2.354
 size_flags_vertical = 3
-custom_constants/separation = 19
-__meta__ = {
-"_edit_use_anchors_": true
-}
+theme_override_constants/separation = -11
+metadata/_edit_use_anchors_ = true
 
 [node name="weaponIcon" type="TextureRect" parent="HBoxContainer"]
-margin_right = 54.0
-margin_bottom = 40.0
+layout_mode = 2
 size_flags_horizontal = 3
-texture = ExtResource( 4 )
-expand = true
-stretch_mode = 6
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
 flip_h = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 73.0
-margin_right = 177.0
-margin_bottom = 40.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.88
+size_flags_stretch_ratio = 0.65
 
 [node name="Control" type="Control" parent="HBoxContainer/VBoxContainer"]
 visible = false
-margin_right = 69.0
-margin_bottom = 39.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ammo" parent="HBoxContainer/VBoxContainer" instance=ExtResource( 1 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 104.0
-margin_bottom = 40.0
-size_flags_horizontal = 3
+[node name="ammo" parent="HBoxContainer/VBoxContainer" instance=ExtResource("4_qpf8c")]
+layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.54
+scaleFactor = Vector2(1, 2)
 
-[node name="Control" parent="HBoxContainer/VBoxContainer/ammo" index="0"]
-size = Vector2( 104, 40 )
-
-[node name="Camera2D" parent="HBoxContainer/VBoxContainer/ammo/Control" index="1"]
-offset = Vector2( 1, 0 )
-zoom = Vector2( 0.375, 0.4 )
+[node name="Label" parent="HBoxContainer/VBoxContainer/ammo" index="0"]
+offset_top = -2.0
+offset_right = 39.0
+offset_bottom = 22.0
+scale = Vector2(2.33333, 4.75)
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Control2" type="Control" parent="HBoxContainer/VBoxContainer"]
 visible = false
-margin_top = 31.0
-margin_right = 69.0
-margin_bottom = 76.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [editable path="v/h/armor"]

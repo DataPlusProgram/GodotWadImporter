@@ -1,11 +1,11 @@
-tool
+@tool
 extends Resource
 class_name matFrames
 
-export(int) var frame
+@export var frame: int
 
-export(Dictionary) var frames = {}
-export var test : String = "erw"
+@export var frames: Dictionary = {}
+@export var test : String = "erw"
 	
 func get_frame(animName,frame):
 	if !frames.has(animName):
@@ -16,9 +16,9 @@ func get_frame(animName,frame):
 func has_animation(animName) -> bool:
 	return frames.has(animName)
 	
-func add_animation(animName) -> void:
+func add_animation_library(animName) -> void:
 	if !frames.has(animName):
 		frames[animName] = []
 			
-func add_frame(anim : String,frame : Texture,position:int):
+func add_frame(anim : String,frame : Texture2D,position:int):
 	frames[anim].insert(position,frame)

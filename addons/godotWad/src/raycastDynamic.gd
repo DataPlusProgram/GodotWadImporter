@@ -1,36 +1,39 @@
-extends RayCast
+extends RayCast3D
 
 
-var maxLength = 1000
-var pColPoint = null
-var stopperGroup = "player"
+var maxLength : float= 1000
+var pColPoint  = null
+var stopperGroup : StringName= &"player" 
 
-var targetNode  = null
-var curLen = 100
-var pRot = 0
-var pMe = Vector3.ZERO
-var pTarget = Vector3.ZERO
-var pDiff = Vector3.ZERO
+var targetNode : Node = null :  set = targetSet
+var curLen : float= 100
+var pRot : float= 0
+var pMe : Vector3= Vector3.ZERO
+var pTarget :Vector3= Vector3.ZERO
+var pDiff : Vector3= Vector3.ZERO
 
-func _physics_process(delta):
-	
-	
+@onready var parent : Node3D = get_parent()
+
+signal physicsFrameSignal
+
+
+
+func _physics_process(delta: float) -> void:
 	
 	if targetNode != null:
 		if is_instance_valid(targetNode):
-			if pRot != -get_parent().rotation.y:#if we have rotated since last frame adjust
-				rotation.y = -get_parent().rotation.y
+			if pRot != -parent.rotation.y:#if we have rotated since last frame adjust
+				rotation.y = -parent.rotation.y
 		
-			pRot = -get_parent().rotation.y
+			pRot = -parent.rotation.y
 			
 			towardsTarget()
-		
-		
-		
+
 		if enabled == false:
 			enabled = true
 	else:
-		enabled = false
+		
+		emit_signal("physicsFrameSignal")
 		return
 	
 	
@@ -45,35 +48,57 @@ func _physics_process(delta):
 	if pColPoint == null or colPoint.distance_squared_to(pColPoint) > 0.1:#if we didn't collide with something last frame or the distance between the last two collision is > 0.1
 		
 		if get_collider() != null:
-			if get_collider().get_class() == "KinematicBody" and !get_collider().is_in_group(stopperGroup):
+			if get_collider().get_class() == "CharacterBody3D" and !get_collider().is_in_group(stopperGroup) and get_collider() != targetNode:
 				add_exception(get_collider())
 			else:
-				curLen = (global_translation- get_collision_point()).length()*1.01
+				curLen = (global_position- get_collision_point()).length()*1.01
 
 	if get_collider() != null:
-		curLen = (global_translation- get_collision_point()).length()*1.01
+		curLen = (global_position- get_collision_point()).length()*1.01
+		
+	
+	emit_signal("physicsFrameSignal")
 
-func towardsTarget():
-	var diff = pDiff
+func towardsTarget() -> void:
+	var diff : Vector3 = pDiff
 	
-	diff = global_translation - targetNode.global_translation
+	if is_inside_tree() and targetNode.is_inside_tree():
+		diff = global_position - targetNode.global_position
+	else:
+		diff = position - targetNode.position
 	
-	var h = 0
+	var h : float = 0
 	
 	if "height" in targetNode:
 		h = targetNode.height
 	
 	diff.y -= h*0.9
 	
-	pMe =global_translation
-	pTarget = targetNode.global_translation
+	pMe =global_position
 	
-	var toCast = diff.normalized()*-curLen
+	if targetNode.is_inside_tree():
+		pTarget = targetNode.global_position
+	else:
+		pTarget = targetNode.position
+		
+
+	var toCast : Vector3 = diff.normalized()*-curLen
 	
 	
-	if toCast != cast_to:
-		if cast_to != toCast:#*-curLen:
-			cast_to = toCast#*-curLen
+	if toCast != target_position:
+		if target_position != toCast:#*-curLen:
+			target_position = toCast#*-curLen
 			
 			
+	
+func targetSet(target):
+	if targetNode == target:
+		return
+	
+	if target is CollisionObject3D:
+		remove_exception(target)
+	
+	
+	targetNode = target
+
 	

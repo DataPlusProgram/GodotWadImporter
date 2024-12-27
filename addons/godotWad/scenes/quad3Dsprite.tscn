@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://br07pau6iijsu"]
 
-[ext_resource path="res://addons/godotWad/scenes/quad3Dsprite.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/quad3Dsprite.gd" id="1"]
 
-[sub_resource type="QuadMesh" id=1]
-size = Vector2( 1.271, 1.767 )
+[sub_resource type="QuadMesh" id="QuadMesh_w78t2"]
 
-[node name="quad3Dsprite" type="MeshInstance"]
-mesh = SubResource( 1 )
-script = ExtResource( 1 )
+[node name="quad3Dsprite" type="MeshInstance3D"]
+custom_aabb = AABB(0, 0, 0, 5, 5, 0)
+mesh = SubResource("QuadMesh_w78t2")
+script = ExtResource("1")

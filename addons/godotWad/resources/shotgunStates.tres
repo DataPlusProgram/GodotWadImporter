@@ -1,0 +1,137 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://bqv0uhfhrssdu"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_1r4w6"]
+
+[resource]
+script = ExtResource("1_1r4w6")
+data = {
+"0": {
+"": "",
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Sprite": "SHTGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 2,
+"Sprite": "SHTGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"": "",
+"Dur": 7,
+"Frame": "A",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"Sprite": "SHTGA",
+"flashFrame": "A",
+"flashSprite": "SHTFA0"
+},
+"3": {
+"": "",
+"Dur": 5,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 4,
+"Sprite": "SHTGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"4": {
+"": "",
+"Dur": 5,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 5,
+"Sprite": "SHTGC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"5": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "",
+"Lit": "",
+"Next": 6,
+"Sprite": "SHTGD",
+"flashFrame": "",
+"flashSprite": ""
+},
+"6": {
+"": "",
+"Dur": 5,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 7,
+"Sprite": "SHTGC",
+"flashFrame": "",
+"flashSprite": ""
+},
+"7": {
+"": "",
+"Dur": 5,
+"Frame": "B",
+"Function": "",
+"Lit": "",
+"Next": 8,
+"Sprite": "SHTGB",
+"flashFrame": "",
+"flashSprite": ""
+},
+"8": {
+"": "",
+"Dur": 3,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 9,
+"Sprite": "SHTGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"9": {
+"": "",
+"Dur": 7,
+"Frame": "A",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"Sprite": "SHTGA",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "flashSprite", "flashFrame", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+"sheetWidth": 2690.0,
+"splitSize": {
+0: 64,
+1: 0,
+2: 0,
+3: 98,
+4: 175,
+5: 115,
+6: 115,
+7: 148,
+8: 0
+}
+}
+}

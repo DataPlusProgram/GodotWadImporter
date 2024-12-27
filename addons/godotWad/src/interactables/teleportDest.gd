@@ -1,17 +1,17 @@
 
-extends Spatial
+extends Node3D
 
 
-var cast : RayCast = null
-
+var cast : RayCast3D = null
+var damageArea : Area3D = null
 
 func _ready():
-	
-	cast = RayCast.new()
-	cast.cast_to.y = -100
-	cast.translation.y += 0.01
+	add_to_group("teelportDest")
+	cast = RayCast3D.new()
+	cast.target_position.y = -100
+	cast.position.y += 0.01
 	cast.enabled = false
-	
+	cast.hit_back_faces = false
 	add_child(cast)
 	
 	#var n = Sprite3D.new()
@@ -22,9 +22,19 @@ func _ready():
 	
 	getSectorInfoFromPolyInfo($"../../")
 	
+	damageArea = Area3D.new()
+	var col : CollisionShape3D = CollisionShape3D.new()
+	var shape : BoxShape3D = BoxShape3D.new()
+	
+	shape.size = Vector3(1,3,1)
+	damageArea.position.y = 3/2.0
+	col.shape = shape
+	
+	damageArea.add_child(col)
+	add_child(damageArea)
 	
 	for i in get_children():
-		if i.get_class() == "RayCast":
+		if i.get_class() == &"RayCast3D":
 			cast = i
 			return
 
@@ -32,7 +42,7 @@ func _ready():
 
 func getSectorInfoFromPolyInfo(mapNode):
 	
-	var info = WADG.getSectorInfoForPoint(mapNode,Vector2(translation.x,translation.z))
+	var info = WADG.getSectorInfoForPoint(mapNode,Vector2(position.x,position.z))
 	
 	if info == null:
 		return
@@ -41,8 +51,9 @@ func getSectorInfoFromPolyInfo(mapNode):
 
 
 func _physics_process(delta):
+	
 	if cast == null:
 		return
 		
-	#if(cast.is_colliding()):
-	#	global_translation.y = cast.get_collision_point().y
+	if(cast.is_colliding()):
+		global_position.y = cast.get_collision_point().y

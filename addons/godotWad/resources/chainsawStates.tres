@@ -1,0 +1,82 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://dl5cywa00624t"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_a4w4q"]
+
+[resource]
+script = ExtResource("1_a4w4q")
+data = {
+"0": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "",
+"Lit": "",
+"Next": 1,
+"PostFunction": "",
+"Sprite": "SAWGC",
+"flashFrame": ""
+},
+"1": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "SAWGD",
+"flashFrame": ""
+},
+"2": {
+"": "",
+"Dur": 4,
+"Frame": "A",
+"Function": "shootState",
+"Lit": "",
+"Next": 3,
+"PostFunction": "",
+"Sprite": "SAWGA",
+"flashFrame": ""
+},
+"3": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "shootState",
+"Lit": "",
+"Next": 4,
+"PostFunction": "",
+"Sprite": "SAWGB",
+"flashFrame": ""
+},
+"4": {
+"": "",
+"Dur": 0,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"PostFunction": "",
+"Sprite": "SAWGB",
+"flashFrame": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "PostFunction", "flashFrame", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4"],
+"sheetWidth": 2321.0,
+"splitSize": {
+0: 65,
+1: 64,
+2: 0,
+3: 98,
+4: 508,
+5: 115,
+6: 108,
+7: 0,
+8: 0
+}
+}
+}

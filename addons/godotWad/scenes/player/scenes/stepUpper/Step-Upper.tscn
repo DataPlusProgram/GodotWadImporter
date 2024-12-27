@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/godotWad/scenes/player/StepUpper.gd" type="Script" id=1]
+[ext_resource path="res://addons/godotWad/scenes/player/tool_dummy_script.gd" type="Script" id=2]
+
+[node name="Step-Upper" type="Node3D"]
+script = ExtResource( 1 )
+height = 32.0
+
+[node name="mid" type="Node3D" parent="."]
+
+[node name="low" type="RayCast3D" parent="mid"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 0.898039, 0.898039, 0.898039, 1 )
+debug_shape_thickness = 5
+
+[node name="high" type="RayCast3D" parent="mid"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 1, 1, 1, 1 )
+debug_shape_thickness = 5
+script = ExtResource( 2 )
+
+[node name="diff" type="RayCast3D" parent="mid"]
+enabled = true
+target_position = Vector3( 0, 1, 0 )
+debug_shape_custom_color = Color( 0.235294, 0.235294, 0.235294, 1 )
+script = ExtResource( 2 )
+
+[node name="left" type="Node3D" parent="."]
+transform = Transform3D( 0.819152, 0, 0.573577, 0, 1, 0, -0.573577, 0, 0.819152, 0, 0, 0 )
+
+[node name="low" type="RayCast3D" parent="left"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 0.898039, 0.898039, 0.898039, 1 )
+debug_shape_thickness = 5
+
+[node name="high" type="RayCast3D" parent="left"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 1, 1, 1, 1 )
+debug_shape_thickness = 5
+script = ExtResource( 2 )
+
+[node name="diff" type="RayCast3D" parent="left"]
+enabled = true
+target_position = Vector3( 0, 1, 0 )
+debug_shape_custom_color = Color( 0.235294, 0.235294, 0.235294, 1 )
+script = ExtResource( 2 )
+
+[node name="right" type="Node3D" parent="."]
+transform = Transform3D( 0.819152, 0, -0.573577, 0, 1, 0, 0.573577, 0, 0.819152, 0, 0, 0 )
+
+[node name="low" type="RayCast3D" parent="right"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 0.898039, 0.898039, 0.898039, 1 )
+debug_shape_thickness = 5
+
+[node name="high" type="RayCast3D" parent="right"]
+enabled = true
+target_position = Vector3( 0, 0, -1 )
+debug_shape_custom_color = Color( 1, 1, 1, 1 )
+debug_shape_thickness = 5
+script = ExtResource( 2 )
+
+[node name="diff" type="RayCast3D" parent="right"]
+enabled = true
+target_position = Vector3( 0, 1, 0 )
+debug_shape_custom_color = Color( 0.235294, 0.235294, 0.235294, 1 )
+script = ExtResource( 2 )

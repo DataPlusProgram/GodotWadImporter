@@ -15,7 +15,7 @@ static func saveNodeAsScene(node,path = "res://dbg/"):
 		ResourceSaver.save(path,packedScene)
 	else:
 		#print("saving as:",path+node.name+".tscn")
-		ResourceSaver.save(path+node.name+".tscn",packedScene)
+		ResourceSaver.save(packedScene,path+node.name+".tscn")
 		
 		
 static func recursiveOwn(node,newOwner):

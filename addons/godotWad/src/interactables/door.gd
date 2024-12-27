@@ -1,4 +1,5 @@
-extends Spatial
+@tool
+extends Node3D
 
 
 enum DIR{
@@ -13,90 +14,101 @@ enum STATE{
 	CLOSING
 }
 
-export(int) var type
-var active = false
-export var speed = 2
-export(DIR) var direction
+@export var type: int
+var active = true
+@export var speed = 2
+@export var direction: DIR
 var state 
-var cast : ShapeCast = null
+var cast : ShapeCast3D = null
 var animTextures = []
-export(String) var floorPath
-export(WADG.TTYPE) var triggerType
-export(String) var animMeshPath = ""
-export(Array) var targets = []
-export(Dictionary) var sectorInfo = {}
-export(float) var globalScale = 0.05
-export(bool) var stayOpen = false
-export(String) var keyType = 9
-
+@export var floorPath: String
+@export var triggerType : WADG.TTYPE
+@export var animMeshPath: Array= []
+@export var targets: Array = []
+@export var sectorInfo: Dictionary = {}
+@export var globalScale: Vector3 = Vector3(0.05,0.05,0.05)
+@export var stayOpen: bool = false
+@export var keyType: int = 9
+@onready var parent : Node = get_parent()
 
 var topH;
 var bottomH;
 var switchCooldown = 0
 var ceiling = null
 var floorNode = null
-export(int) var waitClose = -1
-export(int) var waitOpen = -1
+var openTimeoutTimer : SceneTreeTimer= null
+var closeTimeoutTimer: SceneTreeTimer= null
+var areasDisabled = false
+@export var waitClose: int = -1
+@export var waitOpen: int = -1
 
-
+var areasDisbaled = false
 var overlappingBodies = []
 var overlappingBodiesActivated = []
+var walkOverBodies = []
 var targetNodes = []
 var curH : float = 0
 var nodeInitial = []
 var yInitial = 0
+@onready var isEditor = Engine.is_editor_hint()
 func _ready():
 	
+	if isEditor:
+		return
 	
-	if !get_parent().has_meta("curH"):
-		get_parent().set_meta("curH",0)
+	add_to_group("levelObject",true)
 	
-	speed *= globalScale.y
-	get_parent().set_meta("curH",sectorInfo["ceilingHeight"]) 
+	if !parent.has_meta("curH"):
+		parent.set_meta("curH",0)
+	
+	speed *= globalScale.y * 60
+	parent.set_meta("curH",sectorInfo["ceilingHeight"]) 
 
-	topH = sectorInfo["lowestNeighCeilExc"] - 4*globalScale.y
+	topH = sectorInfo["lowestNeighCeilExc"] #- 4*globalScale.y
 	bottomH = sectorInfo["floorHeight"] 
 	yInitial = sectorInfo["ceilingHeight"]
 		
 
 	for t in targets:
-		var mapNode = get_parent().get_parent().get_parent()
+		var mapNode = parent.get_parent().get_parent()
 		var node = mapNode.get_node(t)
 		
 			
 		if node.has_meta("ceil"): 
-			if node.get_class() != "StaticBody":
+			if node.get_class() != "StaticBody3D":
 				ceiling = node
 				targetNodes.append(node)
-				nodeInitial.append(node.translation)
+				nodeInitial.append(node.position)
 			
 			
 		elif node.has_meta("type"):
 			if node.get_meta("type") == "upper": 
 				targetNodes.append(node)
-				nodeInitial.append(node.translation)
+				nodeInitial.append(node.position)
 				
 	
 	
 	animTextures = $"../../../".getAnimTextures(self,animMeshPath)
 	
-	var mapNode = get_parent().get_parent().get_parent()
+	var mapNode =parent.get_parent().get_parent()
 
 	if ceiling != null:
-		var s = OS.get_system_time_msecs()
-		cast = WADG.createCastShapeForBody(ceiling.get_child(0),-Vector3(0,0.1,0))
-		WADG.incTimeLog(get_tree(),"castShapes",s)
+		var s = Time.get_ticks_msec()
+		if ceiling.get_child_count() > 0:
+			cast = WADG.createCastShapeForBody(ceiling.get_child(0),-Vector3(0,0.1,0))
+			SETTINGS.incTimeLog(get_tree(),"castShapes",s)
 	
-	if direction == WADG.DIR.UP: state = STATE.CLOSED
-	if direction == WADG.DIR.DOWN: state = STATE.OPEN
+	if direction == WADG.DIR.UP: 
+		state = STATE.CLOSED
+	if direction == WADG.DIR.DOWN: 
+		state = STATE.OPEN
 
-
-
-
+	
+	
 	
 
 func bin(body):
-	if body.get_class() == "StaticBody": return
+	if body.get_class() == "StaticBody3D": return
 	
 	
 	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
@@ -110,9 +122,26 @@ func bout(body):
 	
 	if overlappingBodies.has(body):
 		overlappingBodies.erase(body)
-		overlappingBodiesActivated.erase(body)
+	#	overlappingBodiesActivated.erase(body)
+
+func closeTimeOut():
+	state = STATE.CLOSING
+	active = true
+	playClosed()
+		
+func openTimeOut():
+	state = STATE.OPENING
+	active = true
+	playOpen()
 
 func _physics_process(delta):
+		
+	
+	if isEditor:
+		return
+
+	if active == false:
+		return
 	switchCooldown = max(0,switchCooldown-delta)
 	
 	if cast != null:
@@ -123,19 +152,29 @@ func _physics_process(delta):
 			cast.enabled = false
 	
 		for i in cast.get_collision_count():
-			var normal = WADG.normalToDegree(cast.get_collision_normal(i))
+			#var normal = WADG.normalToDegree(cast.get_collision_normal(i))
 			var parent = cast.get_collider(i).get_parent()
 			#if !parent.has_meta("floor")
 
-			if cast.get_collider(i).get_class() != "StaticBody":
+			if cast.get_collider(i).get_class() != "StaticBody3D":
 				var a= parent.has_meta("type")
 				var b = parent.has_meta("floor")
 				var t = parent.get_meta_list()
 				if state == STATE.CLOSING:
 					state = STATE.OPENING
 		
-		#print(normal)
 		
+		
+	
+	for i in overlappingBodies:
+		if !is_instance_valid(i):
+			overlappingBodies.erase(i)
+		
+	
+	for body in walkOverBodies:
+		bodyIn(body)
+		
+	walkOverBodies = []
 	
 	for i in overlappingBodies:
 		bodyIn(i)
@@ -146,41 +185,59 @@ func _physics_process(delta):
 	
 	if state == STATE.OPENING:
 		if curH < topH:
-			incCurH(speed)
-			curH+=speed
-			changeNodesY(targetNodes,speed)
+			incCurH(speed*delta)
+			var newH =  min(topH,curH+speed*delta)
+			changeNodesY(targetNodes,newH-curH)
+			curH = curH
+			
 				
 		if curH >= topH:
 			state = STATE.OPEN
 
 			
 			if waitClose != -1:
-				yield(get_tree().create_timer(waitClose),"timeout")
-				state = STATE.CLOSING
+				#await get_tree().create_timer(waitClose).timeout
+				closeTimeoutTimer = get_tree().create_timer(waitClose)
+				closeTimeoutTimer.timeout.connect(closeTimeOut)
+				active = false
+				#await tree.create_timer(waitClose).timeout 
+				#state = STATE.CLOSING
 				
-				if get_node_or_null("closeSound")!= null: 
-					get_node("closeSound").play()
+				#if get_node_or_null("closeSound")!= null: 
+				#	get_node("closeSound").play()
 				return
 
 			
 				
 	if state == STATE.CLOSING:
 		if curH > bottomH:
-			incCurH(-speed)
-			curH-=speed
-			changeNodesY(targetNodes,-speed)
+			incCurH(-speed*delta)
+			curH-=speed*delta
+			changeNodesY(targetNodes,-speed*delta)
 		
 		if curH  <= bottomH:
 			state = STATE.CLOSED
 
 			if waitOpen != -1:
-				yield(get_tree().create_timer(waitOpen),"timeout")
-				state = STATE.OPENING
 				
-				playOpen()
+				
+				
+				openTimeoutTimer = get_tree().create_timer(waitOpen)
+				openTimeoutTimer.timeout.connect(openTimeOut)
+				active = false
 				return
-		
-	if curH <= bottomH: 
+				#await get_tree().create_timer(waitOpen).timeout
+				
+				
+				
+				
+				#state = STATE.OPENING
+				#
+				#playOpen()
+				return
+	
+	
+	if curH <= bottomH and state == STATE.CLOSED:#some doors can start opeing from below the floor so we need this condition
 		state = STATE.CLOSED
 			
 	if curH >= topH: 
@@ -188,31 +245,42 @@ func _physics_process(delta):
 
 		
 	if state == STATE.CLOSED or state == STATE.CLOSED: 
-		get_parent().set_meta("curOwner",null)
+		parent.set_meta("curOwner",null)
 
+
+
+func walkOverTrigger(body):
+	if !walkOverBodies.has(body):
+		walkOverBodies.append(body)
+
+func unlockAnimMesh(meshNode):
+	meshNode.set_meta("lock",null)
 
 func bodyIn(body):
 	
-	if overlappingBodiesActivated.has(body):
-		return  
-		
+
 	if keyType < 4:
 		if !doesBodyHaveKey(body):
+			if body.interactPressed == true:
+				if body.has_method("popupText"):
+					body.popupText("You need a " +WADG.keyNumberToColorStr(keyType) +" key to open this door")
 			return
 	
-	if get_parent().has_meta("curOwner"):
-		if get_parent().get_meta("curOwner") != self:
+	if parent.has_meta("curOwner"):
+		if parent.get_meta("curOwner") != self:
 			return
+	
 	
 	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.SWITCHR or triggerType == WADG.TTYPE.DOOR or triggerType == WADG.TTYPE.DOOR1:
 		if body.interactPressed == false:
 			return
-	
+		
+		#if "facingDir" in body: todo only open when facing?
+		#	print(body.facingDir)
 	
 	
 	if switchCooldown > 0:
 		return
-	
 	
 	switchCooldown = 1
 	
@@ -220,76 +288,89 @@ func bodyIn(body):
 		if getCurH() <= bottomH or getCurH() >= topH:
 			get_node("buttonSound").play()
 	
-	for i in animTextures:
-		var t = (i.current_frame+1)%2
-		i.current_frame = (i.current_frame+1)%2
+	for i in animTextures.size():
+		var targetTexture = animTextures[i]
+		var meshNode = get_node(animMeshPath[i])
+		
+		if !meshNode.has_meta("lock"):#cheap hack to stop multiple door scripts itt'ing the frame at the same time
+			meshNode.set_meta("lock",true)
+		else:
+			continue
+			
+		get_tree().physics_frame.connect(unlockAnimMesh.bind(targetTexture))
+		var t = (targetTexture.current_frame+1)%2
+		targetTexture.current_frame = (targetTexture.current_frame+1)%2
 
-
+	
 	if !body.is_in_group("player") and !("interactPressed" in body):
 		return 
 		
-	if !overlappingBodiesActivated.has(body):
-		overlappingBodiesActivated.append(body)
-		activate()
+	#if !overlappingBodiesActivated.has(body):
+		#overlappingBodiesActivated.append(body)
+		
+		
+	activate()  
 	
 	
-	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.WALK1: 
+	
+	if triggerType == WADG.TTYPE.SWITCH1 or triggerType == WADG.TTYPE.DOOR1 or triggerType == WADG.TTYPE.WALK1: 
 		for i in get_children():
-			if i.get_class() == "Area":
-				i.queue_free()
+			if i.get_class() == "Area3D":
+				i.monitoring = false
+				i.monitorable = false
+		areasDisabled = true
 
 	
 
 func activate():
+
 	
-	
-	#if sectorInfo["index"] == 53:
-	#	breakpoint
-	
-	
-	if state == STATE.OPEN and stayOpen == false:# and direction == DIR.DOWN: #if open and is a closer and !stayOpen -> close
+	if (state == STATE.OPEN or state == STATE.OPENING) and stayOpen == false:# and direction == DIR.DOWN: #if open and is a closer and !stayOpen -> close
 		state = STATE.CLOSING
-		
-		if !get_parent().has_meta("curOwner"): 
-			get_parent().set_meta("curOwner",self)
+
+		if !parent.has_meta("curOwner"): 
+			parent.set_meta("curOwner",self)
 		
 		playClosed()
 					
-	elif state == STATE.CLOSED and direction == DIR.UP: #if closed and is an opener -> open
+	elif (state == STATE.CLOSED or state == STATE.CLOSING) and direction == DIR.UP: #if closed and is an opener -> open
+		state = STATE.OPENING
 		
 		if getCurH() < topH:
 			
-			if !get_parent().has_meta("curOwner"): 
-				get_parent().set_meta("curOwner",self)
+			if !parent.has_meta("curOwner"):
+				parent.set_meta("curOwner",self)
 			
-			state = STATE.OPENING
+			#state = STATE.OPENING
 			playOpen()
 			
 func changeNodesY(nodes,amt):
 	for node in nodes:
-		if node.get_parent().get_class() != "Spatial":
-			node.get_parent().translation.y += amt
+		if !is_instance_valid(node):
+			continue
+		if node.get_parent().get_class() != "Node3D":
+			node.get_parent().position.y += amt
 		else:
-			node.translation.y += amt
+			node.position.y += amt
 			
 func setNodesY(nodes,value):
 	for nIdx in nodes.size():
 		var node = nodes[nIdx]
 		
-		if node.get_parent().get_class() != "Spatial":
-			node.get_parent().translation.y = value
+		if node.get_parent().get_class() != "Node3D":
+			node.get_parent().position.y = value
 		else:
 		
 			var t= yInitial - value
-			node.translation.y = nodeInitial[nIdx].y - t
+			node.position.y = nodeInitial[nIdx].y - t
 	
 func getCurH():
-	return get_parent().get_meta("curH")
+	return parent.get_meta("curH")
 	
 	
 func incCurH(amt):
 	var curH = getCurH()
-	get_parent().set_meta("curH",curH+amt)
+	parent.set_meta("curH",curH+amt)
 	
 
 func playOpen():
@@ -317,3 +398,54 @@ func doesBodyHaveKey(body):
 	return true
  
 
+func serializeSave():
+	var yArr = []
+
+	for i in targetNodes.size():
+		if is_instance_valid(targetNodes[i]):
+			yArr.append(targetNodes[i].position.y)
+	
+	var dict : Dictionary = {"yArr":yArr,"state":state,"curH":getCurH()}
+	
+	if closeTimeoutTimer != null:
+		dict["closeTimeOutLeft"] = closeTimeoutTimer.time_left
+	
+	
+	if openTimeoutTimer != null:
+		dict["openTimeOutLeft"] = openTimeoutTimer.time_left
+		
+	dict["areasDisabled"] = areasDisabled
+	return dict
+	
+func serializeLoad(data : Dictionary):
+	
+	state = data["state"]
+	
+	get_parent().set_meta("curH",data["curH"]) 
+	
+	for i in data["yArr"].size():
+		targetNodes[i].position.y = data["yArr"][i]
+	
+	
+	areasDisabled = data["areasDisabled"]
+	
+	if data.has("closeTimeOutLeft"):
+		if closeTimeoutTimer != null:
+			closeTimeoutTimer.disconnect("timeout",closeTimeOut)
+			
+		
+		closeTimeoutTimer = get_tree().create_timer(data["closeTimeOutLeft"])
+		closeTimeoutTimer.timeout.connect(closeTimeOut)
+		
+	if data.has("openTimeOutLeft"):
+		if openTimeoutTimer != null:
+			openTimeoutTimer.disconnect("timeout",openTimeOut)
+			
+		
+		openTimeoutTimer = get_tree().create_timer(data["openTimeOutLeft"])
+		openTimeoutTimer.timeout.connect(openTimeOut)
+	
+	for i in get_children():
+		if i.get_class() == "Area3D":
+			i.monitoring = !data["areasDisabled"]
+			i.monitorable = !data["areasDisabled"]

@@ -1,66 +1,72 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=3 uid="uid://dhxyaai4rce5r"]
 
-[ext_resource path="res://addons/godotWad/scenes/enemies/enemyGenerator.gd" type="Script" id=1]
-[ext_resource path="res://addons/godotWad/src/raycastDynamic.gd" type="Script" id=2]
-[ext_resource path="res://addons/godotWad/scenes/enemies/npc.gd" type="Script" id=3]
-[ext_resource path="res://addons/godotWad/scenes/enemies/enemySounds.gd" type="Script" id=4]
-[ext_resource path="res://addons/godotWad/scenes/enemies/navigationLogic.gd" type="Script" id=5]
-[ext_resource path="res://addons/godotWad/src/castWeapon.gd" type="Script" id=6]
-[ext_resource path="res://addons/godotWad/scenes/quad3Dsprite.tscn" type="PackedScene" id=7]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/enemies/enemyGenerator.gd" id="1"]
+[ext_resource type="Script" path="res://addons/godotWad/src/raycastDynamic.gd" id="2"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/enemies/npc.gd" id="3"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/interp.gd" id="3_5bh0w"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/enemies/enemySounds.gd" id="4"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/enemies/navigation2.gd" id="5_ew5gm"]
+[ext_resource type="Script" path="res://addons/godotWad/src/castWeapon.gd" id="6"]
+[ext_resource type="PackedScene" uid="uid://br07pau6iijsu" path="res://addons/godotWad/scenes/quad3Dsprite.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://d0p1hm1hxo3nc" path="res://addons/godotWad/scenes/player/movement.tscn" id="8_upapq"]
 
-[sub_resource type="QuadMesh" id=1]
-size = Vector2( 1.271, 2.263 )
+[sub_resource type="QuadMesh" id="QuadMesh_p7tp7"]
 
-[node name="npc" type="KinematicBody"]
+[node name="npc" type="CharacterBody3D"]
 process_priority = 1
-script = ExtResource( 3 )
-__meta__ = {
-"": "",
-"originAtFeet": true
-}
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("3")
 initialHP = 30.0
 height = 32.0
 thickness = 20.0
+meleeRange = 64.0
 projectileRange = -1.0
+flying = null
+metadata/originAtFeet = true
 
-[node name="AnimatedSprite3D" parent="." instance=ExtResource( 7 )]
-mesh = SubResource( 1 )
+[node name="visual" type="Node3D" parent="."]
+process_physics_priority = -1
+script = ExtResource("3_5bh0w")
+
+[node name="AnimatedSprite3D" parent="visual" instance=ExtResource("7")]
+mesh = SubResource("QuadMesh_p7tp7")
+skeleton = NodePath("../..")
+curAnimation = "front"
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-script = ExtResource( 4 )
+script = ExtResource("4")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
 
-[node name="cast" type="RayCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.6, 0 )
-enabled = true
-cast_to = Vector3( 0, 0, -1 )
-debug_shape_thickness = 1
-script = ExtResource( 2 )
+[node name="navigationLogic" type="NavigationAgent3D" parent="."]
+script = ExtResource("5_ew5gm")
 
-[node name="navigationLogic" type="Node" parent="."]
-script = ExtResource( 5 )
+[node name="castWeapon" type="Node3D" parent="."]
+script = ExtResource("6")
 
-[node name="castWeapon" type="Spatial" parent="."]
-script = ExtResource( 6 )
+[node name="RayCast3D" type="RayCast3D" parent="castWeapon"]
+enabled = false
+collision_mask = 2
 
 [node name="Generator" type="Node" parent="."]
-script = ExtResource( 1 )
-bloodSplatter = [ "BLUDA0", "BLUDB0", "BLUDC0" ]
+script = ExtResource("1")
+gibSounds = ["DSSLOP"]
+entityDepends = PackedStringArray()
+bloodSplatter = ["BLUDA0", "BLUDB0", "BLUDC0"]
 
-[node name="footCast" type="ShapeCast" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0 )
-enabled = false
-margin = 1.0
-max_results = 1
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="."]
+aabb = AABB(-20, 0, -20, 40, 32, 40)
 
-[node name="VisibilityNotifier" type="VisibilityNotifier" parent="."]
-aabb = AABB( -1, 0, -1, 2, 32, 2 )
-max_distance = 200.0
+[node name="movement" parent="." instance=ExtResource("8_upapq")]
 
-[connection signal="camera_entered" from="VisibilityNotifier" to="AnimatedSprite3D" method="_on_VisibilityNotifier_camera_entered"]
+[node name="cast" type="RayCast3D" parent="."]
+script = ExtResource("2")
 
-[editable path="AnimatedSprite3D"]
+[connection signal="screen_entered" from="VisibleOnScreenNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_exited"]
+
+[editable path="visual/AnimatedSprite3D"]

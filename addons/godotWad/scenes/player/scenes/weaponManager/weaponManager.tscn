@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1jshd4cbsids"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/weaponManager.gd" id="1_vf2sy"]
+[ext_resource type="PackedScene" uid="uid://cmpog4jmqm6ak" path="res://addons/godotWad/scenes/player/scenes/weaponManager/weapon_bar.tscn" id="2_3h5g0"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/player/scenes/weaponManager/weaponWheel.gd" id="2_xfsa8"]
+
+[node name="gunManager" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.14822, 0)
+script = ExtResource("1_vf2sy")
+
+[node name="weapons" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0129951, -0.0195066, 0)
+
+[node name="shootCast" type="RayCast3D" parent="."]
+visible = false
+target_position = Vector3(0, 0, -800)
+collision_mask = 2
+debug_shape_custom_color = Color(0.3555, 0.79, 0, 1)
+
+[node name="ui" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="weaponBar" parent="ui" instance=ExtResource("2_3h5g0")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.00868056
+anchor_top = 0.0154321
+anchor_right = 0.987847
+anchor_bottom = 0.0771605
+offset_top = 1.0
+offset_bottom = 1.0
+metadata/_edit_use_anchors_ = true
+
+[node name="weaponWheel" type="Control" parent="ui"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_xfsa8")

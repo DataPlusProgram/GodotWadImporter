@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dm8nrd3hjtw6n"]
+
+[ext_resource type="Script" path="res://addons/gameAssetImporter/scenes/console/consoleWindow.gd" id="1_1awyk"]
+[ext_resource type="PackedScene" uid="uid://dku0k1jhjyjpm" path="res://addons/gameAssetImporter/scenes/console/console.tscn" id="1_60bfu"]
+
+[node name="ConsoleWindow" type="Window"]
+transparent_bg = true
+title = "Console"
+position = Vector2i(0, 36)
+size = Vector2i(1155, 590)
+transparent = true
+script = ExtResource("1_1awyk")
+
+[node name="Console" parent="." instance=ExtResource("1_60bfu")]
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

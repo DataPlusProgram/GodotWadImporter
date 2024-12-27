@@ -1,4 +1,4 @@
-extends RayCast
+extends RayCast3D
 
 
 var ppos : Vector3 = Vector3.ZERO
@@ -26,7 +26,7 @@ func queryLightLevel() -> int:
 	if col != null:
 		if col.has_meta("light"):
 			var lightLevel = WADG.getLightLevel(col.get_meta("light"))
-			lightLevel = range_lerp(lightLevel,0,16,0.0,1.0)
+			lightLevel = remap(lightLevel,0,16,0.0,1.0)
 			return lightLevel
 			
 	return 0

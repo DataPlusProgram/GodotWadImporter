@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cbwy7kgkoemp4"]
+
+[ext_resource type="Shader" path="res://addons/gameAssetImporter/scenes/perfOverlay/invertColor.gdshader" id="1_ka56l"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_ka56l")

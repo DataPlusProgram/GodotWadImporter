@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://cxgeu5ttrai27"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_yxtxw"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_bwdfd"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_n2nh4"]
+
+[node name="chaingunState" instance=ExtResource("1_yxtxw")]
+weaponName = "chaingun"
+category = 4
+categorySubIndex = 1
+magSize = 0
+damage = 10
+maxSpread = Vector2(11, 0)
+spreadPerShot = Vector2(4, 0)
+stateResPath = "res://addons/godotWad/resources/chainGunStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_bwdfd")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_n2nh4")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["CHGGA0", "CHGGB0"])
+spriteListMuzzleFlash = Array[String](["CHGFA0", "CHGFB0"])
+worldSprite = "MGUNA0"
+entityDepends = PackedStringArray()

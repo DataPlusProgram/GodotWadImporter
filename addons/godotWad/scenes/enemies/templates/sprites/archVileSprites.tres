@@ -1,9 +1,9 @@
-[gd_resource type="Resource" load_steps=2 format=2]
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://df2obpoo8qm5"]
 
-[ext_resource path="res://addons/gSheet/scenes/gsheet.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1"]
 
 [resource]
-script = ExtResource( 1 )
+script = ExtResource("1")
 data = {
 "A": {
 "e": "VILEA7D3",
@@ -36,34 +36,34 @@ data = {
 "w": "VILEC3F7"
 },
 "D": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "VILEA3D7_flipped",
+"n": "VILEA3D7_flipped",
+"ne": "VILEA3D7_flipped",
+"nw": "VILEA3D7_flipped",
+"s": "VILEA1D1_flipped",
+"se": "VILEA3D7_flipped",
+"sw": "VILEA2D8_flipped",
+"w": "VILEA3D7_flipped"
 },
 "E": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "VILEB7E3_flipped",
+"n": "VILEB5E5_flipped",
+"ne": "VILEB6E4_flipped",
+"nw": "VILEB4E6_flipped",
+"s": "VILEB1E1_flipped",
+"se": "VILEB8E2_flipped",
+"sw": "VILEB2E8_flipped",
+"w": "VILEB3E7_flipped"
 },
 "F": {
-"e": "",
-"n": "",
-"ne": "",
-"nw": "",
-"s": "",
-"se": "",
-"sw": "",
-"w": ""
+"e": "VILEC7F3_flipped",
+"n": "VILEC5F5_flipped",
+"ne": "VILEC6F4_flipped",
+"nw": "VILEC4F6_flipped",
+"s": "VILEC1F1_flipped",
+"se": "VILEC8F2_flipped",
+"sw": "VILEC2F8_flipped",
+"w": "VILEC3F7_flipped"
 },
 "G": {
 "e": "VILEG7",
@@ -296,18 +296,16 @@ data = {
 "w": "VILE]1"
 },
 "meta": {
-"colNames": [ "s", "sw", "w", "nw", "n", "ne", "e", "se" ],
-"enumColumns": {
-},
-"enumColumnsPrefix": {
-},
+"colNames": ["s", "sw", "w", "nw", "n", "ne", "e", "se"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
 "hasId": false,
-"rowOrder": [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]" ],
-"sheetWidth": 1114.0,
+"rowOrder": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]"],
+"sheetWidth": 2563.0,
 "splitSize": {
 0: 0,
 1: 0,
-2: 0,
+2: 79,
 3: 0,
 4: 0,
 5: 0,

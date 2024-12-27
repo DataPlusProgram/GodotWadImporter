@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://bhwk51w1kaxy1"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_7yxp4"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_r8wsd"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_6nx1c"]
+
+[node name="superShotun" instance=ExtResource("1_7yxp4")]
+weaponName = "superShotgun"
+category = 3
+ammoType = "shell"
+bulletPerShot = 20
+ammoConsumedPerShot = 2
+stateResPath = "res://addons/godotWad/resources/superShotgunStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_r8wsd")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_6nx1c")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["SHT2A0", "SHT2B0", "SHT2C0", "SHT2D0", "SHT2E0", "SHT2F0", "SHT2G0", "SHT2H0", "SHT2I0", "SHT2J0"])
+spriteListMuzzleFlash = Array[String](["SHT2I0", "SHT2J0"])
+worldSprite = "SGN2A0"
+fireSounds = Array[String](["DSDSHTGN"])
+reloadSound = "DSDBLOAD"
+extraSound1 = "DSDBOPN"
+extraSound2 = "DSDBCLS"

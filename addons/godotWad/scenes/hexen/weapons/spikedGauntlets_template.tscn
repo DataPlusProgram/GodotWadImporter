@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://bgdvfjvjqcno4"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_u74p3"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_7pxtd"]
+size = Vector2(1.271, 1.767)
+
+[sub_resource type="QuadMesh" id="QuadMesh_bd60d"]
+size = Vector2(1.271, 1.767)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_orrcu"]
+size = Vector3(1, 1, 1.52624)
+
+[node name="stateGun" instance=ExtResource("1_u74p3")]
+weaponName = "Spiked Gauntlets"
+magSize = -1
+stateResPath = "E:/ROOT/Sync/main/Godot Projects/godot4wadship/addons/godotWad/resources/gauntletStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+mesh = SubResource("QuadMesh_7pxtd")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_bd60d")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["FPCHA0", "FPCHB0", "FPCHC0", "FPCHD0", "FPCHE0"])
+fireSounds = Array[String](["PUNCHMIS"])
+impactSound = "MUMPUN5"
+wallHitSprite = []
+
+[node name="Area3D" type="Area3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.769)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0128851)
+shape = SubResource("BoxShape3D_orrcu")

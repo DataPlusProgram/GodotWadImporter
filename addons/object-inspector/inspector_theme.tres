@@ -1,0 +1,89 @@
+[gd_resource type="Theme" load_steps=16 format=3 uid="uid://dyf67c0ud50ts"]
+
+[ext_resource type="Texture2D" uid="uid://dxg33k4oskw0b" path="res://addons/object-inspector/icons/file.svg" id="1_65vh4"]
+[ext_resource type="Texture2D" uid="uid://d3bmql3kjdw7b" path="res://addons/object-inspector/icons/maximize.svg" id="1_hfaeu"]
+[ext_resource type="Texture2D" uid="uid://gt0ddjodysuy" path="res://addons/object-inspector/icons/collapsed.svg" id="1_hpca1"]
+[ext_resource type="Texture2D" uid="uid://dkea6rkqhc5dr" path="res://addons/object-inspector/icons/expanded.svg" id="2_0jwgf"]
+[ext_resource type="Texture2D" uid="uid://canw8okj10cxg" path="res://addons/object-inspector/icons/search.svg" id="2_vebvf"]
+[ext_resource type="Texture2D" uid="uid://b11lfxnnt465c" path="res://addons/object-inspector/icons/page_first.svg" id="5_e0bdv"]
+[ext_resource type="Texture2D" uid="uid://k07ky4nfvuyf" path="res://addons/object-inspector/icons/edit.svg" id="5_x0g0o"]
+[ext_resource type="Texture2D" uid="uid://oji8ot6h4ocn" path="res://addons/object-inspector/icons/page_last.svg" id="6_wdbtw"]
+[ext_resource type="Texture2D" uid="uid://6wtccq57dvqj" path="res://addons/object-inspector/icons/page_next.svg" id="7_hjbvh"]
+[ext_resource type="Texture2D" uid="uid://h7tvfqrd87wp" path="res://addons/object-inspector/icons/page_prev.svg" id="8_ybigx"]
+[ext_resource type="Texture2D" uid="uid://cdmwkx7s2315y" path="res://addons/object-inspector/icons/delete.svg" id="9_t1qfx"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h08j0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ds1an"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.5)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 3
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_idiuy"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.225, 0.225, 0.225, 0.5)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 3
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cncyr"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 1, 1, 0.125)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 3
+anti_aliasing = false
+
+[resource]
+BoxContainer/constants/separation = 2
+FlowContainer/constants/h_separation = 2
+FlowContainer/constants/v_separation = 2
+Inspector/base_type = &"VBoxContainer"
+Inspector/icons/file = ExtResource("1_65vh4")
+Inspector/icons/maximize = ExtResource("1_hfaeu")
+Inspector/icons/search = ExtResource("2_vebvf")
+InspectorProperty/base_type = &"PanelContainer"
+InspectorProperty/styles/panel = SubResource("StyleBoxEmpty_h08j0")
+InspectorPropertyArray/base_type = &"PanelContainer"
+InspectorPropertyArray/icons/delete = ExtResource("9_t1qfx")
+InspectorPropertyArray/icons/edit = ExtResource("5_x0g0o")
+InspectorPropertyArray/styles/panel = SubResource("StyleBoxEmpty_h08j0")
+InspectorPropertyCategory/base_type = &"PanelContainer"
+InspectorPropertyCategory/styles/header = SubResource("StyleBoxFlat_ds1an")
+InspectorPropertyCategory/styles/panel = SubResource("StyleBoxEmpty_h08j0")
+InspectorPropertyDictionary/base_type = &"PanelContainer"
+InspectorPropertyDictionary/icons/delete = ExtResource("9_t1qfx")
+InspectorPropertyDictionary/icons/edit = ExtResource("5_x0g0o")
+InspectorPropertyDictionary/styles/panel = SubResource("StyleBoxEmpty_h08j0")
+InspectorPropertyGroup/base_type = &"PanelContainer"
+InspectorPropertyGroup/icons/collapsed = ExtResource("1_hpca1")
+InspectorPropertyGroup/icons/expanded = ExtResource("2_0jwgf")
+InspectorPropertyGroup/styles/panel = SubResource("StyleBoxFlat_idiuy")
+InspectorPropertyPaginator/base_type = &"VBoxContainer"
+InspectorPropertyPaginator/icons/page_first = ExtResource("5_e0bdv")
+InspectorPropertyPaginator/icons/page_last = ExtResource("6_wdbtw")
+InspectorPropertyPaginator/icons/page_next = ExtResource("7_hjbvh")
+InspectorPropertyPaginator/icons/page_prev = ExtResource("8_ybigx")
+InspectorPropertySubGroup/base_type = &"InspectorPropertyGroup"
+InspectorPropertySubGroup/styles/panel = SubResource("StyleBoxFlat_cncyr")
+InspectorSubProperty/base_type = &"InspectorProperty"
+InspectorSubProperty/styles/panel = SubResource("StyleBoxFlat_cncyr")

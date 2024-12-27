@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://iebsgp7l3ix2"]
+
+[ext_resource type="PackedScene" uid="uid://bdl2eb42me7a0" path="res://addons/godotWad/scenes/credits/credits.tscn" id="1_6o2xv"]
+
+[node name="CreditsWindow" type="Window"]
+title = "Credits"
+
+[node name="Credits" parent="." instance=ExtResource("1_6o2xv")]
+values = ["Midi Player: arlez80 -https://bitbucket.org//arlez80//godot-midi-player-g4"]

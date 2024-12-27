@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://81edxlj7lhj5"]
+
+[ext_resource type="PackedScene" uid="uid://bcpqqvj8ar2jt" path="res://addons/godotWad/scenes/guns/stateGuns/stateGunBase.tscn" id="1_axulr"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_60pti"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_8v7lf"]
+size = Vector2(1.271, 1.767)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_orrcu"]
+size = Vector3(1, 1, 1.52624)
+
+[node name="stateGun" instance=ExtResource("1_axulr")]
+weaponName = "fists"
+magSize = -1
+stateResPath = "res://addons/godotWad/resources/fistStates.tres"
+
+[node name="AnimatedSprite3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+mesh = SubResource("QuadMesh_60pti")
+
+[node name="muzzleFlash" parent="." index="1"]
+mesh = SubResource("QuadMesh_8v7lf")
+
+[node name="Generator" parent="." index="4"]
+spriteList = Array[String](["PUNGA0", "PUNGB0", "PUNGC0", "PUNGD0"])
+fireSounds = Array[String]([])
+impactSound = "DSPUNCH"
+wallHitSprite = Array[String]([])
+
+[node name="Area3D" type="Area3D" parent="." index="7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.769)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0128851)
+shape = SubResource("BoxShape3D_orrcu")

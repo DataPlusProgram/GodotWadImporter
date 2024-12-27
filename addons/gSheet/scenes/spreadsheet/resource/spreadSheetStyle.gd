@@ -1,21 +1,22 @@
 extends Resource
 class_name spreadSheetStyle
 
-export(Texture) var customGrabber
+@export var customGrabber : Texture2D
 
-export (Color) var cellColor 
-export (Color) var cellBorderColor
+@export var cellColor : Color
+@export var cellBorderColor : Color
 
-export (Color) var headingColor 
-export (Color) var headingBorderColor
+@export var headingColor  : Color
+@export var headingBorderColor: Color
 
-export (Color) var fontColor = Color.black
-export (Color) var cursorColor = Color.black
-export (Color) var optionButtonHoverFontColor
+@export var fontColor : Color = Color.BLACK
+@export var cursorColor : Color = Color.BLACK
+@export var optionButtonHoverFontColor : Color
 
 
-export (int) var borderThickness = 1 
-export (int) var marginLeft = 7
-export (int) var marginRight = 7
-export (int) var marginTop = 3
-export (int) var marginBottom = 3
+@export var borderThickness : int = 1  
+@export var marginLeft: int = 7
+@export var marginRight: int = 7
+@export var marginTop: int = 3
+@export var marginBottom: int = 3
+

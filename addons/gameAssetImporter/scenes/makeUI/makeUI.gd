@@ -1,23 +1,29 @@
-tool
-extends WindowDialog
+@tool
+extends Window
 
 
 signal instance
 signal diskInstance
 signal import
 
-onready var paths = $h/v1/paths/v/v
-onready var cats = $h/v2/cats
-onready var previewWorld = $h/v3/preview/ViewportContainer/Viewport
-onready var previewWorldContainer = $h/v3/preview/ViewportContainer
-onready var texturePreview = $h/v3/preview/texturePreview
-onready var gameList : ItemList = $h/v1/Panel/gameList
-onready var initialRot = Vector2(0,0)
-onready var editedNode = null
-onready var nameLabel = $h/v1/paths/v/h/gameNameEdit
-onready var optionsPanel = $h/v3/options
-export var playMode = false
+@onready var paths = $h/v1/paths/v/v
+@onready var cats = $h/v2/cats
+@onready var previewNode = $h/v3/preview
+@onready var previewWorld = $h/v3/preview/SubViewportContainer/SubViewport
+@onready var previewWorld2DContainer = $h/v3/preview/SubViewportContainer2D
+@onready var previewWorld2D = $h/v3/preview/SubViewportContainer2D/SubViewport
+@onready var previewWorldContainer = $h/v3/preview/SubViewportContainer
+@onready var texturePreview = $h/v3/preview/texturePreview
+@onready var gameList : ItemList = $h/v1/Panel/gameList
+@onready var initialRot = Vector2(0,0)
+@onready var editedNode = null
+@onready var nameLabel = $h/v1/paths/v/h/gameNameEdit
 
+@onready var optionsPanel = $h/v3/options
+@onready var creditsButton =$h/v1/paths/v/HBoxContainer/creditsButton
+@export var playMode = false
+
+var pathScenePacked : PackedScene = preload("res://addons/gameAssetImporter/scenes/makeUI/path.tscn")
 
 var cur = null
 var curName = ""
@@ -34,11 +40,17 @@ var gameToHistory = {}
 var runTailImport = false
 var tailEntStr = ""
 var previousFiles = {}
-
-
+var midiPlayer = null
+var curGameName = ""
 const destPath = "res://game_imports/"
+var inspector = null
+
+
+
 
 func _ready():
+	
+	
 	
 	
 	if playMode:
@@ -46,49 +58,53 @@ func _ready():
 		$h/v3.visible = false
 		$h/v1/paths/v/HBoxContainer/loadButton.visible = false
 		$h/v1/paths/v/HBoxContainer/playButton.visible = true
+		$h/v1/paths/v/HBoxContainer/playButton.grab_focus()
+		$h/v1/paths/v/VBoxContainer/LoaderOptions.visible = true
 	else:
 		$h/v2.visible = true
 		$h/v3.visible = true
+		$h/v1/paths/v/VBoxContainer/LoaderOptions.visible = false
 		$h/v1/paths/v/HBoxContainer/loadButton.visible = true
 		$h/v1/paths/v/HBoxContainer/playButton.visible = false
 
-		
-	cachedPaths()
+	$h/v3/preview/sondFontPath.pathSet.connect(soundFontSet)
 	
 	gameList.clear()
+	var preLoadLoader = false
 	
-	getLoaders()
+	var loaders : Array[String] = getLoaders(preLoadLoader)
 	
-	
-	for i in loaders:
-		var inst = load(i).instance()
-		var configs = inst.getConfigs()
+	if preLoadLoader:#use threaded loading
 		
-		for gameName in configs:
-			initGame(gameName,i)
-			
-			gameToHistory[gameName] = []
-			
-			var reqs = inst.getReqs(gameName)
-			
-			if reqs != null:
-				for req in reqs.size():
-					gameToHistory[gameName].append("")
-			else:
-				breakpoint
-				
+		var breakFlag = false
+		var loaderWait = loaders.duplicate()
+		
+		while !loaders.size() != 0:
+			for i in loaderWait:
+				if ResourceLoader.load_threaded_get_status(i) == ResourceLoader.THREAD_LOAD_LOADED:
+					loaderWait.erase(i)
+				OS.delay_msec(1)
+		
+		var loadersLoaded : Array[PackedScene]= []
+		for i in loaders:
+			loadersLoaded.append(ResourceLoader.load_threaded_get(i))
+		
+		instantiateLoadersPreloaded(loadersLoaded)
+	else:
+		instantiateLoaders(loaders)
 	
+	var a = Time.get_ticks_msec()
 	makeHistoryFile()
 	
-	
-	if gameList.get_selected_items().empty():
+	if gameList.get_selected_items().is_empty():
 		if gameList.get_item_count() > 0:
 			gameList.select(0)
+			_on_gameList_item_selected(0)
 	
 	
 	
 	previewWorld.get_node("CameraTopDown").current = false
-	previewWorld.get_node("Camera").current = true
+	previewWorld.get_node("Camera3D").current = true
 
 
 	
@@ -97,32 +113,107 @@ func _ready():
 			texturePreview.texture = ImageTexture.new()
 			
 			
+	$h/v3/preview/sondFontPath.setPathText(SETTINGS.getSetting(get_tree(),"soundFont"))
+	
+	
 
+func instantiateLoaders(loaders : Array[String]):
+	for i : String in loaders:
+		
+		var a= Time.get_ticks_msec()
+		var loaded = load(i)
+		var h = Time.get_ticks_msec() - a
+		
+		var inst = loaded.instantiate()
+		
+		for gameName in inst.getConfigs():
+			initGame(gameName,i)
+			
+			gameToHistory[gameName] = []
+			
+			var reqs = inst.getReqs(gameName)
+			
+			if reqs != null:
+				for reqIdx in reqs.size():
+					var req = reqs[reqIdx]
+					gameToHistory[gameName].append([req["UIname"],"",[]])
+			else:
+				var dir = DirAccess.open("res://")
+				dir.remove("history.cfg")
+				gameToHistory.erase(gameName)
 
-func getLoaders():
+func instantiateLoadersPreloaded(loaders : Array[PackedScene]):
+	for i : PackedScene in loaders:
+		var inst = i.instantiate()
+		
+		for gameName in inst.getConfigs():
+			initGame(gameName,i)
+			
+			gameToHistory[gameName] = []
+			
+			var reqs = inst.getReqs(gameName)
+			
+			if reqs != null:
+				for reqIdx in reqs.size():
+					var req = reqs[reqIdx]
+					gameToHistory[gameName].append([req["UIname"],"",[]])
+			else:
+				var dir = DirAccess.open("res://")
+				dir.remove("history.cfg")
+				gameToHistory.erase(gameName)
+
+func setStyles():
+	var bgStyle : StyleBoxFlat = Panel.new().get_theme_stylebox("panel").duplicate()
+	
+	if get_tree().has_meta("baseControl"):
+		bgStyle = get_tree().get_meta("baseControl").get_theme_stylebox("panel").duplicate()
+	
+	
+	if bgStyle.bg_color.v < 0.5:
+		bgStyle.bg_color.v += 0.13
+	else:
+		bgStyle.bg_color.v -= 0.1
+	
+	#$h/v1/paths.set("theme_override_styles/panel",bgStyle)
+	#$h/v1/Panel.set("theme_override_styles/panel",bgStyle)
+	#$h/v1/paths.modulate
+	$Panel.set("theme_override_styles/panel",bgStyle)
+	
+	
+	var lineEditStyle = get_tree().get_meta("baseControl").get_theme_stylebox("panel").duplicate()
+	
+
+func getLoaders(loadThem = false) -> Array[String]:
+	
+	var loadersPaths : Array[String] = []
+	
 	if !ENTG.doesDirExist("res://addons"):
-		return
-	
-	
+		return loadersPaths
 	
 	for i in ENTG.getDirsInDir("res://addons"):
-		var target = "res://addons/"+i+"/loader.txt"
-		if ENTG.doesFileExist(target):
-			var loaderPath = getFromConfig(target)
-			if loaderPath == null:
-				continue
-			
-			loaders.append("res://addons/"+i+"/"+loaderPath)
-
+		
+		var ret : Array[String] = []
+		var dir = DirAccess.open("res://addons/"+i)
+	
+		var files = dir.get_files()
+	
+		for filePath : String in files:
+			if filePath.find("_Loader") != -1:
+				filePath = filePath.replace(".remap","")
 				
+				loadersPaths.append("res://addons/"+ i +"/" +filePath)
+				
+				if loadThem:
+					ResourceLoader.load_threaded_request("res://addons/"+ i +"/" +filePath)
+		 
+	return loadersPaths
 
 
 func getFromConfig(path):
-	var f : File = File.new()
-	f.open(path,File.READ)
+	var f : FileAccess = FileAccess.open(path,FileAccess.READ)
 	var ret = f.get_as_text()
 	
-	if ret.empty(): return null
+	if ret.is_empty(): return null
 	return ret
 	
 
@@ -133,17 +224,40 @@ func initGame(gameName,gameParam):
 
 	
 
+func _process(delta: float) -> void:
+	
+	
+	
+	if playMode:
+		size = (get_parent().get_viewport().size)
+		borderless =true
+	#size.y -= 8
+	#size = DisplayServer.window_get_size()
+	
+	#for i in get_children():
+	#	if "size" in i:
+	#		i.size = get_viewport().get_visible_rect().size
 
 func _on_loadButton_pressed():
 	loaderInit()
+	if cur != null and is_instance_valid(cur):
+		if inspector == null:
+			inspector = Inspector.new()
+			inspector.theme = load("res://addons/object-inspector/inspector_theme.tres")
+			inspector.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			inspector.size_flags_vertical = Control.SIZE_EXPAND_FILL
+				
+			optionsPanel.add_child(inspector)
+			
+		inspector.set_object(cur)
+		
 
 
-
-func loaderInit():
+func loaderInit(fast = false):
 	var param = []
 	
 	for i in paths.get_children():
-		if i.required == true and i.getPath().empty():
+		if i.required == true and i.getPath().is_empty():
 			i.setErrorText("*required")
 			return
 	
@@ -153,30 +267,45 @@ func loaderInit():
 		param.append(i.getPath())
 	
 	
-	
-	for i in paths.get_children().size():
-		var child = paths.get_child(i)
-		#gameToHistory[curName][i].append(child.getPath())
-		var t = gameToHistory[curName]
-		gameToHistory[curName][i] =child.getPath()
-	
-	#for i in paths.get_children():
-	#	print(i.name)
-	
-	#gameToHistory[curName] = paths.get_children()[0].getPath()
-	
-	updateHistoryFile()
-	
 	if cur == null:
 		return
 	
-	cur.initialize(param,(nameLabel.text+"_preview").to_lower())
 	
+	if !playMode:
+		
+		cur.initialize(param,curGameName,(nameLabel.text).to_lower())
+		ENTG.createEntityCacheForGame(get_tree(),false,nameLabel.text,cur,editedNode)
+	else:
+		cur.initialize(param,curGameName,(nameLabel.text).to_lower())
+		ENTG.createEntityCacheForGame(get_tree(),false,nameLabel.text,cur,editedNode)
+	
+	
+	for i in paths.get_children().size():
+		var child = paths.get_child(i)
+		
+		if gameToHistory[curName].size() == i:
+			gameToHistory[curName].append([])
+		
+		
+		gameToHistory[curName][i] =[child.getLabelText(),child.getPath(),gameToHistory[curName][i-1][2]]
+		
+		var historyTriple : Array = gameToHistory[curName][i]
+		
+		if !historyTriple[2].has(child.getPath()):
+			if historyTriple[2].size() > 3:
+				historyTriple[2].resize(3)
+				historyTriple[2].pop_front()
+			historyTriple[2].append(child.getPath())
+	updateHistoryFile()
+	
+	
+	if fast:
+		return
 
 	if is_instance_valid(curTree):
 		curTree.queue_free()
 	
-	var all = cur.getAll()
+	var all = cur.getAllCategories()
 	var tree = createTree()
 	curTree = tree
 	
@@ -188,10 +317,10 @@ func loaderInit():
 		all.erase("meta")
 	
 	for i in all:
-		populateTree(tree,i,all[i],meta)
+		populateTree(tree,i,[],meta)
 	
 
-func initializeThreaded(var arr):
+func initializeThreaded(arr):
 	var cur = arr[0]
 	var param = arr[1]
 	var gameName = arr[2]
@@ -200,16 +329,54 @@ func initializeThreaded(var arr):
 
 func createTree():
 	var tree = Tree.new()
-	tree.size_flags_horizontal = SIZE_EXPAND_FILL
-	tree.size_flags_vertical = SIZE_EXPAND_FILL
+	tree.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tree.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	tree.set_hide_root(true)
 	var root = tree.create_item()
 	tree.create_item(root)
 	cats.add_child(tree)
 	
-	tree.connect("item_selected",self,"itemSelected")
+	tree.connect("item_selected", Callable(self, "itemSelected"))
 	
+	tree.item_collapsed.connect(collapseOrExpand)
 	return tree
+
+func collapseOrExpand(item):
+	var itemText : String = item.get_text(0)
+	
+	if !itemText.is_empty():
+		if cur.getAllCategories().has(itemText):
+			itemSelected(item)
+			
+func populateSection(tree : Tree,item : TreeItem,subItems,meta):
+	var itemName = item.get_text(0)
+	tree.release_focus()
+	for i in subItems:
+		var subItem = tree.create_item(item)
+		subItem.set_meta("cat",itemName)
+		subItem.set_text(0,i)
+		
+		if meta != null:
+			if meta.has(i):
+				for m in meta[i].keys():
+					subItem.set_meta(m,meta[i][m])
+		subItem.collapsed = true
+		
+		if itemName == "fonts" or itemName == "themes":
+			subItem.set_meta("info",subItems[i])
+			continue
+		
+		if typeof(subItems) == TYPE_DICTIONARY :
+			
+			##if typeof(subItems[i]) == TYPE_DICTIONARY:
+			#	breakpoint
+			if typeof(subItems[i]) != TYPE_STRING:
+				for j in subItems[i]:
+					var subItem2 = tree.create_item(subItem)
+					#subItem2.set_meta("cat",itemName)
+					subItem2.set_meta("cat",itemName + "/" + i )
+					subItem2.set_text(0,j)
+	
 
 func populateTree(tree : Tree,itemName,subItems,meta):
 	var root = tree.get_root()
@@ -219,6 +386,9 @@ func populateTree(tree : Tree,itemName,subItems,meta):
 	item.collapsed = true
 	item.set_text(0,itemName)
 	
+	var dummyItem = tree.create_item(item)
+
+	
 	for i in subItems:
 		
 		
@@ -226,65 +396,103 @@ func populateTree(tree : Tree,itemName,subItems,meta):
 		subItem.set_meta("cat",itemName)
 		subItem.set_text(0,i)
 		
-		if meta.has(i):
-			for m in meta[i].keys():
-				subItem.set_meta(m,meta[i][m])
+		if meta != null:
+			if meta.has(i):
+				for m in meta[i].keys():
+					subItem.set_meta(m,meta[i][m])
 		subItem.collapsed = true
 		
-		if typeof(subItems) == TYPE_DICTIONARY:
+		if itemName == "fonts" or itemName == "themes":
+			subItem.set_meta("info",subItems[i])
+			continue
+		
+		if typeof(subItems) == TYPE_DICTIONARY :
+			
+			##if typeof(subItems[i]) == TYPE_DICTIONARY:
+			#	breakpoint
 			if typeof(subItems[i]) != TYPE_STRING:
 				for j in subItems[i]:
 					var subItem2 = tree.create_item(subItem)
-					subItem2.set_meta("cat",itemName)
+					#subItem2.set_meta("cat",itemName)
+					subItem2.set_meta("cat",itemName + "/" + i )
 					subItem2.set_text(0,j)
 				
 				
-func itemSelected():
-	var item = curTree.get_selected()
-#	
+func itemSelected(itemOveride = null):
+	await get_tree().physics_frame
+	var item : TreeItem= curTree.get_selected()
+	
+	if itemOveride != null:
+		item = itemOveride
+	
 	cat = "misc"
 	var txt = item.get_text(0)
 	
-	previewWorldContainer.visible = false
 	
+	#populateTree(curTree,txt,[],)
+	
+	previewWorldContainer.visible = false
+	$h/v3/preview/sondFontPath.visible = false
+	$h/v3/preview/fontPreview.visible = false
 	curEntTxt = txt
 	curMeta = {}
 	
-	for key in item.get_meta_list():
-		if key != "__focus_rect":
-			curMeta[key] = item.get_meta(key)
 	
 	if item.has_meta("cat"):
 		cat = item.get_meta("cat")
 	
-	if cat == "entities":
+	var categoryHierarchy = cat.split("/")
+
+	for key in item.get_meta_list():
+		if key != "__focus_rect":
+			curMeta[key] = item.get_meta(key)
+	
+	
+	
+	
+	if item.get_child_count() > 0:
+		var cText = item.get_child(0).get_text(0)
+		if cText == "":
+			var allEntries = getAllInCategory(item.get_text(0))
+			item.remove_child(item.get_child(0))
+			populateSection(curTree,item,allEntries,curMeta)
+	
+	if categoryHierarchy.has("entities"):
 		previewWorldContainer.visible = true
 		clearEnt()
 		
-		var ent  = ENTG.spawn(cur.get_tree(),txt,Vector3.ZERO,Vector3.ZERO,(nameLabel.text+"_preview").to_lower(),previewWorld)
 
-		
+		var ent  = ENTG.spawn(cur.get_tree(),txt,Vector3.ZERO,Vector3.ZERO,nameLabel.text.to_lower(),previewWorld,false,false,get_tree().root)
+
 		pEnt = ent
-
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		previewWorld.get_node("CameraTopDown").current = false
-		previewWorld.get_node("Camera").current = true
+		
+		if ent is Node2D:
+			ent.ready.connect(ent.reparent.bind(previewWorld2D))
+			#ent.reparent(previewWorld2D)
+			previewWorld2DContainer.visible = true
+			previewWorld2D.get_node("Camera2D").make_current()
+			
+			
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			previewWorld.get_node("CameraTopDown").current = false
+			previewWorld.get_node("Camera3D").current = true
 	
 	elif cat == "maps":
 		previewWorldContainer.visible = true
 		clearEnt()
 
 		previewWorld.get_node("CameraTopDown").current = true
-		previewWorld.get_node("Camera").current = false
+		previewWorld.get_node("Camera3D").current = false
 		
 		var mapNode = null
 		
 		if cur.has_method("createMapPreview"):
-			mapNode = cur.createMapPreview(txt,curMeta)
+			mapNode = cur.createMapPreview(txt,curMeta,false,get_tree().get_root())
 			
 			
 		else:
-			mapNode = cur.createMap(txt,curMeta)
+			mapNode = cur.createMap(txt,curMeta,false,get_tree().get_root())
 		
 		if mapNode.get_parent() != null:
 			mapNode.get_parent().remove_child(mapNode)
@@ -292,61 +500,121 @@ func itemSelected():
 		if mapNode != null:
 			pEnt = mapNode
 			previewWorld.add_child(mapNode)
+			
 		
+
 	elif cat == "sounds":
 		var sound = cur.createSound(txt,curMeta)
-		var player = AudioStreamPlayer.new()
 		
+		#var player = AudioStreamPlayer.new()
+		var player = get_node("h/v3/preview/audioPreview")
 		clearEnt()
 		
 		player.stream = cur.createSound(txt,curMeta)
 		player.play()
 		player.volume_db = -10
-		previewWorld.add_child(player)
-		pEnt = player
+		
 	elif cat == "textures":
+		clearEnt()
+		if !cur.has_method("createTexture"):
+			return
+		
 		var x =  cur.createTexture(curEntTxt,curMeta)
+		
+		if x == null:
+			return
+		
+		if "textureFiltering" in cur:
+			if cur.textureFiltering == false:
+				texturePreview.texture_filter  = DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST
+			else:
+				texturePreview.texture_filter  = DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR
+		
+		
+		if x.get_class() == "AnimatedTexture":
+			texturePreview.texture = x
+			return
+
+		
+		
+		if texturePreview.texture == null:
+			texturePreview.texture = ImageTexture.new()
 		texturePreview.texture.image = x
 	elif cat == "game modes":
+		clearEnt()
 		if cur.has_method("createGameModePreview"):
 			var x = cur.createGameModePreview(txt,curMeta)
 			texturePreview.texture = cur.createGameModePreview(txt,curMeta)
-		 
 	
-#	if cat == "game modes":
-#		$h/v2/ui/instanceButton.text = "play"
-#	else:
-#		$h/v2/ui/instanceButton.text = "instance"
-
+	elif cat == "fonts":
+		#curMeta["info"]["disableToDiskdisableToDisk"] = true
+		var pToDisk = cur.toDisk
+		cur.toDisk = false
+		var font = cur.fetchFont(txt,curMeta["info"])
+		cur.toDisk = pToDisk
+		$h/v3/preview/fontPreview.visible = true
+		#$h/v3/preview/fontPreview.add_theme_font_size_override("font",19)
+		$h/v3/preview/fontPreview.set("theme_override_font_sizes/font_size",16)
+		$h/v3/preview/fontPreview.add_theme_font_override("font",font)
+		
+	elif categoryHierarchy.has("mus") or categoryHierarchy.has("midi"):
+		
+		
+			
+		if midiPlayer == null:
+				
+			midiPlayer = ENTG.createMidiPlayer(SETTINGS.getSetting(get_tree(),"soundFont"))
+			previewNode.add_child(midiPlayer)
+				
+		
+		if categoryHierarchy.has("mus"):
+			var midiData :  PackedByteArray= cur.createMidi(txt)
+			ENTG.setMidiPlayerData(midiPlayer,midiData)
+			midiPlayer.play()
+			$h/v3/preview/sondFontPath.visible = true
+		
+		elif categoryHierarchy.has("midi"):
+			var midiData : PackedByteArray= cur.createMidi(txt)
+			ENTG.setMidiPlayerData(midiPlayer,midiData)
+			midiPlayer.play()
+			$h/v3/preview/sondFontPath.visible = true
+			
+			
+		
 
 func fetchLoader(loaderPath):
 	pass
 
-
-func _on_gameList_item_selected(index):#game selected
+func _on_gameList_item_selected(index: int):#game selected
 	
 	if gameList == null:
 		return
 	
-	#gameToHistory["selIndex"] = index
 	
-	get_node("%playButton").text = "play"
-	get_node("%playButton").disabled = false
+	clearEnt()
+	$h.get_node("%playButton").text = "Play"
+	$h.get_node("%playButton").disabled = false
 	
-	var gameLoader = gameList.get_item_metadata(index)
-	var gameName = gameList.get_item_text(index)
-	
+	var gameLoader  = gameList.get_item_metadata(index)
+	var gameName : String = gameList.get_item_text(index)
+	curGameName = gameName
+	curName = gameName
 	nameLabel.text = gameName.to_lower()
 	
 	if !gameToLoaderNode.has(gameName):
 		var loader = gameLoader
-		loader = load(loader).instance()
+		
+		if loader is not PackedScene:
+			loader = load(loader).instantiate()
+		else:
+			loader = loader.instantiate()
+			
 		add_child(loader)
 		gameToLoaderNode[gameName] = loader
 
 	
 	
-	for i in cats.get_children():
+	for i : Node in cats.get_children():
 		i.queue_free()
 	
 	clearEnt()
@@ -354,64 +622,92 @@ func _on_gameList_item_selected(index):#game selected
 	
 	cur = gameToLoaderNode[gameName]
 	
-	if "options" in cur:
-		if optionsPanel.get_child_count() > 0:
-			optionsPanel.remove_child(optionsPanel.get_child(0))
-		optionsPanel.add_child(cur.options)
-	else:
-		print("options not in cur")
-	
-	
-	
 	for i in paths.get_children():
 		i.queue_free()
 	
 	
-	var reqs = cur.getReqs(gameName)
+	var reqs : Array = cur.getReqs(gameName)
 	
+	if gameToHistory.has(gameName):
+		var initReqs : Array = reqs.duplicate(true)
+		reqs = []
+		for savedReq : Array in gameToHistory[gameName]:
+			var uiName : String = savedReq[0]
+			
+			for reqDef : Dictionary in initReqs:
+				var thisReqDef : Dictionary = reqDef.duplicate(true)
+				
+				if reqDef["UIname"] == uiName:
+					reqs.append(thisReqDef)
+					
+					if reqDef["required"] == false:
+						var count : int = 0
+						for i in reqs:
+							if i["UIname"] == uiName:
+								count +=1
+								if count > 1:
+									thisReqDef["extra"] = true
+				
+				
 	
-	curName = gameName
-	
-	var i = 0
+	var i : int = 0
 	
 	for rIdx in reqs.size():
-		var r = reqs[i]
-		var UIname = "path"
-		var required = true
-		var ext = ""
-		var multi = false 
-		var fileNames = []
-		var hints = []
-		
+		var r : Dictionary = reqs[i]
+		var UIname : String = "path"
+		var required : bool= true
+		var ext : Array= [""]
+		var multi : bool = false 
+		var fileNames : Array= []
+		var hints : Array = []
+		var extra : bool = false
 		if r.has("UIname") : UIname = r["UIname"]
 		if r.has("required") : required = r["required"]
 		if r.has("ext") : ext = r["ext"]
 		if r.has("multi") : multi = r["multi"]
 		if r.has("fileNames"): fileNames = r["fileNames"]
 		if r.has("hints"): hints = r["hints"]
+		if r.has("extra"): extra = r["extra"]
 		
 		
-		
-		var node = load("res://addons/gameAssetImporter/scenes/makeUI/path.tscn").instance()
-		
+		var node : Node = pathScenePacked.instantiate()
+		node.signalNewPathCreated.connect(newPathCreated)
+		node.removedSignal.connect(pathRemoved)
+		node.enterPressed.connect(_on_playButton_pressed)
 		node.required = required
 		node.many = multi
 		paths.add_child(node)
 		node.setText(UIname)
 		
-		if ext.empty():
+		
+		if extra:
+			node.showDeleteButton()
+			
+		if ext.is_empty():
 			node.setAsDir()
 		else:
-			node.setExt([ext])
+			node.setExt(ext)
 			
 		
+		if !fileNames.is_empty():
+			
+			var exts = []
+			
+			for e in ext:
+				exts.append(e.replace("*.",""))
+			
+			node.popupStrings = findFiles(fileNames,hints,exts)
+
+			
+		i+=1
+		
 		if gameToHistory.has(gameName):
-			if !gameToHistory[gameName].empty():
-				var savedPaths = gameToHistory[gameName]
+			if !gameToHistory[gameName].is_empty():
+				var savedPaths : Array = gameToHistory[gameName]
 				
 				if rIdx < savedPaths.size():
 				
-					var historyPath = gameToHistory[gameName][rIdx]
+					var historyPath : String = gameToHistory[gameName][rIdx][1]
 						
 					if historyPath.find(".") != -1:
 						if doesFileExist(historyPath):
@@ -419,27 +715,49 @@ func _on_gameList_item_selected(index):#game selected
 							
 					elif ENTG.doesDirExist(historyPath):
 						node.setPathText(historyPath)
+				
+				for path in savedPaths:
+					
+					if node.getLabelText() != path[0]:
+						continue
+					
+					for recentPath in path[2]:
+						if !node.popupStrings.has(recentPath) and node.getPath() != recentPath:
+							node.popupStrings.append(recentPath)
+					
+					if path[1] == "":
+						if node.getPathCount() > 0:
+							node.setPathText(node.popupStrings[0])
+					else:
+						break
+
+			else:
+				breakpoint 
 		
-		if !fileNames.empty():
-			node.popupStrings = findFiles(fileNames,hints,ext.replace("*.",""))
-			
-		i+=1
+	if cur.has_method("getCredits"):
+		creditsButton.visible = true
+	else:
+		creditsButton.visible = false
+
 				
 
 
 
 
 
-func _on_Button_pressed():
-	var l = load("res://addons/godotWad/scenes/entityDebugDialog.tscn").instance()
+func _on_debugButton_pressed():
+	var l = load("res://addons/gameAssetImporter/scenes/entityDebug/entityDebugDialog.tscn").instantiate()
 	add_child(l)
 	l.popup_centered_ratio(0.4)
 
 
-func clearEnt():
+func clearEnt() -> void:
 	if pEnt != null and is_instance_valid(pEnt):
 		pEnt.queue_free()
 		pEnt = null
+	
+	if midiPlayer != null:
+		midiPlayer.stop()
 	
 	texturePreview.texture  = null
 
@@ -459,7 +777,9 @@ func findFiles(files,hints,ext):
 	
 	for f in allFiles:
 		var fn = f.get_file().to_lower()
-		if files.has(fn):
+		
+	
+		if filesLower.has(fn):
 			ret.append(f)
 			found.append(fn)
 	
@@ -486,7 +806,19 @@ func findFiles(files,hints,ext):
 						
 						if found.size() == files.size():
 							return ret
+		
+		if target == "program files":
+			var dirs = findProgramFilesDir()
+			for j in dirs:
+				for f in files:
+					if ENTG.doesDirExist(j + postFix + "/" + f):
+						ret.append(j + postFix + "/" + f)
 						
+						found.append(f.to_lower())
+						
+						if found.size() == files.size():
+							return ret
+			
 		
 	
 	for i in ret.size():
@@ -494,7 +826,23 @@ func findFiles(files,hints,ext):
 	
 	return ret
 
+static func findProgramFilesDir() -> Array[String]:
+	var ret : Array[String] = []
+	var drives : Array[String] = getDrives()
+	
+	for i : String in drives:
+		if ENTG.doesDirExist(i + "/Program Files (x86)/"):
+			ret.append(i + "/Program Files (x86)/")
+		
+	return ret
 
+static func getDrives() -> Array[String]:
+	var ret : Array[String] = []
+	
+	for i in DirAccess.get_drive_count():
+		ret.append(DirAccess.get_drive_name(i))
+		
+	return ret
 
 static func getAllFlat(path,filter = null):
 	var ret = []
@@ -510,15 +858,14 @@ static func getAllFlat(path,filter = null):
 	return ret
 	
 	
-static func allInDirectory(path,filter=null):
+static func allInDirectory(path,filter=[]):
 	var files = []
-	var dir = Directory.new()
-	var res = dir.open(path)
+	var dir = DirAccess.open(path)
 	
-	if res != 0:
+	if dir == null:
 		return []
 		
-	dir.list_dir_begin()
+	dir.list_dir_begin()  # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
 	while true:
 		var file = dir.get_next()
@@ -529,22 +876,21 @@ static func allInDirectory(path,filter=null):
 			if file.find(".") == -1:
 				files.append(file)
 			else:
-				if filter != null:
-					var ext = file.split(".")
-					ext = ext[ext.size()-1].to_lower()
-					if ext.find(filter)!= -1:
-						files.append(file)
+				#if filter != null:
+				if !filter.is_empty():
+					for i in filter:
+						var ext = file.split(".")
+						ext = ext[ext.size()-1].to_lower()
+						if ext.find(i)!= -1:
+							files.append(file)
 				else:
 					files.append(file)
+					
 
 	dir.list_dir_end()
 
 	return files
 	
-	
-
-static func cachedPaths():
-	return
 
 
 
@@ -552,12 +898,16 @@ static func cachedPaths():
 
 func _on_instanceButton_pressed():
 	
-	if curEntTxt.empty():
+	if curEntTxt.is_empty():
 		return
 		
 	
 	var targetTree = get_tree()
 	
+	var returnCache = ENTG.fetchEntityCaches(targetTree,nameLabel.text,true)
+	
+	if returnCache == null:
+		return
 	
 	if cat == "game modes":
 		var mode = cur.createGameMode(curEntTxt,curMeta)
@@ -566,90 +916,164 @@ func _on_instanceButton_pressed():
 	
 	if cat ==  "maps":
 		var pGameName = cur.gameName
-		print("curNAme is:",curName)
 		cur.gameName = curName
-		ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur.getCreatorScript(),editedNode)
-		var map = cur.createMap(curEntTxt,curMeta)
+		#ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur,editedNode)
+		var map = cur.createMap(curEntTxt,curMeta,returnCache)
 		
 		cur.gameName = pGameName
 		
-		var returnCache = ENTG.fetchEntityCaches(targetTree,nameLabel.text,true)
 		
+		returnCache = copyDependentEntitiesToCacheAuto(targetTree)
 		return emit_signal("instance",map,returnCache)
 	
 	if cat == "textures":
-		var texture = cur.createTexture(curEntTxt,curMeta)
-		return
+		var image = cur.createTexture(curEntTxt,curMeta)
+		
+		if image == null:
+			return
+			
+		var type : String = image.get_class()
+		var texture = null
+		
+		if type == "Image":
+			texture = ImageTexture.new()
+			texture.image = image
+			
+		if type == "AnimatedTexture":
+			texture = image
+		
+		
+		var ret = Sprite2D.new()
+		
+		ret.texture = texture
+		
+		if "textureFiltering" in cur:
+			if cur.textureFiltering == false:
+				ret.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			else:
+				ret.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		
+		return emit_signal("instance",ret,returnCache)
 	
-	var info = cur.getEntityInfo(curEntTxt)
 	
-	if info == null:
-		return
 	ENTG.updateEntitiesOnDisk(targetTree)
 	
-	var e = ENTG.fetchEntityCaches(targetTree,"")
+	
 	
 	#if e.empty():
 	#	print("create enitty cache for game")
-	ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur.getCreatorScript(),editedNode)
+	#ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur,editedNode)
 
 
-	var ent = ENTG.fetchEntity(curEntTxt,targetTree,nameLabel.text+"_preview",false)
+	var ent = ENTG.fetchEntity(curEntTxt,targetTree,nameLabel.text,false,false,targetTree.get_root())
+	var depends = []
 	
 
-	if info.has("depends"):
-		if typeof(info["depends"]) == TYPE_STRING:
-			ENTG.fetchEntity(info["depends"],targetTree,nameLabel.text,false).queue_free()
-		else:
-			for i in info["depends"]:
-				ENTG.fetchEntity(i,targetTree,nameLabel.text,false).queue_free()
-			
-			
+	if ent.has_meta("entityDepends"):
+		depends = ent.get_meta("entityDepends")
+		returnCache = copyDependentEntitiesToCache(targetTree,ent,depends)
 		
-	var returnCache = null
-	if info.has("depends"):
-		returnCache = ENTG.fetchEntityCaches(targetTree,nameLabel.text,true)
-	
-	
+		
 	emit_signal("instance",ent,returnCache)
 	
 
-
-func getTree() -> SceneTree:
+func copyDependentEntitiesToCacheAuto(targetTree):
+	var cacheSrc =  ENTG.fetchEntityCaches(targetTree,"",false,get_tree().get_root())[0]
+	var cacheDest = ENTG.fetchEntityCaches(targetTree,"",false,editedNode)[0]
+	var visited = []
+	var procArray : PackedStringArray = []
 	
+	for ent in cacheSrc.get_children():
+		if ent.has_meta("entityDepends"):
+			for depEnt in ent.get_meta("entityDepends"):
+				if !procArray.has(depEnt):
+					procArray.append(depEnt)
+	
+	
+	recursiveMove(cacheSrc,cacheDest,procArray,visited)
+	return cacheDest
+		#copyDependentEntitiesToCache(visited)
+	
+	
+
+
+func copyDependentEntitiesToCache(targetTree,ent,depends,visited = []):
+	var cacheSrc =  ENTG.fetchEntityCaches(targetTree,"",false,get_tree().get_root())[0]
+	var cacheDest = ENTG.fetchEntityCaches(targetTree,"",false,editedNode)[0]
+
+	
+	cacheSrc.print_tree_pretty()
+	cacheDest.print_tree_pretty()
+	
+	if ent.has_meta("entityDepends"):
+		depends = ent.get_meta("entityDepends")
+		recursiveMove(cacheSrc,cacheDest,depends,visited)
+	
+	return cacheDest
+	
+
+func recursiveMove(source : Node,dest : Node,entStrArr,visited = []):
+	
+	
+	
+	
+	for entStr in entStrArr:
+		entStr = entStr.to_lower()
+		if visited.has(entStr):
+			continue
+		
+		var entity = source.get_node_or_null(entStr)
+		
+		if entity == null:
+			continue
+
+		if !dest.has_node(entStr):
+			print("reparented ent to dest")
+			entity.reparent(dest)
+		
+		visited.append(entStr)
+		
+		if entity.has_meta("entityDepends"):
+			var depends = entity.get_meta("entityDepends")
+			recursiveMove(source,dest,depends,visited)
+		
+	
+
+	
+func getTree():
+	print("editedNode:",editedNode)
 	if  editedNode != null:
+		print("edited node path =",editedNode.get_path())
 		return editedNode
 	
 	return get_tree()
 		
 		
 
-func getSettingsAsText():
+func getSettingsAsText() -> String:
 	
-	var selectedGame = ""
+	var selectedGame : String = ""
 	
-	if !gameList.get_selected_items().empty():
+	if !gameList.get_selected_items().is_empty():
 		selectedGame = gameList.get_item_text(gameList.get_selected_items()[0])
 	
-	var settingsDict = {
+	var settingsDict : Dictionary = {
 		
 		"savedToPath":gameToHistory,
 		"selectedGame": selectedGame,
 		"previousFiles": previousFiles
 	}
-	return var2str(settingsDict)
+	return var_to_str(settingsDict)
 
-func makeHistoryFile():
+func makeHistoryFile() -> void:
 	
-	if !doesFileExist("history.txt"):
-		var f = File.new()
-		f.open("history.txt",File.WRITE)
+	if !doesFileExist("history.cfg"):
+		var f : FileAccess = FileAccess.open("history.cfg",FileAccess.WRITE)
 		f.store_string(getSettingsAsText())
 		f.close()
 	
-	var f = File.new()
-	f.open("history.txt",File.READ_WRITE)
-	var savedSettingsDict =  str2var(f.get_as_text())
+	var f : FileAccess= FileAccess.open("history.cfg",FileAccess.READ_WRITE)
+	var savedSettingsDict =  str_to_var(f.get_as_text())
 	
 	
 	
@@ -658,46 +1082,58 @@ func makeHistoryFile():
 		f.close()
 		return
 
-	var gameHistoryDict = savedSettingsDict["savedToPath"]
+	var gameHistoryDict : Dictionary = savedSettingsDict["savedToPath"]
 	
-	for gameName in gameHistoryDict.keys():
-		for pathIdx in gameHistoryDict[gameName].size():
-			var pathStr = gameHistoryDict[gameName][pathIdx]
+	for gameName : String in gameHistoryDict.keys():
+		for pathIdx : int in gameHistoryDict[gameName].size():
 			
+			var curGameHistory : Array = gameHistoryDict[gameName]
+			var pathStr : String = curGameHistory[pathIdx][1]
 			
-			if pathStr.empty():
+			if pathStr.is_empty():
 				continue
 			
-				
+			var labelText : String = curGameHistory[pathIdx][0]
+			var recents : Array = curGameHistory[pathIdx][2]
+			
+
 			if pathStr.find(".") != -1:
 				if doesFileExist(pathStr):
+					if gameToHistory[gameName].size() == pathIdx:
+						gameToHistory[gameName].append(["","",[]])
 					
-					gameToHistory[gameName][pathIdx]= pathStr
+					
+					gameToHistory[gameName][pathIdx][0]= labelText
+					gameToHistory[gameName][pathIdx][1]= pathStr
+					gameToHistory[gameName][pathIdx][2] = recents
+					
 			else:
 				if ENTG.doesDirExist(pathStr):
+					gameToHistory[gameName][pathIdx][0]= labelText
+					gameToHistory[gameName][pathIdx][1]= pathStr
+					gameToHistory[gameName][pathIdx][2] = recents
 					
-					gameToHistory[gameName][pathIdx]= pathStr
-					
-					
-	if !savedSettingsDict["selectedGame"].empty():
-		var target = savedSettingsDict["selectedGame"]
-		for i in gameList.get_item_count():
+	
+	
+	
+	if !savedSettingsDict["selectedGame"].is_empty():
+		var target : String = savedSettingsDict["selectedGame"]
+		for i : int in gameList.get_item_count():
 			if gameList.get_item_text(i)== target:
 				gameList.select(i)
 				_on_gameList_item_selected(i)
+				break
 			
 		
 		
 	f.close()
 	
 func updateHistoryFile():
-	if !doesFileExist("history.txt"):
-		var f = File.new()
-		f.open("history.txt",File.WRITE)
+	if !doesFileExist("history.cfg"):
+		var f = FileAccess.open("history.cfg",FileAccess.WRITE)
 		f.close()
 	
-	var f = File.new()
-	f.open("history.txt",File.WRITE)
+	var f = FileAccess.open("history.cfg",FileAccess.WRITE)
 	f.store_string(getSettingsAsText())
 	f.close()
 
@@ -712,9 +1148,7 @@ func createHistDict():
 	return dict
 
 static func doesFileExist(path : String) -> bool:
-	var f : File = File.new()
-	var ret = f.file_exists(path)
-	f.close()
+	var ret = FileAccess.file_exists(path)
 	return ret
 
 
@@ -731,27 +1165,59 @@ func createMapThread(arr):
 	
 	ENTG.recursiveOwn(map,map)
 	var ps = PackedScene.new()
+
+	
+	for i in map.get_children():
+		#if i.name == "Entities":
+		#	i.get_parent().remove_child(i)
+		
+		#if i.name == "SectorSpecials":
+		#	i.get_parent().remove_child(i)
+			
+		#if i.name == "Geometry":
+		#	i.get_parent().remove_child(i)
+		
+		#if i.name == "Interactables":
+		#	i.get_parent().remove_child(i)
+		
+		pass
+	
+	
+	
+	for i in map.get_children():
+		print(i.name)
+	
 	ps.pack(map)
-	
+
 	var destPath = "res://game_imports/"+cur.gameName+"/maps/"+curEntTxt+".tscn"
-	ResourceSaver.save(destPath,ps)
+	
+	
+	for i in map.get_children():#this is needed to stop ghost nodes
+		map.remove_child(i)
+	
+
+	
+	#OS.delay_msec(2000)
+	ResourceSaver.save(ps,destPath)
+	
+	print("map saved")
+	#OS.delay_msec(2000)
+	
 	map.queue_free()
+	#
+	emit_signal("diskInstance",ResourceLoader.load(destPath).instantiate())
 	
-	emit_signal("diskInstance",ResourceLoader.load(destPath).instance())
-	
-	#emit_signal("diskInstance",map)
 
 var headThread = null
 
 func _on_importButton_pressed():
 	oldName = cur.gameName
 	
-	if curEntTxt.empty():
+	
+	if curEntTxt.is_empty():
 		return
 	
-	print("import button pressed")
 	
-
 	if "toDisk" in cur:#legacy
 		pToDisk  = cur.toDisk
 		cur.toDisk = true
@@ -760,12 +1226,13 @@ func _on_importButton_pressed():
 	
 	var addSignal = true
 	
-	for sig in cur.get_signal_connection_list("fileWaitDone"):
-		if sig["target"] == self:
+	for sig in cur.get_signal_connection_list("fileWaitDoneSignal"):
+
+		if sig["callable"].get_object() == self:
 			addSignal = false
 	
 	if addSignal == true:
-		cur.connect("fileWaitDone",self,"importTailFlagSet")
+		cur.connect("fileWaitDoneSignal", Callable(self, "importTailFlagSet"))
 		
 	headThread = Thread.new()
 	importHead()
@@ -783,22 +1250,28 @@ func importHead():
 	
 	
 	tailEntStr = curEntTxt
-	
+	var categoryHierarchy = cat.split("/")
 	
 	if cat == "maps":
 		cur.createMapResourcesOnDisk(curEntTxt,curMeta,editorInterface)
 	elif cat == "game modes":
 		curMeta["destPath"] = "res://game_imports/"+cur.gameName
 		cur.createGameModeResourcesOnDisk(curEntTxt,curMeta,editorInterface)
+	elif categoryHierarchy.has("midi") or categoryHierarchy.has("mus"):
+		cur.createMidiOnDisk(curEntTxt,curMeta,editorInterface)
+		importTailFlagSet()
+	elif cat == "textures":
+		cur.createTextureDisk(curEntTxt,curMeta,editorInterface)
+		importTailFlagSet()
+	elif cat == "fonts":
+		var font = cur.fetchFont(curEntTxt,curMeta)
+	elif cat == "themes":
+		curMeta["destPath"] = "res://game_imports/"+cur.gameName +"/themes/"
+		var theme = cur.createThemeDisk(curEntTxt,curMeta)
 	else:
-		var e = ENTG.fetchEntityCaches(targetTree,nameLabel.text)
-
-		if e.empty():
-			ENTG.createEntityCacheForGame(targetTree,false,nameLabel.text,cur.getCreatorScript(),editedNode)
 		cur.createEntityResourcesOnDisk(curEntTxt,curMeta,editorInterface)
+	
 
-	
-	
 	
 	
 	
@@ -806,13 +1279,15 @@ var mapThread = Thread.new()
 
 func _physics_process(delta):
 	
-	
-	
 	if texturePreview != null:
 		texturePreview.visible = false
 	
 		if texturePreview.texture != null:
-			if texturePreview.texture.image != null:
+			var t = texturePreview.texture.get_class()
+			if texturePreview.texture.get_class() != "AnimatedTexture":
+				if texturePreview.texture.image != null:
+					texturePreview.visible = true
+			else:
 				texturePreview.visible = true
 	
 	
@@ -825,7 +1300,7 @@ func _physics_process(delta):
 	else:
 		setOptionsVisibility(false)
 	
-	$h/v3/preview/ViewportContainer/Viewport/StaticBody.visible = previewWorld.get_node("Camera").current
+	$h/v3/preview/SubViewportContainer/SubViewport/StaticBody3D.visible = previewWorld.get_node("Camera3D").current
 
 		
 
@@ -863,34 +1338,33 @@ func gameListGrabFocus():
 	gameList.grab_focus()
 
 func importTail(entStr,cat):
+	var cats = cat.split("/")
 	ENTG.updateEntitiesOnDisk(get_tree())
-	if cat == "entities":
+	
+	if cats.has("entities"):
 		var ent = ENTG.fetchEntity(curEntTxt,get_tree(),nameLabel.text,true)
-		
 		if ent != null:
 			if ent.get_parent() != null:
 				ent.get_parent().remove_child(ent)
-		
 		emit_signal("diskInstance",ent)
 	elif cat == "maps":
 		hide()
 		createMapThread([cur,entStr])
+		
 	elif cat == "game modes":
 		curMeta["destPath"] = "res://game_imports/"+nameLabel.text
 		var node = cur.createGameModeDisk(curEntTxt,curMeta,get_tree(),nameLabel.text)
 		emit_signal("diskInstance",node)
-		
+
 	
 	cur.gameName = oldName
 	if "toDisk" in cur:
 		cur.toDisk = pToDisk
 
-func createDirectories(var gameName,var dirs = ["textures","materials","sounds","sprites","textures/animated","entities","fonts","maps"]):
+func createDirectories(gameName, dirs = ["textures","materials","sounds","sprites","textures/animated","entities","fonts","maps","themes"]):
 
 	
-	var directory = Directory.new()
-	
-	directory.open("res://")
+	var directory = DirAccess.open("res://")
 	
 	
 	var split = (destPath+gameName).lstrip("res://")
@@ -901,25 +1375,36 @@ func createDirectories(var gameName,var dirs = ["textures","materials","sounds",
 		for i in subDirs.size():
 			var path = "res://"
 			for j in i+1:
-				directory.open(path)
+				directory = directory.open(path)
 				path += subDirs[j] + "/"
 				createDirIfNotExist(path,directory)
 				
-			directory.open(path)
+			directory =directory.open(path)
 	
 	
 	directory.open(destPath+nameLabel.text)
 	
 	for i in dirs:
-		createDirIfNotExist(i,directory)
+		var initDir = directory.get_current_dir()
+		
+		var subs = i.split("/")
+		
+		
+		if subs.size() == 1:
+			createDirIfNotExist(i,directory)
+		else:
+			createDirIfNotExist(subs[0],directory)
+			createDirIfNotExist(i,directory)
+		
+		directory.open(initDir)
 	
 
 	
-	
-	var e = cur.getEntityDict()
-	for ent in e:
-		if "category" in e[ent]:
-			createDirIfNotExist(destPath+nameLabel.text+"/entities/" + e[ent]["category"],directory)
+	if cur.has_method("getEntityDict"):
+		var e = cur.getEntityDict()
+		for ent in e:
+			if "category" in e[ent]:
+				createDirIfNotExist(destPath+nameLabel.text+"/entities/" + e[ent]["category"],directory)
 	
 
 	
@@ -932,7 +1417,11 @@ func createDirectories(var gameName,var dirs = ["textures","materials","sounds",
 	
 
 	
-func createDirIfNotExist(path,dir):
+func createDirIfNotExist(path : String,dir : DirAccess):
+	var t = dir.get_current_dir()
+
+	#if !dir.dir_exists_absolute(path):
+	#	dir.make_dir(path)
 	if !dir.dir_exists(path):
 		dir.make_dir(path)
 		
@@ -941,11 +1430,11 @@ func createDirIfNotExist(path,dir):
 func waitForDirToExist(path):
 	var waitThread = Thread.new()
 	
-	waitThread.start(self,"waitForDirToExistTF",path)
+	waitThread.start(Callable(self, "waitForDirToExistTF").bind(path))
 	waitThread.wait_to_finish()
 	
 func waitForDirToExistTF(path):
-	var dir = Directory.new()
+	var dir = DirAccess.open(path)
 	while !dir.dir_exists(path):
 
 		OS.delay_msec(10)
@@ -965,29 +1454,111 @@ func _on_playButton_pressed():
 		return
 	
 	for i in paths.get_children():
-		if i.required == true and i.getPath().empty():
+		if i.required == true and i.getPath().is_empty():
 			i.setErrorText("*required")
 			return
-	
+			
 	loaderInit()
 
-	var all = cur.getAll()
+	var all = cur.getAllGameModes()
 	
 	var noGameMode = false
 	
-	if !all.has("game modes"):
-		noGameMode = true
-		
-	if all["game modes"].size() == 0:
+	if all.is_empty():
 		noGameMode = true
 		
 	if noGameMode:
 		get_node("%playButton").text = "No game mode implemented"
 		get_node("%playButton").disabled = true
 		return
-	var gamdeModeName = all["game modes"].keys()[0]
-	var gameMode = all["game modes"][gamdeModeName]
-	var meta = all["meta"][gamdeModeName]
-	var mode = cur.createGameMode(gamdeModeName,meta)
+	var gamdeModeName = all.keys()[0]
+	var gameMode = all[gamdeModeName]
+	var meta = {"path":all[gamdeModeName]}
+	meta["loader"]= cur
+	var mode = cur.createGameMode(gamdeModeName,meta,curName,curGameName)
+	
 	get_tree().get_root().add_child(mode)
+	
 	queue_free()
+
+
+func _on_close_requested():
+	hide()
+
+func soundFontSet(path):
+	if midiPlayer != null:
+		midiPlayer.soundfont = path
+		
+	SETTINGS.setSetting(get_tree(),"soundFont",path)
+	
+func newPathCreated(creator : Node,created : Node):
+	pass
+			
+func pathRemoved(pathNode):
+	var curEntry : Array = gameToHistory[curGameName]
+	var targetPAth = pathNode.getPath()
+	
+	for i in paths.get_child_count():
+		if paths.get_child(i) == pathNode:
+			curEntry.remove_at(i)
+			return
+
+func getFilesInDir(dirPath : String) -> Array[String]:
+	var ret : Array[String] = []
+	var dir = DirAccess.open(dirPath)
+	
+	var files = dir.get_files()
+	
+	for filePath : String in files:
+		if filePath.find("_Loader") != -1:
+			return [filePath]
+
+	
+	return ret
+
+func getAllInCategory(categoryName : String):
+	
+	if categoryName == "entities":
+		return cur.getAllEntites()
+	elif categoryName == "sounds":
+		return cur.getAllSounds()
+	elif categoryName == "maps":
+		return cur.getAllMaps()
+	elif categoryName == "music":
+		return cur.getAllMusic()
+	elif categoryName == "fonts":
+		return cur.getAllFonts()
+	elif categoryName == "textures":
+		return cur.getAllTextures()
+	elif categoryName == "game modes":
+		return cur.getAllGameModes()
+	elif categoryName == "themes":
+		return cur.getAllThemes()
+	
+
+
+func _on_loader_options_pressed() -> void:
+	ENTG.showObjectInspector(cur)
+
+
+func _on_credits_button_pressed() -> void:
+	
+	if cur == null:
+		return
+		
+	var creds = cur.getCredits()
+	var credList: Window = load("res://addons/godotWad/scenes/credits/creditsWindow.tscn").instantiate()
+	credList.get_child(0).values = creds
+	get_tree().get_root().add_child(credList)
+	credList.popup_centered_ratio()
+	
+func printCaches():
+	for i in ENTG.fetchEntityCaches(cur.get_tree(),nameLabel.text.to_lower()):
+		if i.is_inside_tree():
+			print(i.get_path())
+		else:
+			print("orphan")
+		
+		i.print_tree_pretty()
+	
+	print("---")

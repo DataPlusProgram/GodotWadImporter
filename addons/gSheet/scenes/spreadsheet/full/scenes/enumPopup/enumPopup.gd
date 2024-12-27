@@ -1,5 +1,5 @@
-tool
-extends Popup
+@tool
+extends Window
 signal selectedItem 
 
 var item
@@ -31,4 +31,4 @@ func _on_select_pressed():
 
 
 func _on_ItemList_item_activated(index):
-	 _on_select_pressed()
+	_on_select_pressed()

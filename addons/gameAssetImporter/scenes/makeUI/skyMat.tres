@@ -1,0 +1,6 @@
+[gd_resource type="PhysicalSkyMaterial" format=3 uid="uid://hh1g5o67juje"]
+
+[resource]
+sun_disk_scale = 39.05
+ground_color = Color(0.0901961, 0.0745098, 0.0509804, 1)
+energy_multiplier = 3.6

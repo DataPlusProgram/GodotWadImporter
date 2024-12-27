@@ -1,0 +1,186 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://bwsgaf7cv1ysp"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_vo1yb"]
+
+[resource]
+script = ExtResource("1_vo1yb")
+data = {
+"-2": {
+"alpha": "",
+"changeTexture": "",
+"cumulative": "",
+"dest": 16,
+"direction": 2,
+"doorSpeed": 2,
+"inc": "",
+"keyType": 4,
+"loop": "",
+"secret": "",
+"specialType": "",
+"speed": "",
+"startDelay": "",
+"stayOpen": "",
+"str": "stair",
+"triggerType": 9,
+"type": 1,
+"value": 0,
+"vector": "",
+"wait": "",
+"waitOpen": ""
+},
+"0": {
+"alpha": "",
+"changeTexture": "",
+"cumulative": "",
+"dest": 16,
+"direction": 2,
+"doorSpeed": 2,
+"inc": "",
+"keyType": 4,
+"loop": "",
+"secret": "",
+"specialType": "",
+"speed": "",
+"startDelay": "",
+"stayOpen": "",
+"str": "dummy",
+"triggerType": 9,
+"type": 10,
+"value": 0,
+"vector": "",
+"wait": "",
+"waitOpen": ""
+},
+"242": {
+"alpha": "",
+"changeTexture": "WATER0",
+"cumulative": "",
+"dest": 16,
+"direction": 0,
+"doorSpeed": 2,
+"inc": "",
+"keyType": 4,
+"loop": "",
+"secret": "",
+"specialType": "fakeFloorAndCeilingLegacy",
+"speed": "",
+"startDelay": "",
+"stayOpen": "",
+"str": "fakeFloorAndCeiling (legacy)",
+"triggerType": 8,
+"type": 13,
+"value": 0,
+"vector": "",
+"wait": "",
+"waitOpen": ""
+},
+"meta": {
+"colNames": ["str", "type", "triggerType", "wait", "direction", "stayOpen", "dest", "inc", "value", "waitOpen", "changeTexture", "keyType", "speed", "vector", "loop", "startDelay", "doorSpeed", "specialType", "alpha", "secret", "cumulative"],
+"enumColumns": {
+1: {
+"@DUMMY": 13,
+"ALPHA": 12,
+"CEILING": 9,
+"CRUSHER": 3,
+"DOOR": 0,
+"DUMMY": 10,
+"EXIT": 5,
+"FLOOR": 1,
+"LIFT": 2,
+"LIGHT": 6,
+"SCROLL": 7,
+"STAIR": 4,
+"STOPPER": 11,
+"TELEPORT": 8
+},
+2: {
+"@DUMMY": 9,
+"DOOR": 0,
+"DOOR1": 1,
+"GUN1": 6,
+"GUNR": 7,
+"NONE": 8,
+"SWITCH1": 2,
+"SWITCHR": 3,
+"WALK1": 4,
+"WALKR": 5
+},
+4: {
+"@DUMMY": 2,
+"DOWN": 1,
+"UP": 0
+},
+6: {
+"@DUMMY": 16,
+"FLOOR": 11,
+"FLOOR_up8": 12,
+"HIGHEST_ADJ_CEILING": 10,
+"HIGHEST_ADJ_FLOOR": 13,
+"HIGHEST_NFLOOR_EXC": 14,
+"LOWEST_ADJ_CEILING": 0,
+"LOWEST_ADJ_CEILING_DOWN8": 9,
+"LOWEST_ADJ_FLOOR": 1,
+"NEXT_HIGHEST_FLOOR": 2,
+"NEXT_HIGHEST_FLOOR_up8": 8,
+"NEXT_LOWEST_FLOOR": 3,
+"SHORTEST_LOWER_TEXTURE": 15,
+"up24": 5,
+"up32": 6,
+"up512": 7,
+"up8": 4
+},
+8: {
+"@DUMMY": 0,
+"HIGHEST_ADJ": -2,
+"LOWEST_ADJ": -1
+},
+11: {
+"@DUMMY": 4,
+"BLUE": 2,
+"GREEN": 1,
+"RED": 0,
+"YELLOW": 3
+},
+16: {
+"@DUMMY": 2,
+"FAST": 1,
+"NORMAL": 0
+}
+},
+"enumColumnsPrefix": {
+1: "LTYPE",
+2: "TTYPE",
+4: "DIR",
+6: "DEST",
+8: "LIGHTCAT",
+11: "KEY",
+16: "DOORSPEED"
+},
+"hasId": false,
+"rowOrder": ["-2", "0", "242"],
+"sheetWidth": 9425.0,
+"splitSize": {
+0: 382,
+1: 98,
+2: 105,
+3: 0,
+4: 55,
+5: 23,
+6: 239,
+7: 0,
+8: 125,
+9: 0,
+10: 112,
+11: 89,
+12: 0,
+13: 0,
+14: 0,
+15: 36,
+16: 107,
+17: 0,
+18: 0,
+19: 79,
+20: 0
+}
+}
+}

@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://bn8k05nfvf223"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_fpot3"]
+
+[resource]
+script = ExtResource("1_fpot3")
+data = {
+"0": {
+"Dur": 1,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 0,
+"Sprite": "PLSGA0",
+"flashFrame": "",
+"flashSprite": ""
+},
+"1": {
+"Dur": 1.5,
+"Frame": "A2",
+"Function": "shootState",
+"Lit": "",
+"Next": 2,
+"Sprite": "PLSFA0",
+"flashFrame": "",
+"flashSprite": ""
+},
+"2": {
+"Dur": 1.5,
+"Frame": "A",
+"Function": "",
+"Lit": "",
+"Next": 3,
+"Sprite": "PLSFA0",
+"flashFrame": "",
+"flashSprite": ""
+},
+"3": {
+"Dur": 20,
+"Frame": "B",
+"Function": "checkFire",
+"Lit": "",
+"Next": 0,
+"Sprite": "PLSGB0",
+"flashFrame": "",
+"flashSprite": ""
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "flashSprite", "flashFrame"],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3"],
+"sheetWidth": 2437.0,
+"splitSize": {
+0: 66,
+1: 64,
+2: 0,
+3: 0,
+4: 65,
+5: 93,
+6: 126,
+7: 0
+}
+}
+}

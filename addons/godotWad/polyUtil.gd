@@ -11,12 +11,12 @@ static func rev(a,b,debug=false):
 		
 
 	
-	var ai = Geometry.is_polygon_clockwise(a)
-	var bi = Geometry.is_polygon_clockwise(b)
+	var ai = Geometry2D.is_polygon_clockwise(a)
+	var bi = Geometry2D.is_polygon_clockwise(b)
 	
 	
-	if Geometry.is_polygon_clockwise(a): a.invert()
-	if !Geometry.is_polygon_clockwise(b): b.invert()
+	if Geometry2D.is_polygon_clockwise(a): a.invert()
+	if !Geometry2D.is_polygon_clockwise(b): b.invert()
 	
 	
 	a = polyWithoutDuplicateVerts2(a)
@@ -63,9 +63,9 @@ static func rev(a,b,debug=false):
 		var n = Node2D.new()
 		n.name = "flee"
 		
-		n.add_child(makeCircleNode(aVert,0.05,Color.white))
-		n.add_child(makeCircleNode(aSplit[0],0.05,Color.red))
-		n.add_child(makeCircleNode(aSplit[1],0.05,Color.black))
+		n.add_child(makeCircleNode(aVert,0.05,Color.WHITE))
+		n.add_child(makeCircleNode(aSplit[0],0.05,Color.RED))
+		n.add_child(makeCircleNode(aSplit[1],0.05,Color.BLACK))
 		
 		#if !doesSegOverlapPoly(aSplit[0],bSplit[0],b):
 		#	n.add_child(makeLineNode(aSplit[0],bSplit[0],"0,0"))
@@ -137,8 +137,8 @@ static func rev(a,b,debug=false):
 	var fillerPoly1 = [b[b1],a[a2],a[a1]]
 	var fillerPoly2 = [a[a2],b[b2],b[b1]]
 	
-	if !Geometry.is_polygon_clockwise(fillerPoly1): fillerPoly1.invert()
-	if !Geometry.is_polygon_clockwise(fillerPoly2): fillerPoly2.invert()
+	if !Geometry2D.is_polygon_clockwise(fillerPoly1): fillerPoly1.invert()
+	if !Geometry2D.is_polygon_clockwise(fillerPoly2): fillerPoly2.invert()
 	#fillerPoly1.polygon = [b[b1],a[a2],a[a1]]
 	#if debug:
 	#	print(a1,",",b1,",",b2,",",a1)
@@ -185,10 +185,10 @@ static func findNewVertTrace(poly,point,dir = Vector2.RIGHT):
 		var b = poly[(i+1)%poly.size()]
 		
 		
-		var contact = Geometry.segment_intersects_segment_2d(a,b,segA,segB)
+		var contact = Geometry2D.segment_intersects_segment(a,b,segA,segB)
 		
 		if contact == null:
-			contact =Geometry.segment_intersects_segment_2d(segA,segB,a,b)
+			contact = Geometry2D.segment_intersects_segment(segA,segB,a,b)
 			
 		
 		if contact != null:
@@ -211,7 +211,7 @@ func getPointOnPolyClosestToPoint(poly,point):
 		var a = poly[segIdx]
 		var b = poly[abs((segIdx+1)%poly.size())]
 		
-		var p = Geometry.get_closest_point_to_segment_2d(point,a,b)
+		var p = Geometry2D.get_closest_point_to_segment(point,a,b)
 		var dist = p.distance_squared_to(point)
 		
 		if dist < closestDist:
@@ -278,8 +278,8 @@ static func canalTwoPolys(polyA,polyB,leaveA,enterB,leaveB,enterA,bIsHole=true):
 
 	
 
-	var shapeHalf1: PoolVector2Array = []
-	var shapeHalf2: PoolVector2Array = []
+	var shapeHalf1: PackedVector2Array = []
+	var shapeHalf2: PackedVector2Array = []
 	
 	var newPolyA  = []
 	
@@ -325,7 +325,7 @@ static func addVertToPoly(poly,point,trackedPoint = null):
 		var segA = poly[i]
 		var segB = poly[(i+1)%poly.size()]
 
-		var closest = Geometry.get_closest_point_to_segment_2d(point,segA,segB)
+		var closest = Geometry2D.get_closest_point_to_segment(point,segA,segB)
 		var dist = point.distance_squared_to(closest)
 
 		if dist < minDist:
@@ -411,25 +411,25 @@ static func doesSegOverlapPoly(segA,segB,poly):
 		#polySegA = polySegA+(polySegB-polySegA)*0.1
 		#polySegB = polySegA+(polySegB-polySegA)*0.9
 		
-		var contact = Geometry.segment_intersects_segment_2d(segA,segB,polySegA,polySegB)
+		var contact = Geometry2D.segment_intersects_segment(segA,segB,polySegA,polySegB)
 		if contact != null:
 			return true
 			
 		if contact == null:
-			contact =Geometry.segment_intersects_segment_2d(polySegA,polySegB,segA,segB)
+			contact = Geometry2D.segment_intersects_segment(polySegA,polySegB,segA,segB)
 			if contact != null:
 				return true
 		
 	return false
 
 
-static func makeLineNode(a,b,lineName,col = Color.blue):
+static func makeLineNode(a,b,lineName,col = Color.BLUE):
 	
 	var line = Line2D.new()
 	line.name = lineName
 	line.width= 0.02
 	line.default_color = col
-	line.points = PoolVector2Array([a,b])
+	line.points = PackedVector2Array([a,b])
 	
 	return line
 
@@ -438,11 +438,11 @@ static func saveLine(a,b,lineName):
 	WADG.saveNodeAsScene(makeLineNode(a,b,lineName))
 
 
-static func makeCircleNode(pos,radius = 1,color = Color.black):
+static func makeCircleNode(pos,radius = 1,color = Color.BLACK):
 	var verts = []
 	var i = 0
 	while i < 360:
-		verts.append(Vector2(radius*sin(deg2rad(i)),radius*cos(deg2rad(i)))+pos) 
+		verts.append(Vector2(radius*sin(deg_to_rad(i)),radius*cos(deg_to_rad(i)))+pos) 
 		i += 20
 	
 	var poly = Polygon2D.new()

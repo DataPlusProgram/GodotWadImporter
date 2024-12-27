@@ -1,0 +1,376 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://be2ncgxj6731r"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_mq2vo"]
+
+[resource]
+script = ExtResource("1_mq2vo")
+data = {
+"0": {
+"": "",
+"Dur": 15,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "FATTA"
+},
+"1": {
+"": "",
+"Dur": 15,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "FATTB"
+},
+"10": {
+"": "",
+"Dur": 4,
+"Frame": "E",
+"Function": "chase",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "FATTE"
+},
+"11": {
+"": "",
+"Dur": 4,
+"Frame": "E",
+"Function": "chase",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "FATTE"
+},
+"12": {
+"": "",
+"Dur": 4,
+"Frame": "F",
+"Function": "chase",
+"Lit": false,
+"Next": 13,
+"Paramters": "",
+"Sprite": "FATTF"
+},
+"13": {
+"": "",
+"Dur": 4,
+"Frame": "F",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "FATTF"
+},
+"14": {
+"": "fatRaise",
+"Dur": 20,
+"Frame": "G",
+"Function": "",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "FATTG"
+},
+"15": {
+"": 1,
+"Dur": 10,
+"Frame": "H",
+"Function": "attack",
+"Lit": true,
+"Next": 16,
+"Paramters": "",
+"Sprite": "FATTH"
+},
+"16": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "face",
+"Lit": false,
+"Next": 17,
+"Paramters": "",
+"Sprite": "FATTI"
+},
+"17": {
+"": "",
+"Dur": 5,
+"Frame": "G",
+"Function": "face",
+"Lit": false,
+"Next": 18,
+"Paramters": "",
+"Sprite": "FATTG"
+},
+"18": {
+"": 2,
+"Dur": 10,
+"Frame": "H",
+"Function": "attack",
+"Lit": true,
+"Next": 19,
+"Paramters": "",
+"Sprite": "FATTH"
+},
+"19": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "face",
+"Lit": false,
+"Next": 20,
+"Paramters": "",
+"Sprite": "FATTI"
+},
+"2": {
+"": "",
+"Dur": 4,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "FATTA"
+},
+"20": {
+"": "",
+"Dur": 5,
+"Frame": "G",
+"Function": "face",
+"Lit": false,
+"Next": 21,
+"Paramters": "",
+"Sprite": "FATTG"
+},
+"21": {
+"": 3,
+"Dur": 10,
+"Frame": "H",
+"Function": "attack",
+"Lit": true,
+"Next": 22,
+"Paramters": "",
+"Sprite": "FATTH"
+},
+"22": {
+"": "",
+"Dur": 5,
+"Frame": "I",
+"Function": "face",
+"Lit": false,
+"Next": 23,
+"Paramters": "",
+"Sprite": "FATTI"
+},
+"23": {
+"": "",
+"Dur": 5,
+"Frame": "G",
+"Function": "checkFire",
+"Lit": false,
+"Next": 15,
+"Paramters": "",
+"Sprite": "FATTG"
+},
+"24": {
+"": "pain",
+"Dur": 3,
+"Frame": "J",
+"Function": "playHurt",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "FATTJ"
+},
+"25": {
+"": "pain",
+"Dur": 3,
+"Frame": "J",
+"Function": "",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "FATTJ"
+},
+"26": {
+"": "",
+"Dur": 6,
+"Frame": "K",
+"Function": "",
+"Lit": false,
+"Next": 27,
+"Paramters": "",
+"Sprite": "FATTK"
+},
+"27": {
+"": "",
+"Dur": 6,
+"Frame": "L",
+"Function": "playDeath",
+"Lit": false,
+"Next": 28,
+"Paramters": "",
+"Sprite": "FATTL"
+},
+"28": {
+"": "",
+"Dur": 6,
+"Frame": "M",
+"Function": "deadState",
+"Lit": false,
+"Next": 29,
+"Paramters": "",
+"Sprite": "FATTM"
+},
+"29": {
+"": "",
+"Dur": 6,
+"Frame": "N",
+"Function": "",
+"Lit": false,
+"Next": 30,
+"Paramters": "",
+"Sprite": "FATTN"
+},
+"3": {
+"": "",
+"Dur": 4,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "FATTA"
+},
+"30": {
+"": "",
+"Dur": 6,
+"Frame": "O",
+"Function": "",
+"Lit": false,
+"Next": 31,
+"Paramters": "",
+"Sprite": "FATTO"
+},
+"31": {
+"": "",
+"Dur": 6,
+"Frame": "P",
+"Function": "",
+"Lit": false,
+"Next": 32,
+"Paramters": "",
+"Sprite": "FATTP"
+},
+"32": {
+"": "",
+"Dur": 6,
+"Frame": "Q",
+"Function": "",
+"Lit": false,
+"Next": 33,
+"Paramters": "",
+"Sprite": "FATTQ"
+},
+"33": {
+"": "",
+"Dur": 6,
+"Frame": "R",
+"Function": "",
+"Lit": false,
+"Next": 34,
+"Paramters": "",
+"Sprite": "FATTR"
+},
+"34": {
+"": "",
+"Dur": -1,
+"Frame": "R",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "FATTR"
+},
+"4": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "FATTB"
+},
+"5": {
+"": "",
+"Dur": 4,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "FATTB"
+},
+"6": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "FATTC"
+},
+"7": {
+"": "",
+"Dur": 4,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "FATTC"
+},
+"8": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "FATTD"
+},
+"9": {
+"": "",
+"Dur": 4,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 10,
+"Paramters": "",
+"Sprite": "FATTD"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34"],
+"sheetWidth": 2238.0,
+"splitSize": {
+0: 90,
+1: 75,
+2: 64,
+3: 74,
+4: 66,
+5: 89,
+6: 98,
+7: 0
+}
+}
+}

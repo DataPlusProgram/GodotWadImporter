@@ -1,28 +1,47 @@
-tool
+@tool
 extends AudioStreamPlayer3D
 
-export(Array,AudioStreamSample) var deathSounds 
-export(Array,AudioStreamSample) var painSounds 
-export(Array,AudioStreamSample) var attackSounds 
-export(Array,AudioStreamSample) var alertSounds 
-export(Array,AudioStreamSample) var meleeSounds
+@export var deathSounds : Array # (Array,AudioStreamWAV)
+@export var gibSounds : Array
+@export var painSounds : Array # (Array,AudioStreamWAV)
+@export var attackSounds : Array# (Array,AudioStreamWAV)
+@export var alertSounds  : Array# (Array,AudioStreamWAV)
+@export var meleeSounds : Array# (Array,AudioStreamWAV)
+@export var searchSounds : Array
+@export var stompSounds : Array
+
+
+var soundManager = null
 
 func _ready():
-	randomize()
+	soundManager = ENTG.getSoundManager(get_tree())
+
 
 func playDeath():
-	playRandom(deathSounds)
+	soundManager.playRandom(deathSounds,self,{})
+	#playRandom(deathSounds)
 		
 
 func playHurt():
-	playRandom(painSounds)
+	soundManager.playRandom(painSounds,self,{"unique":true})
+	#playRandom(painSounds)
 
 
 func playAttack():
-	playRandom(attackSounds)
+	if soundManager != null:
+		soundManager.playRandom(attackSounds,self,{})
+	#playRandom(attackSounds)
 
 func playMelee():
 	playRandom(meleeSounds)
+
+func playStomp():
+	playRandom(stompSounds)
+
+func playGib():
+	playRandom(gibSounds) 
+
+
 
 func playRandom(streamArr):
 	if streamArr.size() == 0:
@@ -34,4 +53,9 @@ func playRandom(streamArr):
 	
 
 func playAlert():
-	playRandom(alertSounds)
+	if soundManager != null:
+		soundManager.playRandom(alertSounds,self,{})
+	#playRandom(alertSounds)
+	
+func playSearch():
+	playRandom(searchSounds)

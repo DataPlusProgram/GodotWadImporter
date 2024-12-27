@@ -1,18 +1,22 @@
-tool
+@tool
 extends HSplitContainer
 signal hDraw
 signal hDrag
-onready var lastAmount = split_offset
+
+@onready var lastAmount = split_offset
 
 
 func _ready():
-	connect("draw",self,"draw")
-	connect("dragged",self,"dragged")
+	#connect("draw",self,"draw")
+	#connect("dragged",self,"dragged")
 	
-func draw():
+	draw.connect(draw1)
+	dragged.connect(dragged1)
+	
+func draw1():
 	emit_signal("hDraw",self)
 	
-func dragged(amt):
+func dragged1(amt):
 	emit_signal("hDrag",amt,self)
 
 #func _input(event):

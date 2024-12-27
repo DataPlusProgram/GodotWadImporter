@@ -1,0 +1,416 @@
+[gd_resource type="Resource" script_class="gsheet" load_steps=2 format=3 uid="uid://wfe86p4prm1r"]
+
+[ext_resource type="Script" path="res://addons/gSheet/scenes/gsheet.gd" id="1_ddjvp"]
+
+[resource]
+script = ExtResource("1_ddjvp")
+data = {
+"0": {
+"": "",
+"Dur": 10,
+"Frame": "A",
+"Function": "idle",
+"Lit": false,
+"Next": 1,
+"Paramters": "",
+"Sprite": "VILEA"
+},
+"1": {
+"": "",
+"Dur": 10,
+"Frame": "B",
+"Function": "idle",
+"Lit": false,
+"Next": 0,
+"Paramters": "",
+"Sprite": "VILEB"
+},
+"10": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "chase",
+"Lit": false,
+"Next": 11,
+"Paramters": "",
+"Sprite": "VILEE"
+},
+"11": {
+"": "",
+"Dur": 2,
+"Frame": "E",
+"Function": "chase",
+"Lit": false,
+"Next": 12,
+"Paramters": "",
+"Sprite": "VILEE"
+},
+"12": {
+"": "",
+"Dur": 2,
+"Frame": "F",
+"Function": "chase",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "VILEF"
+},
+"13": {
+"": "",
+"Dur": 0,
+"Frame": "G",
+"Function": "",
+"Lit": true,
+"Next": 14,
+"Paramters": "",
+"Sprite": "VILEG"
+},
+"14": {
+"": "",
+"Dur": 8,
+"Frame": "G",
+"Function": "face",
+"Lit": true,
+"Next": 15,
+"Paramters": "",
+"Sprite": "VILEG"
+},
+"15": {
+"": "",
+"Dur": 8,
+"Frame": "H",
+"Function": "face",
+"Lit": true,
+"Next": 16,
+"Paramters": "",
+"Sprite": "VILEH"
+},
+"16": {
+"": "",
+"Dur": 8,
+"Frame": "I",
+"Function": "face",
+"Lit": true,
+"Next": 17,
+"Paramters": "",
+"Sprite": "VILEI"
+},
+"17": {
+"": "",
+"Dur": 8,
+"Frame": "J",
+"Function": "face",
+"Lit": true,
+"Next": 18,
+"Paramters": "",
+"Sprite": "VILEJ"
+},
+"18": {
+"": "",
+"Dur": 8,
+"Frame": "K",
+"Function": "face",
+"Lit": true,
+"Next": 19,
+"Paramters": "",
+"Sprite": "VILEK"
+},
+"19": {
+"": "",
+"Dur": 8,
+"Frame": "L",
+"Function": "face",
+"Lit": true,
+"Next": 20,
+"Paramters": "",
+"Sprite": "VILEL"
+},
+"2": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 3,
+"Paramters": "",
+"Sprite": "VILEA"
+},
+"20": {
+"": "",
+"Dur": 8,
+"Frame": "M",
+"Function": "face",
+"Lit": true,
+"Next": 21,
+"Paramters": "",
+"Sprite": "VILEM"
+},
+"21": {
+"": "",
+"Dur": 8,
+"Frame": "N",
+"Function": "face",
+"Lit": true,
+"Next": 22,
+"Paramters": "",
+"Sprite": "VILEN"
+},
+"22": {
+"": "",
+"Dur": 8,
+"Frame": "O",
+"Function": "attack",
+"Lit": true,
+"Next": 23,
+"Paramters": "",
+"Sprite": "VILE0"
+},
+"23": {
+"": "",
+"Dur": 20,
+"Frame": "P",
+"Function": "",
+"Lit": true,
+"Next": 2,
+"Paramters": "",
+"Sprite": "VILEP"
+},
+"24": {
+"": "",
+"Dur": 5,
+"Frame": "Q",
+"Function": "",
+"Lit": false,
+"Next": 25,
+"Paramters": "",
+"Sprite": "VILEQ"
+},
+"25": {
+"": "",
+"Dur": 5,
+"Frame": "Q",
+"Function": "playHurt",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "VILEQ"
+},
+"26": {
+"": "",
+"Dur": 7,
+"Frame": "Q",
+"Function": "deadState",
+"Lit": false,
+"Next": 27,
+"Paramters": "",
+"Sprite": "VILEQ"
+},
+"27": {
+"": "",
+"Dur": 7,
+"Frame": "R",
+"Function": "playDeath",
+"Lit": false,
+"Next": 28,
+"Paramters": "",
+"Sprite": "VILER"
+},
+"28": {
+"": "",
+"Dur": 7,
+"Frame": "S",
+"Function": "",
+"Lit": false,
+"Next": 29,
+"Paramters": "",
+"Sprite": "VILES"
+},
+"29": {
+"": "",
+"Dur": 7,
+"Frame": "T",
+"Function": "",
+"Lit": false,
+"Next": 30,
+"Paramters": "",
+"Sprite": "VILET"
+},
+"3": {
+"": "",
+"Dur": 2,
+"Frame": "A",
+"Function": "chase",
+"Lit": false,
+"Next": 4,
+"Paramters": "",
+"Sprite": "VILEA"
+},
+"30": {
+"": "",
+"Dur": 7,
+"Frame": "U",
+"Function": "",
+"Lit": false,
+"Next": 31,
+"Paramters": "",
+"Sprite": "VILEU"
+},
+"31": {
+"": "",
+"Dur": 7,
+"Frame": "V",
+"Function": "",
+"Lit": false,
+"Next": 32,
+"Paramters": "",
+"Sprite": "VILEV"
+},
+"32": {
+"": "",
+"Dur": 7,
+"Frame": "W",
+"Function": "",
+"Lit": false,
+"Next": 33,
+"Paramters": "",
+"Sprite": "VILEW"
+},
+"33": {
+"": "",
+"Dur": 5,
+"Frame": "X",
+"Function": "",
+"Lit": false,
+"Next": 34,
+"Paramters": "",
+"Sprite": "VILEX"
+},
+"34": {
+"": "",
+"Dur": 5,
+"Frame": "Y",
+"Function": "",
+"Lit": false,
+"Next": 35,
+"Paramters": "",
+"Sprite": "VILEY"
+},
+"35": {
+"": "",
+"Dur": -1,
+"Frame": "Z",
+"Function": "",
+"Lit": false,
+"Next": -1,
+"Paramters": "",
+"Sprite": "VILEZ"
+},
+"36": {
+"": "",
+"Dur": 8,
+"Frame": "[",
+"Function": "playStomp",
+"Lit": false,
+"Next": 37,
+"Paramters": "reviver state",
+"Sprite": "VILE["
+},
+"37": {
+"": "",
+"Dur": 8,
+"Frame": "\\",
+"Function": "",
+"Lit": false,
+"Next": 38,
+"Paramters": "",
+"Sprite": "VILE\\\\"
+},
+"38": {
+"": "",
+"Dur": 8,
+"Frame": "]",
+"Function": "reviveWaitOver",
+"Lit": false,
+"Next": 2,
+"Paramters": "",
+"Sprite": "VILE\\]"
+},
+"4": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 5,
+"Paramters": "",
+"Sprite": "VILEB"
+},
+"5": {
+"": "",
+"Dur": 2,
+"Frame": "B",
+"Function": "chase",
+"Lit": false,
+"Next": 6,
+"Paramters": "",
+"Sprite": "VILEB"
+},
+"6": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 7,
+"Paramters": "",
+"Sprite": "VILEC"
+},
+"7": {
+"": "",
+"Dur": 2,
+"Frame": "C",
+"Function": "chase",
+"Lit": false,
+"Next": 8,
+"Paramters": "",
+"Sprite": "VILEC"
+},
+"8": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 9,
+"Paramters": "",
+"Sprite": "VILED"
+},
+"9": {
+"": "",
+"Dur": 2,
+"Frame": "D",
+"Function": "chase",
+"Lit": false,
+"Next": 10,
+"Paramters": "",
+"Sprite": "VILED"
+},
+"meta": {
+"colNames": ["Sprite", "Frame", "Lit", "Next", "Dur", "Function", "Paramters", ""],
+"enumColumns": {},
+"enumColumnsPrefix": {},
+"hasId": false,
+"rowOrder": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38"],
+"sheetWidth": 2317.0,
+"splitSize": {
+0: 70,
+1: 75,
+2: 64,
+3: 74,
+4: 64,
+5: 117,
+6: 98,
+7: 0
+}
+}
+}

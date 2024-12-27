@@ -1,25 +1,26 @@
-tool
+@tool
 extends Node
 
 
-export(Array,String) var front = ["MISLA1"]
-export(Array,String) var frontLeft = []
-export(Array,String) var left = []
-export(Array,String) var backLeft = []
-export(Array,String) var back = ["MISLA5"]
-export(Array,String) var backRight = ["MISLA6A4"]
-export(Array,String) var right = ["MISLA7A3"]
-export(Array,String) var frontRight = ["MISLA8A2"]
-export(Array,String) var explosion = ["MISLB0","MISLC0","MISLD0"]
+@export var front = ["MISLA1"] # (Array,String)
+@export var frontLeft = [] # (Array,String)
+@export var left = [] # (Array,String)
+@export var backLeft = [] # (Array,String)
+@export var back = ["MISLA5"] # (Array,String)
+@export var backRight = ["MISLA6A4"] # (Array,String)
+@export var right = ["MISLA7A3"] # (Array,String)
+@export var frontRight = ["MISLA8A2"] # (Array,String)
+@export var explosion = ["MISLB0","MISLC0","MISLD0"] # (Array,String)
 
-export(String) var spawnSound = ""
-export(String) var idleSound = ""
-export(String) var explosionSound = "DSBAREXP"
-export var scaleFactor = Vector3(1,1,1)
-export var sizeIncrease = 0.0
+@export var spawnSound: String = ""
+@export var idleSound: String = ""
+@export var explosionSound: String = "DSBAREXP"
+@export var scaleFactor = Vector3(1,1,1)
+@export var sizeIncrease = 0.0
 
 var spriteList = []
 var animationPlayer 
+var animationLibrary
 var animatedSprite : AnimatedSprite3D
 var loader
 var entityLoader
@@ -30,14 +31,17 @@ var entityLoader
 
 
 func initialize():
-	
+	animationLibrary = AnimationLibrary.new()
 	animationPlayer =  $"../AnimationPlayer"
+	animationPlayer.add_animation_library("",animationLibrary)
 	animatedSprite = $"../AnimatedSprite3D"
 	animatedSprite.frames = SpriteFrames.new()
 	animatedSprite.pixel_size = (scaleFactor.x * 0.5) + (scaleFactor.x *sizeIncrease)
 	
-	get_parent().velo*= scaleFactor
 	
+	
+	get_parent().velo*= scaleFactor.z
+	get_parent().splashRadius*= scaleFactor.z
 	addSriteCondition(front,[],"front")
 	addSriteCondition(frontLeft,frontRight,"frontLeft")
 	addSriteCondition(left,right,"left")
@@ -50,23 +54,26 @@ func initialize():
 	animatedSprite.animation = "right"
 	
 	addSprites(explosion,"explosion")
+	createAnim("idle",0,2,0.3,true)
 	createAnim("explosion",0,explosion.size(),0.3,false)
 	initSounds()
 	
 	
-	var anim = $"../AnimationPlayer".get_animation("explosion")
+	#var anim = $"../AnimationPlayer".get_animation("explosion")
+	var anim = animationLibrary.get_animation("explosion")
 	anim.add_track(Animation.TYPE_VALUE,1)
 	anim.track_set_path(1,"AnimatedSprite3D:animation")
 	anim.track_insert_key(1,0,"explosion")
 	
 	
+	
 
 func addSriteCondition(desired,fallback,sprName):
-	if !desired.empty(): 
+	if !desired.is_empty(): 
 		addSprites(desired,sprName)
 		spriteList += desired
 	
-	if desired.empty() and !fallback.empty():
+	if desired.is_empty() and !fallback.is_empty():
 		addSprites(flipped(fallback),sprName)
 		spriteList += flipped(fallback)
 		
@@ -76,7 +83,7 @@ func addSriteCondition(desired,fallback,sprName):
 
 func addSprites(spriteNames,set = "default"):
 	for s in spriteNames.size():
-		var sprite : Texture = loader.fetchDoomGraphic(spriteNames[s])
+		var sprite : Texture2D = loader.fetchDoomGraphic(spriteNames[s])
 		
 		if sprite == null:
 			print("missing srpite:",spriteNames[s])
@@ -84,14 +91,15 @@ func addSprites(spriteNames,set = "default"):
 	
 		
 		
-		if !animatedSprite.frames.has_animation(set):
-			animatedSprite.frames.add_animation(set)
+		if !animatedSprite.sprite_frames.has_animation(set):
+			#animatedSprite.sprite_frames.add_animation_library(set)
+			animatedSprite.sprite_frames.add_animation(set)
 
-		animatedSprite.frames.add_frame(set,sprite,s)
+		animatedSprite.sprite_frames.add_frame(set,sprite,s)
 
 
 func flipped(arr):
-	if arr.empty():
+	if arr.is_empty():
 		return []
 	var ret = []
 	for i in arr:
@@ -138,7 +146,9 @@ func createAnim(animName,startIndex,numSprites,dur:float,loop=false):
 	anim.add_track(Animation.TYPE_VALUE,0)
 	anim.length = dur
 	anim.track_set_path(0,"AnimatedSprite3D:frame")
-	anim.set_loop(loop)
+	#anim.set_loop(loop)
+	if loop != false:
+		anim.loop_mode = Animation.LOOP_LINEAR
 	anim.value_track_set_update_mode(0,anim.UPDATE_DISCRETE)
 	var delta = max(dur / numSprites,0.001)
 	
@@ -146,21 +156,20 @@ func createAnim(animName,startIndex,numSprites,dur:float,loop=false):
 		anim.track_insert_key(0,delta*s,s+startIndex)
 	
 	
-	var e = animationPlayer.add_animation(animName,anim)
-	
+	#var e = animationPlayer.add_animation_library(animName,anim)
+	var e = animationLibrary.add_animation(animName,anim)
 	
 	return anim
 	
-func getSpriteCondition(desired,fallback,sprName):
+func getSpriteCondition(desired,fallback,sprNames):
 	var ret = []
 	
-	if !desired.empty(): 
+	if !desired.is_empty(): 
 		for sprName in desired:
 			if !spriteList.has(sprName):
 				spriteList.append(sprName)
 	
-	if desired.empty() and !fallback.empty():
+	if desired.is_empty() and !fallback.is_empty():
 		for sprName in flipped(fallback):
 			if !spriteList.has(sprName):
 				spriteList.append(sprName)
-

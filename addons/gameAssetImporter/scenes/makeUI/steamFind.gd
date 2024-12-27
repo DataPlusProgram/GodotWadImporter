@@ -18,14 +18,16 @@ static func optimisitcFind():
 	return []
 
 static func doesFileExist(path : String) -> bool:
-	var f : File = File.new()
-	var ret = f.file_exists(path)
-	f.close()
-	return ret
+	#var f : File = File.new()
+	#var ret = f.file_exists(path)
+	#f.close()
+	
+	return FileAccess.file_exists(path)
 	
 static func doesDirExist(dirPath):
-	var d = Directory.new();
-	return d.dir_exists(dirPath)
+	#var d = DirAccess.open(dirPath);
+	return DirAccess.dir_exists_absolute(dirPath)
+	#return d.dir_exists(dirPath)
 
 
 static func parseSteamDir(path):
@@ -35,11 +37,10 @@ static func parseSteamDir(path):
 	if !doesFileExist(vdfPath):
 		return ret
 		
-	var file = File.new()
+	var file = FileAccess.open(vdfPath,FileAccess.READ)
 	var paths = []
-	file.open(vdfPath,File.READ)
 	
-	if file.open(vdfPath, File.READ) == OK:
+	if file != null:
 		while !file.eof_reached():
 			var line = file.get_line()
 			if line.find('"path"') != -1:

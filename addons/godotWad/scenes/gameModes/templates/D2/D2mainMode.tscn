@@ -1,0 +1,59 @@
+[gd_scene load_steps=12 format=3 uid="uid://de7v44hqnv64y"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/mainMode_template.gd" id="1_r8exu"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/Generator.gd" id="2_83hwp"]
+[ext_resource type="Resource" uid="uid://b41turepijbnk" path="res://addons/godotWad/resources/intermissionScreensD1.tres" id="3_huwmv"]
+[ext_resource type="PackedScene" uid="uid://dhl77huh1s1at" path="res://addons/godotWad/WAD_Loader.tscn" id="4_ksgic"]
+[ext_resource type="Shader" path="res://addons/godotWad/shaders/melt.gdshader" id="5_n1h5o"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/main/meltRect.gd" id="6_y8oxl"]
+[ext_resource type="PackedScene" uid="uid://t1mrjy0uapia" path="res://addons/godotWad/scenes/gameModes/templates/ScoreScreen/scoreScreen.tscn" id="7_8dn0p"]
+[ext_resource type="Script" path="res://addons/godotWad/scenes/gameModes/templates/ScoreScreen/scoreScreen.gd" id="8_wxava"]
+[ext_resource type="PackedScene" uid="uid://cf0kxe40frncs" path="res://addons/gameAssetImporter/scenes/soundManager/soundManager.tscn" id="9_3a361"]
+
+[sub_resource type="Environment" id="Environment_5ywfy"]
+background_energy_multiplier = 0.0
+ambient_light_energy = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y8edn"]
+shader = ExtResource("5_n1h5o")
+shader_parameter/timer = 0.0
+shader_parameter/y_offsets = null
+shader_parameter/melting = false
+
+[node name="mainMode_template" type="Node3D" groups=["gameMode"]]
+script = ExtResource("1_r8exu")
+modeName = "Doom 2 mode"
+
+[node name="Generator" type="Node" parent="."]
+script = ExtResource("2_83hwp")
+dependantChildren = Array[String](["res://addons/godotWad/scenes/gameModes/templates/D2/D2mainMenu.tscn"])
+scoreScreenImg = ExtResource("3_huwmv")
+
+[node name="WadLoader" parent="." instance=ExtResource("4_ksgic")]
+fontCharsHexen = null
+
+[node name="endScreen" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_5ywfy")
+
+[node name="meltRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_y8edn")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_y8oxl")
+
+[node name="ScoreScreen" parent="." instance=ExtResource("7_8dn0p")]
+visible = false
+script = ExtResource("8_wxava")
+
+[node name="SoundManager" parent="." instance=ExtResource("9_3a361")]
+process_physics_priority = 999

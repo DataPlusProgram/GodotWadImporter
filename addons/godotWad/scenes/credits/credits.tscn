@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdl2eb42me7a0"]
+
+[ext_resource type="Script" path="res://addons/godotWad/scenes/credits/credits.gd" id="1_nwty6"]
+[ext_resource type="PackedScene" uid="uid://cffknv4d5tc1v" path="res://addons/gameAssetImporter/scenes/richList/richList.tscn" id="2_4kcgr"]
+
+[node name="Credits" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_nwty6")
+
+[node name="RichList" parent="." instance=ExtResource("2_4kcgr")]
+layout_mode = 1
+hoverColor = Color(0.20506, 0.237637, 0.27674, 1)
+borderColor = Color(0.462305, 0.51559, 0.579677, 1)
+selectionEnabled = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
