@@ -2,35 +2,32 @@
 
 ![](https://user-images.githubusercontent.com/62811101/167262974-9a93db20-e4ca-45b1-a012-e222ed06cc65.png)
 
-This is a Godot plugin that allows the importing of Doom WAD maps into Godot.
+![image](https://github.com/user-attachments/assets/126828fb-b224-4d3e-ac73-6cab0fbe81c7)
 
-Video Demonstration here: https://www.youtube.com/watch?v=8Gr4nZPxadQ
 
-It is the successor from my previous WAD importer https://github.com/DataPlusProgram/GodWad
+This is a Godot plugin that allows the importing of Doom WAD maps into Godot. Now updated for Godot 4.
 
-Linetypes(doors,lifts,etc..) are supported for the base Doom format but Hexen based linetypes are not supported.
+**Video Demonstration here:** https://www.youtube.com/watch?v=8Gr4nZPxadQ
 
-If you wnat a body to interact with objects add a "interactPressed" bool to the body which is true when the interaction button is pressed and false when its not pressed.
-
-If you have a .pk3 file you will have to first extract the WAD out if it mannually.
+It supports the default doom linetypes along with some Boom linetypes.
+It can open .WAD files and .PKG3 files.
 
 
 ## Character Controller
-There is a provided character controller for testing purposes
+There is a provided character controller:
 
 ![](https://i.giphy.com/media/dRsq8BVZ2lUapFyGJk/giphy.webp)
 
-The character controller generated dynamically by the pluging by clicking the "Create Character Controller" button
-
+Watch the Youtube video for information on how to use it.
 
 
 | Action        |  Description  |
 | ------------- |:-------------:|
-| ui_up         | move forward  |
-| ui_down       | move backward |
-| ui_left       | move left     |
-| ui_right      | move right    |
+| forward       | move forward  |
+| backward      | move backward |
+| strafeLeft    | move left     |
+| strafeRight   | move right    |
 | shoot         | shoot weapon  |
 | interact      | actvate doors, buttons, etc|
 | jump          | jump          |
-| weaponSwitchCategory0...5| Switch between weapon categories |
+| weaponSwitchCategory 0...7| Switch between weapon categories |
