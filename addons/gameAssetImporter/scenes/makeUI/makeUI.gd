@@ -1002,9 +1002,6 @@ func copyDependentEntitiesToCache(targetTree,ent,depends,visited = []):
 	var cacheDest = ENTG.fetchEntityCaches(targetTree,"",false,editedNode)[0]
 
 	
-	cacheSrc.print_tree_pretty()
-	cacheDest.print_tree_pretty()
-	
 	if ent.has_meta("entityDepends"):
 		depends = ent.get_meta("entityDepends")
 		recursiveMove(cacheSrc,cacheDest,depends,visited)
@@ -1028,7 +1025,6 @@ func recursiveMove(source : Node,dest : Node,entStrArr,visited = []):
 			continue
 
 		if !dest.has_node(entStr):
-			print("reparented ent to dest")
 			entity.reparent(dest)
 		
 		visited.append(entStr)
@@ -1041,9 +1037,7 @@ func recursiveMove(source : Node,dest : Node,entStrArr,visited = []):
 
 	
 func getTree():
-	print("editedNode:",editedNode)
 	if  editedNode != null:
-		print("edited node path =",editedNode.get_path())
 		return editedNode
 	
 	return get_tree()
@@ -1183,10 +1177,6 @@ func createMapThread(arr):
 		pass
 	
 	
-	
-	for i in map.get_children():
-		print(i.name)
-	
 	ps.pack(map)
 
 	var destPath = "res://game_imports/"+cur.gameName+"/maps/"+curEntTxt+".tscn"
@@ -1200,7 +1190,6 @@ func createMapThread(arr):
 	#OS.delay_msec(2000)
 	ResourceSaver.save(ps,destPath)
 	
-	print("map saved")
 	#OS.delay_msec(2000)
 	
 	map.queue_free()
