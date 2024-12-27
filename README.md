@@ -7,7 +7,7 @@
 
 This is a Godot plugin that allows the importing of Doom WAD maps into Godot. Now updated for Godot 4.
 
-**Video Demonstration here:** https://www.youtube.com/watch?v=8Gr4nZPxadQ
+**Video Demonstration here:** [https://www.youtube.com/watch?v=8Gr4nZPxadQ](https://www.youtube.com/watch?v=SkcoE_M1Itc)
 
 It supports the default doom linetypes along with some Boom linetypes.
 It can open .WAD files and .PKG3 files.
