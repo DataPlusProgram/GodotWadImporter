@@ -27,3 +27,4 @@ history.cfg
 *.autosave*
 *.pk3
 
+!addons/
