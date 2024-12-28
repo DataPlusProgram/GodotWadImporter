@@ -678,7 +678,7 @@ func createMapTail(metaData : Dictionary,cacheParent = null):
 	#SETTINGS.setTimeLog(get_tree(),"total",trueTotalStart)
 	
 	
-	printTimings()
+	#printTimings()
 	return mapNode
 
 func initialize(wadArr,config,gameName):
